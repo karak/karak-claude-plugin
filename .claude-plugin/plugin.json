@@ -1,0 +1,22 @@
+{
+  "name": "karak-claude-plugin",
+  "description": "Design documentation, code review, Apple HIG, icon design skills, and specialized agents for Claude Code",
+  "version": "1.0.0",
+  "author": {
+    "name": "yasushi"
+  },
+  "skills": [
+    "google-design-docs",
+    "codex-review",
+    "apple-design",
+    "icon-design"
+  ],
+  "agents": [
+    "quality-assurance-manager",
+    "ui-designer",
+    "requirements-analyst",
+    "agile-project-manager",
+    "system-designer",
+    "code-refactorer"
+  ]
+}
