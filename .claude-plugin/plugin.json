@@ -1,23 +1,39 @@
 {
   "name": "karak-claude-plugin",
-  "description": "Design documentation, code review, Apple HIG, icon design skills, and specialized agents for Claude Code",
-  "version": "1.0.0",
+  "description": "Design, code review, UX psychology, and specialized cloud architecture agents for Claude Code",
+  "version": "1.1.0",
   "author": {
-    "name": "yasushi"
+    "name": "karak"
   },
+  "homepage": "https://github.com/yasushi/karak-claude-plugin",
+  "repository": "https://github.com/yasushi/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "code-review",
+    "ux",
+    "cloud-architecture",
+    "gcp",
+    "apple-hig",
+    "icon-design",
+    "frontend"
+  ],
   "skills": [
     "google-design-docs",
     "codex-review",
     "apple-design",
-    "icon-design"
+    "icon-design",
+    "frontend-aesthetics",
+    "theme-factory",
+    "ux-psychologist"
   ],
   "agents": [
-    "quality-assurance-manager",
-    "ui-designer",
-    "requirements-analyst",
-    "agile-project-manager",
-    "system-designer",
-    "code-refactorer",
-    "gcp-infrastructure-engineer"
+    "./agents/quality-assurance-manager.md",
+    "./agents/ui-designer.md",
+    "./agents/requirements-analyst.md",
+    "./agents/agile-project-manager.md",
+    "./agents/system-designer.md",
+    "./agents/code-refactorer.md",
+    "./agents/gcp-infrastructure-engineer.md"
   ]
 }
