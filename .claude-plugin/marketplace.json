@@ -1,18 +1,46 @@
 {
   "name": "karak-dev",
-  "description": "Design, code review, UX psychology, and specialized cloud architecture tools for Claude Code",
   "owner": {
     "name": "karak"
+  },
+  "metadata": {
+    "description": "Design, code review, UX psychology, and specialized cloud architecture tools for Claude Code",
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "karak-claude-plugin",
-      "description": "Design documentation, code review with session resume, Apple HIG, icon design, AI slop detection, theming, UX psychology skills, and specialized agents for cloud architecture",
-      "version": "1.1.0",
       "source": "./",
+      "description": "Design documentation, code review with session resume, Apple HIG, icon design, AI slop detection, theming, UX psychology skills, and specialized agents for cloud architecture",
+      "version": "1.2.0",
       "author": {
         "name": "karak"
-      }
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "design",
+        "code-review",
+        "ux-psychology",
+        "cloud-architecture",
+        "gcp",
+        "apple-hig",
+        "icon-design",
+        "frontend",
+        "theme",
+        "accessibility"
+      ],
+      "category": "development",
+      "tags": [
+        "design-system",
+        "code-quality",
+        "ux",
+        "cloud",
+        "ios",
+        "android",
+        "web"
+      ]
     }
   ]
 }

@@ -27,6 +27,7 @@ capabilities:
   - prototyping
   - design_tokens
 priority: high
+model: sonnet
 ---
 
 # UI Design Specialist

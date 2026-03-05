@@ -1,22 +1,24 @@
 {
   "name": "karak-claude-plugin",
   "description": "Design, code review, UX psychology, and specialized cloud architecture agents for Claude Code",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": {
     "name": "karak"
   },
-  "homepage": "https://github.com/yasushi/karak-claude-plugin",
-  "repository": "https://github.com/yasushi/karak-claude-plugin",
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
   "license": "MIT",
   "keywords": [
     "design",
     "code-review",
-    "ux",
+    "ux-psychology",
     "cloud-architecture",
     "gcp",
     "apple-hig",
     "icon-design",
-    "frontend"
+    "frontend",
+    "theme",
+    "accessibility"
   ],
   "skills": [
     "google-design-docs",
