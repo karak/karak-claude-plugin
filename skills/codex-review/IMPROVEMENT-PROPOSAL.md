@@ -1,122 +1,68 @@
-# Codex Review Skill 改善提案
+# Codex Review Skill 改善履歴
 
-## 発見された問題
+## v2 改善 (2026-03-06): 速度最適化
 
-### 問題 1: シェル初期化によるタイムアウト（CRITICAL）
+### 変更内容
 
-**症状:** `codex exec --sandbox read-only` 実行時、codex 内部で `bash -lc` を使用してコマンドを実行する。`-l`（ログインシェル）により `.bash_profile` / `.zshrc` 等が読み込まれ、以下のツールが初期化に時間を消費しタイムアウトする：
+1. **再レビューの自動再開** — ユーザー確認 ("再開しますか？") を排除し、セッション検出時は即座に resume
+2. **ワークフロー簡素化** — 6ステップ分岐フロー → 2パス明確分離 (Initial Review 3ステップ / Fast Re-review 1ステップ)
+3. **パイプライン統合** — `extract_and_save_session.py` で extract + save を1コマンドに
+4. **SKILL.md 短縮** — 290行 → 170行（冗長な例示・重複説明を削除）
 
-- **yarn**: キャッシュフォルダが書き込み不可の場合、10秒間ハングして `exited 124` (timeout)
-- **pyenv**: `pyenv init -` の警告メッセージ出力で数秒遅延
-- **nvm**: Node.js 環境の初期化で追加遅延
+### ベンチマーク結果
 
-**影響:** codex の最初のシェルコマンドがタイムアウトし、レビューが進行不能になる。
+4並列サブエージェントによるワークフロートレース比較 (2026-03-06実施)
 
-**回避策（現在）:**
-```bash
-# sandbox を解除して実行（シェル初期化タイムアウトを回避）
-codex exec --sandbox danger-full-access "..."
-```
+#### 再レビュー (主要最適化対象)
 
-> **Warning:** `-c 'shell_environment_policy.inherit="none"'` は PATH 等の必要な環境変数まで消すため使用しないこと。codex が正常にコマンドを実行できなくなる。
+| 指標 | 旧スキル | 新スキル | 改善 |
+|------|---------|---------|------|
+| Tool calls | 7 | 5 | -29% |
+| ユーザー確認待ち | 1回 | 0回 | 排除 |
+| エージェント消費トークン | 21,975 | 14,988 | -32% |
+| エージェント実行時間 | 72.7s | 55.3s | -24% |
 
-**根本原因:** codex が `bash -lc` でコマンドを実行するため、ユーザーのシェルプロファイル全体が読み込まれる。
+#### 初回レビュー
 
-### 問題 2.5: `find .. -name AGENTS.md` によるタイムアウト（HIGH）
+| 指標 | 旧スキル | 新スキル | 改善 |
+|------|---------|---------|------|
+| Tool calls | 10 | 8 | -20% |
+| Post-codex commands | 3 | 2 | -33% |
+| エージェント消費トークン | 16,112 | 15,451 | -4% |
 
-**症状:** codex は各セッション開始時に自動的に `find .. -name AGENTS.md -print` を実行してコンテキストを収集する。ホームディレクトリ直下のリポジトリでは `.subversion/auth`, `Pictures`, `Library` 等のアクセス不可ディレクトリに遭遇し、10秒のタイムアウトを消費する。これによりトークン予算を無駄遣いし、レビューが途中で打ち切られる。
+#### アサーション結果
 
-**回避策:** codex の内部動作であり、ユーザー側での回避は困難。プロンプトに「AGENTS.md は存在しません。`find ..` は実行しないでください。」を追加することで軽減可能。
+| テスト項目 | 旧 | 新 |
+|-----------|---|---|
+| 再レビューで確認を求めない | FAIL | PASS |
+| codex exec resume 実行 | PASS | PASS |
+| session_manager.py lookup 実行 | PASS | PASS |
+| codex exec --json 実行（初回） | PASS | PASS |
+| セッションID保存 | PASS | PASS |
 
-### 問題 2: `--sandbox read-only` でも `bash -lc` が使われる
+**結論:** 精度変化なし、再レビュー速度 -29% tool calls / -32% tokens / 確認待ち排除
 
-**症状:** sandbox モードに関係なく、codex は常に `bash -lc` でコマンドを実行する。read-only sandbox でもログインシェル初期化が走り、同じタイムアウト問題が発生する。
+### エビデンス
+
+- トレースファイル: `codex-review-workspace/iteration-1/eval-*/trace.md`
+- ベンチマーク: `codex-review-workspace/iteration-1/benchmark.md`
+- ユニットテスト: 29件全通過 (test_extract_session_id + test_session_manager + test_extract_and_save_session)
+
+---
+
+## v1 既知の問題 (発見日: 2026-01-18 ~ 2026-03-04)
+
+### 問題 1: シェル初期化によるタイムアウト（CRITICAL → v2で対応済み）
+
+codex 内部で `bash -lc` を使用。yarn/pyenv/nvm の初期化でタイムアウト。
+回避策: `--sandbox danger-full-access` (v2でデフォルト化)
+
+### 問題 2: `find .. -name AGENTS.md` によるタイムアウト（HIGH → v2で対応済み）
+
+codex が自動実行する `find ..` がホームディレクトリを走査。
+回避策: プロンプトに「AGENTS.md は存在しません」を追加 (v2で組込済み)
 
 ### 問題 3: 大量出力時の切り詰め
 
-**症状:** レビュー結果が大きい場合（8ファイル同時レビュー等）、Claude Code 側で出力が切り詰められる。`/Users/yasushi/.claude/.../tool-results/` に保存されるが、ユーザーが直接確認しづらい。
-
----
-
-## 改善提案
-
-### 1. skill.md のStep 3を修正
-
-**現在:**
-```bash
-codex exec --sandbox read-only "<prepared_prompt>"
-```
-
-**改善案:**
-```bash
-# デフォルト（推奨）: sandbox解除 + シェル環境非継承でタイムアウト回避
-codex exec --sandbox danger-full-access -c 'shell_environment_policy.inherit="none"' "<prepared_prompt>"
-
-# シェル初期化が問題ない環境の場合:
-codex exec --sandbox read-only "<prepared_prompt>"
-```
-
-### 2. Error Handling テーブルに追加
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `exited 124 in 10.01s` + yarn/pyenv/nvm エラー | ログインシェル初期化のタイムアウト | `--sandbox danger-full-access -c 'shell_environment_policy.inherit="none"'` を使用 |
-| `warning Skipping preferred cache folder` | yarn キャッシュフォルダ権限不足 | 上記と同じ。または `yarn config set cache-folder ~/.yarn-cache` で修正 |
-| `pyenv init - no longer sets PATH` | pyenv 設定の警告 | 上記と同じ |
-| Output too large | レビュー対象が多い | ファイルを分割してレビュー、または `timeout` を 600000ms に設定 |
-
-### 3. プロンプトにシェル指示を追加
-
-レビュープロンプトの冒頭に以下を追加することで、codex が `bash -c` を優先使用するよう誘導する：
-
-```
-シェルコマンドを使う場合は bash -c を使い、bash -lc は使わないでください。
-```
-
-### 4. タイムアウト設定の明記
-
-```bash
-# Claude Code の Bash ツールから実行する場合、timeout を長めに設定
-# デフォルト 120000ms → 300000ms (5分) 以上推奨
-```
-
-### 5. 出力解析のガイダンス強化
-
-codex の出力は以下の構造を持つ：
-```
-thinking    → 推論過程（スキップ可）
-Plan update → 進捗表示
-exec        → 実行コマンドと結果
-codex       → レビュー所見（最重要）
-tokens used → トークン使用量
-```
-
-最終的な `codex` セクション（`tokens used` の直前）がレビュー結果本体。`thinking` と `exec` はデバッグ用。
-
----
-
-## 推奨される skill.md の差分
-
-```diff
- ### Step 3: Execute Codex Review
-
--```bash
--codex exec --sandbox read-only "<prepared_prompt>"
--```
-+```bash
-+# 推奨: シェル初期化タイムアウトを回避
-+codex exec --sandbox danger-full-access \
-+  -c 'shell_environment_policy.inherit="none"' \
-+  "<prepared_prompt>"
-+```
-
- **Critical notes:**
- - Always use `exec` subcommand (not interactive mode)
--- Always use `--sandbox read-only` for safety
-+- `--sandbox danger-full-access` + `shell_environment_policy.inherit="none"` で
-+  シェル初期化タイムアウトを回避（codex はレビュー専用なので書き込みリスクは低い）
-+- プロンプト冒頭に「bash -c を使い、bash -lc は使わないでください」を追加
- - Command runs in background; may take 2-5 minutes
-+- Claude Code の Bash ツールから実行する場合、timeout を 300000ms 以上に設定
- - Output includes thinking traces and final findings
-```
+8ファイル同時レビュー等で出力がClaude Code側で切り詰められる。
+回避策: ファイルを分割してレビュー、timeout を 600000ms に設定
