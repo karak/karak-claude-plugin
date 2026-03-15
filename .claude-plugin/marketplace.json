@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Design, code review, UX psychology, and specialized cloud architecture tools for Claude Code",
-    "version": "1.5.0"
+    "version": "1.6.0"
   },
   "plugins": [
     {
       "name": "karak-claude-plugin",
       "source": "./",
-      "description": "Design documentation, code review with session resume, Apple HIG, Material Design 3, icon design, AI slop detection, UX psychology, Hi-Fi design quality skills, and specialized agents for cloud architecture",
-      "version": "1.5.0",
+      "description": "Design documentation, code review with session resume, Apple HIG, Material Design 3, icon design, AI slop detection, UX psychology, Hi-Fi design quality, mobile auth screen design, C4 architecture diagram skills, and specialized agents for cloud architecture",
+      "version": "1.6.0",
       "author": {
         "name": "karak"
       },
@@ -31,7 +31,9 @@
         "accessibility",
         "material-design",
         "android",
-        "hifi-design"
+        "hifi-design",
+        "architecture",
+        "c4-model"
       ],
       "category": "development",
       "tags": [
@@ -43,7 +45,10 @@
         "android",
         "material-design",
         "web",
-        "hifi-design"
+        "hifi-design",
+        "architecture",
+        "c4-model",
+        "plantuml"
       ]
     }
   ]

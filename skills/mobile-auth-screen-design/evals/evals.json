@@ -1,0 +1,97 @@
+{
+  "skill_name": "mobile-auth-screen-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "React Native でログイン画面を作りました。デザインレビューをお願いします。\n\n```jsx\nconst LoginScreen = () => (\n  <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>\n    <Text style={{ fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 24 }}>ログイン</Text>\n    <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, color: '#666', marginBottom: 4 }}>EMAIL ADDRESS</Text>\n    <TextInput style={{ height: 44, borderWidth: 1, borderColor: '#ccc', borderRadius: 6, paddingHorizontal: 12, marginBottom: 12 }} placeholder=\"example@mail.com\" />\n    <Text style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, color: '#666', marginBottom: 4 }}>PASSWORD</Text>\n    <TextInput style={{ height: 44, borderWidth: 1, borderColor: '#ccc', borderRadius: 6, paddingHorizontal: 12, marginBottom: 20 }} secureTextEntry />\n    <TouchableOpacity style={{ backgroundColor: '#3B82F6', height: 48, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>\n      <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>ログイン</Text>\n    </TouchableOpacity>\n    <TouchableOpacity style={{ height: 48, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}>\n      <Text style={{ fontSize: 15 }}>Googleでログイン</Text>\n    </TouchableOpacity>\n    <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: '#666' }}>アカウントをお持ちでない方はこちら</Text>\n  </View>\n);\n```",
+      "expected_output": "モバイル認証UIの専門的知識に基づくレビュー",
+      "assertions": [
+        {
+          "id": "1a",
+          "text": "GoogleボタンにGロゴが必要であること（Google Brand Guidelines準拠）を明示しているか",
+          "rationale": "Google公式ガイドライン違反。テキストのみのボタンは要件違反"
+        },
+        {
+          "id": "1b",
+          "text": "justifyContent:centerの垂直中央配置がキーボード表示時にフォームを隠すという理由付きで問題を指摘しているか",
+          "rationale": "「中央配置が悪い」だけでなく「なぜ悪いか（キーボード衝突）」まで説明できるか"
+        },
+        {
+          "id": "1c",
+          "text": "プライマリボタン(48px)とフィールド(44px)の高さ差が4pxしかなく視覚的階層が不十分であることを数値で指摘しているか",
+          "rationale": "サイズ差の「量」まで正確に指摘できるかを測る。一般的な「ボタンを大きく」では不十分"
+        },
+        {
+          "id": "1d",
+          "text": "パスワードを忘れたリンクが未実装であり、かつパスワードフィールドの直下右寄せが最適な配置位置であると示しているか",
+          "rationale": "存在しない要素の欠如に気づき、かつ最適配置まで示せるかを測る"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "モバイルアプリのサインアップ画面を設計中です。以下の構成でどこが改善できますか？\n\n- 画面中央に縦並びでフォーム配置\n- 「名前」「メール」「パスワード」「パスワード確認」の4フィールド（高さ46px、枠線1px、角丸6px、フィールド間12px）\n- フィールドラベルは上部に小さく表示（12px uppercase）\n- 「アカウント作成」ボタン（高さ50px、角丸8px、青）\n- フォーム幅は画面全体（左右padding 16px）\n- パスワードフィールドにトグルなし\n- エラー時はフィールド下にテキストのみ（赤文字）",
+      "expected_output": "設計段階の問題を複数指摘",
+      "assertions": [
+        {
+          "id": "2a",
+          "text": "フォームの中央配置がモバイルでアンチパターンであり、その理由（キーボード表示時の衝突）まで説明しているか",
+          "rationale": "「中央は良くない」だけでなく理由を説明できるかを測る"
+        },
+        {
+          "id": "2b",
+          "text": "エラー表示が赤テキストのみで色覚特性を持つユーザーに届かないアクセシビリティ問題と指摘しているか",
+          "rationale": "アクセシビリティ観点（色覚特性/WCAG）まで踏み込んだ指摘ができるか"
+        },
+        {
+          "id": "2c",
+          "text": "フィールド間12pxが狭すぎると数値で指摘し、推奨値（16-20px）を示しているか",
+          "rationale": "曖昧な「もっと間隔を」ではなく具体的な数値改善を示せるか"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "SwiftUI でパスワードリセット画面を実装しています。UXとデザインの観点でフィードバックをください。\n\n```swift\nstruct PasswordResetView: View {\n    @State private var email = \"\"\n    var body: some View {\n        VStack(spacing: 16) {\n            Text(\"パスワードリセット\")\n                .font(.title2)\n                .padding(.top, 40)\n            TextField(\"メールアドレス\", text: $email)\n                .textFieldStyle(.roundedBorder)\n                .frame(height: 44)\n                .padding(.horizontal, 16)\n            Button(\"リセットメールを送信\") { }\n                .frame(maxWidth: .infinity)\n                .frame(height: 44)\n                .background(Color.blue)\n                .foregroundColor(.white)\n                .cornerRadius(8)\n                .padding(.horizontal, 16)\n            Spacer()\n        }\n    }\n}\n```",
+      "expected_output": "SwiftUI特有の改善と実装コードを含むフィードバック",
+      "assertions": [
+        {
+          "id": "3a",
+          "text": "画面の目的を説明するサブテキスト（例:「登録メールにリセットリンクを送ります」）が欠けていることを指摘しているか",
+          "rationale": "タイトルだけではユーザーが次のアクションを理解できないという問題を捉えられるか"
+        },
+        {
+          "id": "3b",
+          "text": "ボタンとフィールドが同じ高さ44pxであり視覚的な優先順位が不明確であることを具体的な数値で指摘しているか",
+          "rationale": "コードを読んで正確にサイズを比較し差別化不足を指摘できるか"
+        },
+        {
+          "id": "3c",
+          "text": ".keyboardType(.emailAddress)の欠如をSwiftUIの実際のコードスニペット付きで示しているか",
+          "rationale": "概念だけでなくSwiftUIの実装コードを提示できるかを測る"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "React Native でログイン画面を実装しました。デザインフィードバックをお願いします。\n\n```jsx\nconst LoginScreen = () => (\n  <View style={{ flex: 1, paddingTop: 64, paddingHorizontal: 28 }}>\n    <Text style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>おかえりなさい</Text>\n    <Text style={{ fontSize: 16, color: '#666', marginBottom: 40 }}>アカウントにログインして続けましょう</Text>\n\n    <Text style={{ fontSize: 14, color: '#333', marginBottom: 6 }}>メールアドレス</Text>\n    <View style={{ flexDirection: 'row', alignItems: 'center', height: 52, borderWidth: 1.5, borderColor: '#ddd', borderRadius: 10, paddingHorizontal: 14, marginBottom: 18 }}>\n      <Text style={{ marginRight: 8, fontSize: 16 }}>✉</Text>\n      <TextInput style={{ flex: 1 }} placeholder=\"example@mail.com\" keyboardType=\"email-address\" autoCapitalize=\"none\" />\n    </View>\n\n    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>\n      <Text style={{ fontSize: 14, color: '#333' }}>パスワード</Text>\n      <TouchableOpacity><Text style={{ fontSize: 13, color: '#3B82F6' }}>パスワードを忘れた方</Text></TouchableOpacity>\n    </View>\n    <View style={{ flexDirection: 'row', alignItems: 'center', height: 52, borderWidth: 1.5, borderColor: '#ddd', borderRadius: 10, paddingHorizontal: 14, marginBottom: 28 }}>\n      <Text style={{ marginRight: 8, fontSize: 16 }}>🔒</Text>\n      <TextInput style={{ flex: 1 }} secureTextEntry placeholder=\"パスワードを入力\" />\n      <TouchableOpacity><Text style={{ fontSize: 13, color: '#999' }}>表示</Text></TouchableOpacity>\n    </View>\n\n    <TouchableOpacity style={{\n      height: 52, borderRadius: 10, backgroundColor: '#1A1A2E',\n      flexDirection: 'row', alignItems: 'center', justifyContent: 'center',\n      shadowColor: '#1A1A2E', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6\n    }}>\n      <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700', marginRight: 8 }}>ログイン</Text>\n      <Text style={{ fontSize: 16, color: '#fff' }}>→</Text>\n    </TouchableOpacity>\n  </View>\n);\n```",
+      "expected_output": "フィールドとボタンが同じ高さ(52px)でも、濃色塗りつぶし＋シャドウ＋アイコンにより視覚的階層が確保されているため、高さ差を問題として指摘しない。他の改善点があれば指摘する。",
+      "assertions": [
+        {
+          "id": "4a",
+          "text": "フィールドとボタンが同じ高さ52pxであることを問題として指摘していないか（色・シャドウ・アイコンで十分な差別化がある場合は高さ差は必須でない）",
+          "rationale": "高さが同じでも視覚的階層が十分な場合はNGでない。スキルが過剰にフラグを立てないかを測る反例テスト"
+        },
+        {
+          "id": "4b",
+          "text": "このデザインの実際の改善点（例: SafeAreaView欠如、Google/Appleサインインの欠如、エラー状態未実装など）を少なくとも1点指摘しているか",
+          "rationale": "反例テストが「何も指摘しない」になることを防ぐ。良いデザインにも改善点はある"
+        }
+      ],
+      "files": []
+    }
+  ]
+}
