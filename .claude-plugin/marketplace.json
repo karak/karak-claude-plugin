@@ -11,7 +11,7 @@
     {
       "name": "karak-claude-plugin",
       "source": "./",
-      "description": "Design documentation, code review with session resume, Apple HIG, Material Design 3, icon design, AI slop detection, theming, UX psychology, Hi-Fi design quality, mobile auth screen design, C4 architecture diagram skills, and specialized agents for cloud architecture",
+      "description": "Design documentation, code review with session resume, Apple HIG, Material Design 3, icon design, AI slop detection, UX psychology, Hi-Fi design quality, mobile auth screen design, C4 architecture diagram skills, and specialized agents for cloud architecture",
       "version": "1.6.0",
       "author": {
         "name": "karak"
@@ -28,7 +28,6 @@
         "apple-hig",
         "icon-design",
         "frontend",
-        "theme",
         "accessibility",
         "material-design",
         "android",
