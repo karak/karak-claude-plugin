@@ -21,7 +21,9 @@
     "android",
     "hifi-design",
     "architecture",
-    "c4-model"
+    "c4-model",
+    "adr",
+    "decision-record"
   ],
   "skills": [
     "./skills/google-design-docs",
@@ -33,7 +35,8 @@
     "./skills/material-design",
     "./skills/hifi-design-quality",
     "./skills/mobile-auth-screen-design",
-    "./skills/write-c4-diagram"
+    "./skills/write-c4-diagram",
+    "./skills/adr-architect"
   ],
   "agents": [
     "./agents/quality-assurance-manager.md",
