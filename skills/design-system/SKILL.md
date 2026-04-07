@@ -1,24 +1,26 @@
 ---
 name: design-system
 description: >
-  ウェブサイトやアプリのデザインシステムを作成・適用するスキル。55の実在するプロダクトのデザインシステム（色、タイポグラフィ、コンポーネント、レイアウト）をリファレンスとして保持し、
+  ウェブサイトやアプリのデザインシステムを作成・適用するスキル。60の実在するプロダクトのデザインシステム（色、タイポグラフィ、コンポーネント、レイアウト）をリファレンスとして保持し、
   ユーザーの要望に最適なデザインを提案・実装する。
   以下のキーワードでトリガーされる：
   - 「〇〇のようなデザインで」「〇〇風のデザイン」「〇〇みたいなサイト」（サイト名ベース）
   - 「モダンなデザイン」「ダークモードのサイト」「ミニマルなUI」「温かみのあるデザイン」（雰囲気ベース）
   - 「緑系のサイト」「青と白のデザイン」「グラデーションを使ったサイト」（色使いベース）
+  - 「日本語のウェブサイト」「日本のサービス風」「和文デザイン」「日本語UI」（日本語ウェブベース）
   - 「design system」「デザインシステム」「カラーパレット」「タイポグラフィ」
   - サイト名直接指定: Stripe, Linear, Vercel, Notion, Airbnb, Apple, Spotify, Figma, Framer,
     Supabase, Claude, Cursor, Raycast, Coinbase, Uber, Resend, Cal, PostHog, Wise, SpaceX,
     Revolut, Pinterest, Webflow, Miro, Intercom, BMW, NVIDIA, Warp, ElevenLabs, Superhuman,
     Mistral, Airtable, Clay, Sentry, Zapier, MongoDB, HashiCorp, Kraken, Expo, Mintlify,
     Sanity, Lovable, ClickHouse, Composio, Cohere, Minimax, Ollama, OpenCode, Replicate,
-    RunwayML, Together AI, VoltAgent, xAI, IBM
+    RunwayML, Together AI, VoltAgent, xAI, IBM,
+    メルカリ (Mercari), SmartHR, LINE, freee, クックパッド (Cookpad)
 ---
 
 # Design System Skill
 
-55の実在するプロダクトのデザインシステムをリファレンスとして、ウェブサイトやアプリのUI/デザインシステムを作成・適用する。
+60の実在するプロダクトのデザインシステムをリファレンスとして、ウェブサイトやアプリのUI/デザインシステムを作成・適用する。日本語ウェブサイトの作成時は、日本語サービスカテゴリのリファレンスも合わせて参照する。
 
 ## When to Use
 
@@ -43,6 +45,8 @@ references/notion.md       → Notion のデザインシステム
 ### 2. 雰囲気・色使いで指定された場合
 
 下記カタログから最適なサイトを1〜3つ選び、そのリファレンスを参照して提案する。
+
+**日本語ウェブサイトの場合:** 日本語UIを生成する場合は、Japanese Services カテゴリのリファレンスを合わせて参照し、CJKタイポグラフィ（和文フォントスタック、line-height、letter-spacing、禁則処理、palt）の実装パターンを取り入れる。
 
 ### 3. デザインシステムの生成
 
@@ -145,6 +149,19 @@ references/notion.md       → Notion のデザインシステム
 | Together AI | `references/together.ai.md` | パステル, グラデーション, エアリー, GPU | Pastel gradients |
 | xAI | `references/x.ai.md` | ブルータリスト, モノスペース, ダーク, ミニマル | Dark, monospace |
 
+### Japanese Services（日本語サービス）
+
+> 日本語ウェブサイト・日本語UIの作成時は、このカテゴリのリファレンスを優先的に参照する。
+> CJKタイポグラフィ（和文フォント指定、line-height、letter-spacing、禁則処理、palt）の実装例を含む。
+
+| Site | File | Keywords | Primary Color |
+|------|------|----------|---------------|
+| メルカリ (Mercari) | `references/mercari.md` | マーケットプレイス, レッド, ミニマル, 実用的, C2C | Red `#ff333f`, White |
+| SmartHR | `references/smarthr.md` | 業務UI, SaaS, ウォームグレー, アクセシブル, 信頼 | Blue `#0077c7`, Stone |
+| LINE | `references/line.md` | メッセンジャー, グリーン, 大胆, 親しみやすい, モダン | Green `#06c755`, White |
+| freee | `references/freee.md` | 会計, SaaS, ブルー, 親しみやすい, 明快 | Blue `#2864f0`, White |
+| クックパッド (Cookpad) | `references/cookpad.md` | レシピ, オレンジ, 温かみ, 家庭的, UGC | Orange `#f28c06`, Off-white `#f8f6f2` |
+
 ---
 
 ## Reference File Structure
@@ -183,9 +200,17 @@ references/notion.md       → Notion のデザインシステム
 
 **色指定の場合:**
 ```
-「緑系」→ Supabase (#3ecf8e), Spotify (#1db954), NVIDIA (#76b900)
+「緑系」→ Supabase (#3ecf8e), Spotify (#1db954), NVIDIA (#76b900), LINE (#06c755)
 「パープル系」→ Stripe (gradient), Sentry (#1f1633), Kraken (#7132f5)
-「青と白」→ Coinbase (#0052ff), Airtable (#1b61c9), Webflow (#146ef5)
+「青と白」→ Coinbase (#0052ff), Airtable (#1b61c9), Webflow (#146ef5), freee (#2864f0), SmartHR (#0077c7)
+「赤・オレンジ系」→ Airbnb (#ff385c), メルカリ (#ff333f), クックパッド (#f28c06)
+```
+
+**日本語ウェブサイトの場合:**
+```
+「日本語のサービス」→ メルカリ, SmartHR, LINE, freee, クックパッド から選択
+「日本の業務アプリ風」→ SmartHR, freee から選択
+「日本のコンシューマー向け」→ メルカリ, LINE, クックパッド から選択
 ```
 
 ### Step 2: リファレンス読み込み
@@ -232,6 +257,10 @@ references/notion.md       → Notion のデザインシステム
 | モノスペース / monospace | xAI, OpenCode, Composio |
 | 白黒 / monochrome | Uber, Vercel, Cal, Apple |
 | カラフル / colorful | Figma, Miro, Webflow, Clay |
+| 日本語 / japanese | メルカリ, SmartHR, LINE, freee, クックパッド |
+| 業務UI / business-app | SmartHR, freee, Airtable, Notion |
+| マーケットプレイス / marketplace | メルカリ, Airbnb, Pinterest |
+| UGC / community | クックパッド, Pinterest, PostHog |
 
 ---
 
