@@ -1,6 +1,6 @@
 {
   "name": "karak-claude-plugin",
-  "description": "Design, code review, UX psychology, and specialized cloud architecture agents for Claude Code",
+  "description": "Design, UX psychology, and specialized cloud architecture agents for Claude Code",
   "author": {
     "name": "karak"
   },
@@ -9,7 +9,6 @@
   "license": "MIT",
   "keywords": [
     "design",
-    "code-review",
     "ux-psychology",
     "cloud-architecture",
     "gcp",
@@ -28,7 +27,6 @@
   ],
   "skills": [
     "./skills/google-design-docs",
-    "./skills/codex-review",
     "./skills/apple-design",
     "./skills/icon-design",
     "./skills/frontend-aesthetics",
