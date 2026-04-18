@@ -5,60 +5,13 @@
   },
   "metadata": {
     "description": "Design, UX psychology, and specialized cloud architecture tools for Claude Code",
-    "version": "1.9.0"
+    "version": "2.0.0"
   },
   "plugins": [
     {
-      "name": "karak-claude-plugin",
-      "source": "./",
-      "description": "Design documentation, Apple HIG, Material Design 3, icon design, AI slop detection, UX psychology, Hi-Fi design quality, mobile auth screen design, C4 architecture diagram, design system (60 real-world product references incl. Japanese services), ADR (Architecture Decision Record) architect skills, and specialized agents for cloud architecture",
-      "version": "1.9.0",
-      "author": {
-        "name": "karak"
-      },
-      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
-      "repository": "https://github.com/karak-developer/karak-claude-plugin",
-      "license": "MIT",
-      "keywords": [
-        "design",
-        "ux-psychology",
-        "cloud-architecture",
-        "gcp",
-        "apple-hig",
-        "icon-design",
-        "frontend",
-        "accessibility",
-        "material-design",
-        "android",
-        "hifi-design",
-        "architecture",
-        "c4-model",
-        "adr",
-        "decision-record"
-      ],
-      "category": "development",
-      "tags": [
-        "design-system",
-        "code-quality",
-        "ux",
-        "cloud",
-        "ios",
-        "android",
-        "material-design",
-        "web",
-        "hifi-design",
-        "architecture",
-        "c4-model",
-        "plantuml",
-        "design-system-reference",
-        "adr",
-        "decision-record"
-      ]
-    },
-    {
       "name": "karak-design",
       "source": "./karak-design",
-      "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, Google design docs, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design",
+      "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system",
       "version": "1.0.0",
       "author": {
         "name": "karak"
@@ -75,7 +28,8 @@
         "ux-psychology",
         "hifi-design",
         "accessibility",
-        "android"
+        "android",
+        "design-system"
       ],
       "category": "development",
       "tags": [
@@ -91,7 +45,7 @@
     {
       "name": "karak-architecture",
       "source": "./karak-architecture",
-      "description": "System architecture skills: C4 model diagrams, system design, GCP infrastructure",
+      "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure",
       "version": "1.0.0",
       "author": {
         "name": "karak"
@@ -103,7 +57,9 @@
         "architecture",
         "c4-model",
         "cloud-architecture",
-        "gcp"
+        "gcp",
+        "adr",
+        "decision-record"
       ],
       "category": "development",
       "tags": [
@@ -111,13 +67,15 @@
         "c4-model",
         "plantuml",
         "cloud",
-        "gcp"
+        "gcp",
+        "adr",
+        "decision-record"
       ]
     },
     {
       "name": "karak-engineering",
       "source": "./karak-engineering",
-      "description": "Code quality and review skills: Codex-based code review with session resume, code refactoring, QA management",
+      "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management",
       "version": "1.0.0",
       "author": {
         "name": "karak"
@@ -127,12 +85,14 @@
       "license": "MIT",
       "keywords": [
         "code-review",
-        "code-quality"
+        "code-quality",
+        "google-design-docs"
       ],
       "category": "development",
       "tags": [
         "code-quality",
-        "code-review"
+        "code-review",
+        "google-design-docs"
       ]
     },
     {

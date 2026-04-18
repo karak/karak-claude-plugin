@@ -1,6 +1,6 @@
 {
   "name": "karak-design",
-  "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, Google design docs, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design",
+  "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system",
   "author": {
     "name": "karak"
   },
@@ -16,17 +16,18 @@
     "ux-psychology",
     "hifi-design",
     "accessibility",
-    "android"
+    "android",
+    "design-system"
   ],
   "skills": [
-    "./skills/google-design-docs",
     "./skills/apple-design",
     "./skills/icon-design",
     "./skills/frontend-aesthetics",
     "./skills/ux-psychologist",
     "./skills/material-design",
     "./skills/hifi-design-quality",
-    "./skills/mobile-auth-screen-design"
+    "./skills/mobile-auth-screen-design",
+    "./skills/design-system"
   ],
   "agents": [
     "./agents/ui-designer.md"
