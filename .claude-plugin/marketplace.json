@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Design, code review, UX psychology, and specialized cloud architecture tools for Claude Code",
-    "version": "1.6.0"
+    "version": "1.7.0"
   },
   "plugins": [
     {
       "name": "karak-claude-plugin",
       "source": "./",
-      "description": "Design documentation, code review with session resume, Apple HIG, Material Design 3, icon design, AI slop detection, UX psychology, Hi-Fi design quality, mobile auth screen design, C4 architecture diagram skills, and specialized agents for cloud architecture",
-      "version": "1.6.0",
+      "description": "Meta-package: design, architecture, engineering, and product management tools for Claude Code",
+      "version": "1.7.0",
       "author": {
         "name": "karak"
       },
@@ -49,6 +49,109 @@
         "architecture",
         "c4-model",
         "plantuml"
+      ]
+    },
+    {
+      "name": "karak-design",
+      "source": "./karak-design",
+      "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, Google design docs, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design",
+      "version": "1.0.0",
+      "author": {
+        "name": "karak"
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "design",
+        "apple-hig",
+        "material-design",
+        "icon-design",
+        "frontend",
+        "ux-psychology",
+        "hifi-design",
+        "accessibility",
+        "android"
+      ],
+      "category": "development",
+      "tags": [
+        "design-system",
+        "ux",
+        "ios",
+        "android",
+        "material-design",
+        "web",
+        "hifi-design"
+      ]
+    },
+    {
+      "name": "karak-architecture",
+      "source": "./karak-architecture",
+      "description": "System architecture skills: C4 model diagrams, system design, GCP infrastructure",
+      "version": "1.0.0",
+      "author": {
+        "name": "karak"
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "architecture",
+        "c4-model",
+        "cloud-architecture",
+        "gcp"
+      ],
+      "category": "development",
+      "tags": [
+        "architecture",
+        "c4-model",
+        "plantuml",
+        "cloud",
+        "gcp"
+      ]
+    },
+    {
+      "name": "karak-engineering",
+      "source": "./karak-engineering",
+      "description": "Code quality and review skills: Codex-based code review with session resume, code refactoring, QA management",
+      "version": "1.0.0",
+      "author": {
+        "name": "karak"
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "code-review",
+        "code-quality"
+      ],
+      "category": "development",
+      "tags": [
+        "code-quality",
+        "code-review"
+      ]
+    },
+    {
+      "name": "karak-product",
+      "source": "./karak-product",
+      "description": "Product management agents: requirements analysis, agile project management",
+      "version": "1.0.0",
+      "author": {
+        "name": "karak"
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "product-management",
+        "requirements",
+        "agile"
+      ],
+      "category": "development",
+      "tags": [
+        "product-management",
+        "agile",
+        "requirements"
       ]
     }
   ]
