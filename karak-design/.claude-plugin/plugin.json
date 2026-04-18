@@ -1,0 +1,34 @@
+{
+  "name": "karak-design",
+  "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, Google design docs, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design",
+  "author": {
+    "name": "karak"
+  },
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "apple-hig",
+    "material-design",
+    "icon-design",
+    "frontend",
+    "ux-psychology",
+    "hifi-design",
+    "accessibility",
+    "android"
+  ],
+  "skills": [
+    "./skills/google-design-docs",
+    "./skills/apple-design",
+    "./skills/icon-design",
+    "./skills/frontend-aesthetics",
+    "./skills/ux-psychologist",
+    "./skills/material-design",
+    "./skills/hifi-design-quality",
+    "./skills/mobile-auth-screen-design"
+  ],
+  "agents": [
+    "./agents/ui-designer.md"
+  ]
+}
