@@ -1,0 +1,21 @@
+{
+  "name": "karak-engineering",
+  "description": "Code quality and review skills: Codex-based code review with session resume, code refactoring, QA management",
+  "author": {
+    "name": "karak"
+  },
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "code-quality"
+  ],
+  "skills": [
+    "./skills/codex-review"
+  ],
+  "agents": [
+    "./agents/code-refactorer.md",
+    "./agents/quality-assurance-manager.md"
+  ]
+}
