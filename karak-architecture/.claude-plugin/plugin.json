@@ -1,11 +1,11 @@
 {
   "name": "karak-architecture",
-  "description": "System architecture skills: C4 model diagrams, system design, GCP infrastructure",
+  "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure",
   "author": { "name": "karak" },
   "homepage": "https://github.com/karak-developer/karak-claude-plugin",
   "repository": "https://github.com/karak-developer/karak-claude-plugin",
   "license": "MIT",
-  "keywords": ["architecture", "c4-model", "cloud-architecture", "gcp"],
-  "skills": ["./skills/write-c4-diagram"],
+  "keywords": ["architecture", "c4-model", "cloud-architecture", "gcp", "adr", "decision-record"],
+  "skills": ["./skills/write-c4-diagram", "./skills/adr-architect"],
   "agents": ["./agents/system-designer.md", "./agents/gcp-infrastructure-engineer.md"]
 }

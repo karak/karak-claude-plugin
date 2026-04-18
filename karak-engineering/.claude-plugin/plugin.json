@@ -1,6 +1,6 @@
 {
   "name": "karak-engineering",
-  "description": "Code quality and review skills: Codex-based code review with session resume, code refactoring, QA management",
+  "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management",
   "author": {
     "name": "karak"
   },
@@ -9,10 +9,12 @@
   "license": "MIT",
   "keywords": [
     "code-review",
-    "code-quality"
+    "code-quality",
+    "google-design-docs"
   ],
   "skills": [
-    "./skills/codex-review"
+    "./skills/codex-review",
+    "./skills/google-design-docs"
   ],
   "agents": [
     "./agents/code-refactorer.md",
