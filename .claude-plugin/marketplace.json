@@ -4,15 +4,15 @@
     "name": "karak"
   },
   "metadata": {
-    "description": "Design, code review, UX psychology, and specialized cloud architecture tools for Claude Code",
-    "version": "1.7.0"
+    "description": "Design, UX psychology, and specialized cloud architecture tools for Claude Code",
+    "version": "1.9.0"
   },
   "plugins": [
     {
       "name": "karak-claude-plugin",
       "source": "./",
-      "description": "Meta-package: design, architecture, engineering, and product management tools for Claude Code",
-      "version": "1.7.0",
+      "description": "Design documentation, Apple HIG, Material Design 3, icon design, AI slop detection, UX psychology, Hi-Fi design quality, mobile auth screen design, C4 architecture diagram, design system (60 real-world product references incl. Japanese services), ADR (Architecture Decision Record) architect skills, and specialized agents for cloud architecture",
+      "version": "1.9.0",
       "author": {
         "name": "karak"
       },
@@ -21,7 +21,6 @@
       "license": "MIT",
       "keywords": [
         "design",
-        "code-review",
         "ux-psychology",
         "cloud-architecture",
         "gcp",
@@ -33,7 +32,9 @@
         "android",
         "hifi-design",
         "architecture",
-        "c4-model"
+        "c4-model",
+        "adr",
+        "decision-record"
       ],
       "category": "development",
       "tags": [
@@ -48,7 +49,10 @@
         "hifi-design",
         "architecture",
         "c4-model",
-        "plantuml"
+        "plantuml",
+        "design-system-reference",
+        "adr",
+        "decision-record"
       ]
     },
     {
