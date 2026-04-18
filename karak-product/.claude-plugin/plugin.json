@@ -1,0 +1,10 @@
+{
+  "name": "karak-product",
+  "description": "Product management agents: requirements analysis, agile project management",
+  "author": { "name": "karak" },
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": ["product-management", "requirements", "agile"],
+  "agents": ["./agents/requirements-analyst.md", "./agents/agile-project-manager.md"]
+}
