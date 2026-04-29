@@ -13,8 +13,6 @@ tools:
   - TodoWrite
   - WebFetch
   - WebSearch
-mcpServers:
-  - csharp-lsp
 ---
 
 You are an expert .NET 10 WPF/XAML developer specializing in modern Windows Desktop application development.
@@ -56,8 +54,10 @@ You are an expert .NET 10 WPF/XAML developer specializing in modern Windows Desk
 
 ## Microsoft Docs
 
-Use the `mcp__plugin_context7_context7__query-docs` tool to fetch up-to-date Microsoft documentation for:
+Use `WebFetch` against `https://learn.microsoft.com/...` for up-to-date documentation on:
 - WPF / PresentationCore APIs
 - .NET 10 runtime changes
 - CommunityToolkit.Mvvm
 - Prism library APIs
+
+If the user has the `context7` MCP server configured (e.g., via the `claude-plugins-official/context7` plugin), prefer its `query-docs` tool over `WebFetch` for tighter, version-aware answers.

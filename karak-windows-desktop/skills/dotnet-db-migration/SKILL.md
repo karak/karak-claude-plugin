@@ -40,7 +40,8 @@ public static class DbStartup
 {
     public static async Task MigrateAsync(IServiceProvider services, ILogger logger)
     {
-        // Use IDbContextFactory — compatible with both AddDbContext and AddDbContextFactory registrations
+        // Resolve IDbContextFactory<T> — register via AddDbContextFactory<T>() (recommended for WPF;
+        // see dotnet-clean-architecture). Plain AddDbContext<T>() does NOT register IDbContextFactory<T> by default.
         var factory = services.GetRequiredService<IDbContextFactory<AppDbContext>>();
         await using var db = await factory.CreateDbContextAsync();
 

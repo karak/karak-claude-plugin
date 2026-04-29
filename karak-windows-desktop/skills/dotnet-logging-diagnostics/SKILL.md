@@ -43,6 +43,8 @@ _host = Host.CreateDefaultBuilder()
     .Build();
 ```
 
+> **Pair with `dotnet-wpf-expert` host lifecycle.** `_host` must be a field on `App` and started/stopped via `await _host.StartAsync()` in `OnStartup` and `await _host.StopAsync(); _host.Dispose();` in `OnExit`. Without that, Serilog's hosted-service flush never runs and tail log entries are lost on shutdown.
+
 ---
 
 ## appsettings.json Configuration
