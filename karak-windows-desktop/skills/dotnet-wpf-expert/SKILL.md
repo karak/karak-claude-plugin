@@ -1,6 +1,6 @@
 ---
 name: dotnet-wpf-expert
-description: Use when developing WPF/XAML applications with .NET 10, designing MVVM architecture, implementing UI components, or working with WinUI patterns. Covers PresentationCore, dependency properties, data binding, commands, navigation, and common pitfalls in desktop app development.
+description: Use when developing WPF/XAML applications with .NET 10, designing MVVM architecture, implementing UI components, or working with data binding, commands, and navigation patterns. Covers PresentationCore, dependency properties, and common pitfalls in WPF desktop app development.
 ---
 
 # .NET 10 WPF / XAML Expert
@@ -55,7 +55,9 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private bool _isDirty;
 
-    [RelayCommand(CanExecute = nameof(IsDirty))]
+    private bool CanSaveAsync() => IsDirty;
+
+    [RelayCommand(CanExecute = nameof(CanSaveAsync))]
     private async Task SaveAsync(CancellationToken ct)
     {
         await _service.SaveAsync(ct);

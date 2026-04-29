@@ -25,12 +25,12 @@ Two main structural patterns for WPF desktop apps. Choose based on team size and
 
 ## Clean Architecture — Layer Map
 
-```
-Domain          (zero dependencies)
-  └─ Application (depends on Domain only)
-       └─ Infrastructure (depends on Application interfaces)
-       └─ Presentation   (depends on Application + Domain)
-```
+| Layer | Depends on | Must NOT depend on |
+|-------|-----------|---------------------|
+| Domain | *(nothing)* | Application, Infrastructure, Presentation |
+| Application | Domain | Infrastructure, Presentation |
+| Infrastructure | Application (interfaces) | Presentation |
+| Presentation (WPF) | Application + Domain | Infrastructure directly |
 
 ### Domain layer
 Pure C# — entities, value objects, domain events, repository interfaces, no framework references.
@@ -41,13 +41,13 @@ public class Project
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; }
-    private readonly List<Task> _tasks = new();
-    public IReadOnlyList<Task> Tasks => _tasks.AsReadOnly();
+    private readonly List<ProjectTask> _tasks = new();
+    public IReadOnlyList<ProjectTask> Tasks => _tasks.AsReadOnly();
 
     public void AddTask(string title)
     {
         if (string.IsNullOrWhiteSpace(title)) throw new DomainException("Title required");
-        _tasks.Add(new Task(title));
+        _tasks.Add(new ProjectTask(title));
     }
 }
 ```

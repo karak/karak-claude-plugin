@@ -81,8 +81,9 @@ private static async Task BackupIfSqliteAsync(AppDbContext db, ILogger logger)
     File.Copy(dbPath, backupPath, overwrite: true);
     logger.LogInformation("Database backed up to {BackupPath}", backupPath);
 
-    // Keep only last 5 backups
-    var backups = Directory.GetFiles(Path.GetDirectoryName(dbPath)!, "*.bak.*")
+    // Keep only last 5 backups for this specific database file
+    var dbFileName = Path.GetFileName(dbPath);
+    var backups = Directory.GetFiles(Path.GetDirectoryName(dbPath)!, dbFileName + ".bak.*")
                             .OrderByDescending(f => f).Skip(5);
     foreach (var old in backups) File.Delete(old);
 }
@@ -97,7 +98,6 @@ EF Core handles gaps automatically (`MigrateAsync` applies all pending migration
 ```csharp
 public static async Task<bool> CheckVersionGapAsync(AppDbContext db, ILogger logger)
 {
-    var applied = await db.Database.GetAppliedMigrationsAsync();
     var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
 
     if (pending.Count > 5)
@@ -164,7 +164,7 @@ services.AddFluentMigratorCore()
         .AddSQLite()
         .WithGlobalConnectionString(connectionString)
         .ScanIn(typeof(AddProjectTable).Assembly).For.Migrations())
-    .AddLogging(lb => lb.AddSerilog());
+    .AddLogging(lb => lb.AddSerilog()); // requires Serilog.Extensions.Logging NuGet package
 
 // Apply
 var runner = host.Services.GetRequiredService<IMigrationRunner>();
@@ -177,11 +177,11 @@ runner.MigrateUp();
 
 | Mistake | Fix |
 |---------|-----|
-| No backup before `MigrateAsync` | Always copy SQLite file first — see BackupIfSqliteAsync above |
+| No backup before `MigrateAsync` | Copy SQLite file to `<dbpath>.bak.<timestamp>` before calling MigrateAsync |
 | Migration applied to wrong database | Use environment-specific connection strings; log the DB path at startup |
 | `__EFMigrationsHistory` not committed | Commit all `Migrations/` files including the snapshot |
-| Concurrent migration on multi-instance startup | Use `Database.EnsureCreated()` with a file lock, or serialize startup |
-| User sees crash on migration failure | Wrap `MigrateAsync` in try/catch with a user-friendly dialog |
+| Concurrent migration on multi-instance startup | Use a named `Mutex` to serialize startup across processes (e.g. `new Mutex(true, "MyApp.DbMigration")`) |
+| User sees crash on migration failure | Wrap `MigrateAsync` in try/catch with a user-friendly MessageBox dialog |
 
 ---
 

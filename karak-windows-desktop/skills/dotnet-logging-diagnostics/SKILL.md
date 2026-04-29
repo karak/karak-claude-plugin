@@ -88,7 +88,7 @@ _host = Host.CreateDefaultBuilder()
 
 | Level | Use for |
 |-------|---------|
-| `Verbose` | Hot-path tracing (disabled in production) |
+| `Verbose` | Hot-path tracing (disabled in production) — MEL equivalent: `Trace` |
 | `Debug` | State snapshots useful during dev |
 | `Information` | Business events (user logged in, order placed) |
 | `Warning` | Recoverable issues (retry attempt, fallback used) |
@@ -109,9 +109,9 @@ _logger.LogInformation("Project " + id + " loaded");
 // Destructure complex objects with @
 _logger.LogDebug("Saving {@Project}", project);
 
-// Conditional verbose (avoids allocation cost)
-if (_logger.IsEnabled(LogLevel.Verbose))
-    _logger.LogVerbose("Raw payload: {Payload}", JsonSerializer.Serialize(data));
+// Conditional trace (avoids allocation cost when trace is disabled)
+if (_logger.IsEnabled(LogLevel.Trace))
+    _logger.LogTrace("Raw payload: {Payload}", JsonSerializer.Serialize(data));
 ```
 
 ---

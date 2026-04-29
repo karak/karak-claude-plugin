@@ -7,7 +7,7 @@ description: Use when writing unit or integration tests for .NET 10 WPF/XAML app
 
 ## Overview
 
-xUnit はファクトリーメソッドベースのテストフレームワーク。Moq でインターフェースをモックし、ViewModel と Service 層を分離してテストする。
+xUnit はコンストラクタ注入ベースのテストフレームワーク（テストごとに新インスタンス生成）。Moq でインターフェースをモックし、ViewModel と Service 層を分離してテストする。
 
 **Core principle:** ViewModel は UI を知らないから、純粋な C# クラスとしてテスト可能。
 
@@ -23,9 +23,11 @@ MyApp.Tests/
 
 ```xml
 <!-- MyApp.Tests.csproj -->
+<!-- .NET 10 推奨: xunit.v3 (xUnit v3)。v2 系でも動作するが v3 は並列実行とパフォーマンスが向上 -->
 <PackageReference Include="xunit" Version="2.*" />
 <PackageReference Include="xunit.runner.visualstudio" Version="2.*" />
 <PackageReference Include="Moq" Version="4.*" />
+<!-- FluentAssertions v7+ は商用利用に有料ライセンスが必要。OSS/個人は v6 系を使用 -->
 <PackageReference Include="FluentAssertions" Version="6.*" />
 <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
 ```

@@ -34,7 +34,7 @@ dotnet tool install --global dotnet-counters
 
 # Live counters — CPU, GC, threadpool, exception rate
 dotnet-counters monitor --process-id <pid> \
-  --counters System.Runtime,Microsoft.AspNetCore.Hosting
+  --counters System.Runtime
 
 # Collect a CPU + GC trace (30s)
 dotnet-trace collect --process-id <pid> \
@@ -80,7 +80,7 @@ For development profiling (Debug menu > Performance Profiler):
 
 ## WPF-Specific Performance Traps
 
-### 1. Unvirtualized large lists
+### Unvirtualized large lists
 ```xml
 <!-- Bad: renders all 10,000 items immediately -->
 <StackPanel>
@@ -93,7 +93,7 @@ For development profiling (Debug menu > Performance Profiler):
          VirtualizingStackPanel.VirtualizationMode="Recycling" />
 ```
 
-### 2. Frequent INotifyPropertyChanged on hot path
+### Frequent INotifyPropertyChanged on hot path
 ```csharp
 // Bad: fires binding update on every frame
 void OnTimer() => StatusText = DateTime.Now.ToString("HH:mm:ss.fff");
@@ -102,23 +102,36 @@ void OnTimer() => StatusText = DateTime.Now.ToString("HH:mm:ss.fff");
 _displayTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
 ```
 
-### 3. DataTemplate without x:Key causes repeated lookups
+### DataTemplate type lookup
+
 ```xml
-<!-- Add DataType to avoid visual tree traversal on every item -->
-<DataTemplate DataType="{x:Type vm:ProjectViewModel}">
-  ...
-</DataTemplate>
+<!-- Good: DataType-based implicit DataTemplate — WPF resolves this once per type,
+     not on every item render. This IS the correct pattern. -->
+<ItemsControl.Resources>
+    <DataTemplate DataType="{x:Type vm:ProjectViewModel}">
+        <TextBlock Text="{Binding Name}" />
+    </DataTemplate>
+</ItemsControl.Resources>
+
+<!-- Bad: no DataType means WPF must walk the visual tree for each item -->
+<ItemsControl.ItemTemplate>
+    <DataTemplate>
+        <TextBlock Text="{Binding Name}" />
+    </DataTemplate>
+</ItemsControl.ItemTemplate>
 ```
 
-### 4. UI thread blocking
-```csharp
-// Bad: blocks UI for synchronous I/O
-void LoadButton_Click(object s, RoutedEventArgs e) =>
-    Items = _repo.GetAll().ToObservableCollection(); // sync!
+### UI thread blocking
 
-// Good: async + await returns to UI thread
-async void LoadButton_Click(object s, RoutedEventArgs e) =>
-    Items = (await _repo.GetAllAsync()).ToObservableCollection();
+```csharp
+// Bad: synchronous I/O blocks UI thread; async void swallows exceptions
+void LoadButton_Click(object s, RoutedEventArgs e) =>
+    Items = new ObservableCollection<Item>(_repo.GetAll()); // sync!
+
+// Good: route through ViewModel RelayCommand — async, testable, no code-behind
+[RelayCommand]
+private async Task LoadAsync() =>
+    Items = new ObservableCollection<Item>(await _repo.GetAllAsync());
 ```
 
 ---

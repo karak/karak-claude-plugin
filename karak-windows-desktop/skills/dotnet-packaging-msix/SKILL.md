@@ -30,27 +30,35 @@ Add the packaging project via Visual Studio: **Add > New Project > Windows Appli
 ## Package.appxmanifest — Required Settings
 
 ```xml
-<Identity
-  Name="com.mycompany.myapp"
-  Publisher="CN=MyCompany, O=MyCompany, C=JP"
-  Version="1.2.0.0" />          <!-- Must be 4-part: major.minor.build.revision -->
+<!-- Package element must declare the rescap namespace for runFullTrust -->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="rescap">
 
-<Properties>
-  <DisplayName>My App</DisplayName>
-  <PublisherDisplayName>MyCompany</PublisherDisplayName>
-  <Logo>Assets\StoreLogo.png</Logo>
-</Properties>
+  <Identity
+    Name="com.mycompany.myapp"
+    Publisher="CN=MyCompany, O=MyCompany, C=JP"
+    Version="1.2.0.0" />          <!-- Must be 4-part: major.minor.build.revision -->
 
-<Capabilities>
-  <rescap:Capability Name="runFullTrust" />   <!-- Required for WPF -->
-</Capabilities>
+  <Properties>
+    <DisplayName>My App</DisplayName>
+    <PublisherDisplayName>MyCompany</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />   <!-- Required for WPF -->
+  </Capabilities>
+
+</Package>
 ```
 
-**Version sync:** Keep `Version` here in sync with your AssemblyVersion. A mismatch causes update failures. Automate via MSBuild property:
+**Version sync:** Keep `Version` here in sync with your application version. A mismatch causes update failures. Automate via MSBuild property:
 
 ```xml
-<!-- MyApp.Package.wapproj -->
-<PackageVersion>$(AssemblyVersion).0</PackageVersion>
+<!-- MyApp.Package.wapproj — $(Version) is a 3-part semver; append .0 for required 4-part MSIX format -->
+<PackageVersion>$(Version).0</PackageVersion>
 ```
 
 ---
@@ -162,7 +170,6 @@ jobs:
 
       - name: Build MSIX
         run: |
-          dotnet publish MyApp/MyApp.csproj -c Release -r win-x64 --self-contained
           msbuild MyApp.Package/MyApp.Package.wapproj `
             /p:Configuration=Release `
             /p:AppxPackageSigningEnabled=false `
@@ -193,3 +200,18 @@ jobs:
 | `runFullTrust` capability missing | WPF apps need it — add to `<Capabilities>` |
 | Update fails silently | Ensure AppInstaller `Uri` attribute matches the exact hosted URL |
 | CI build succeeds but MSIX is unsigned | `AppxPackageSigningEnabled=false` + explicit signtool step required |
+
+---
+
+## Quick Reference
+
+| Task | How |
+|------|-----|
+| Add packaging project | VS: Add > New Project > Windows Application Packaging Project |
+| Required manifest namespace | `xmlns:rescap` + `IgnorableNamespaces="rescap"` on `<Package>` |
+| Version format | 4-part `major.minor.build.revision`; automate with `$(Version).0` |
+| Development signing | `New-SelfSignedCertificate` + `Export-PfxCertificate` |
+| Production signing | EV cert from CA + `signtool sign /fd SHA256 /tr <timestamp-url>` |
+| GPO silent install | `Add-AppxProvisionedPackage` (machine) or `Add-AppxPackage` (user) |
+| Auto-update | `.appinstaller` file + `OnLaunch HoursBetweenUpdateChecks` |
+| CI/CD | msbuild `.wapproj` with `AppxPackageSigningEnabled=false`, then signtool |
