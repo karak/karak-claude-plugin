@@ -104,7 +104,9 @@ Add-AppxProvisionedPackage -Online `
 Add-AppxPackage -Path "\\share\MyApp_1.2.0.0_x64.msix"
 ```
 
-**Prerequisite:** The signing certificate must be in the machine's Trusted People / Trusted Root store via GPO before deployment.
+**Prerequisite:** The signing certificate must be in a Trusted People / Trusted Root store before deployment:
+- **Per-machine (`Add-AppxProvisionedPackage`):** install the cert into the machine's Trusted People / Trusted Root via GPO.
+- **Per-user (`Add-AppxPackage`):** install the cert into the current user's Trusted People (or rely on the machine-wide GPO trust above).
 
 ### Intune
 Upload the `.msix` as a Line-of-Business (LOB) app. Intune handles silent install and update.

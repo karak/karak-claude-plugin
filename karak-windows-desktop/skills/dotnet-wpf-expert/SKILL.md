@@ -26,6 +26,10 @@ App/
 
 ```csharp
 // App.xaml.cs
+//
+// Note: OnStartup/OnExit are the ONLY safe `async void` methods in this codebase —
+// they are WPF lifecycle event-handler overrides, so the runtime tolerates async void.
+// For the general rule (and why every other async method must return Task), see dotnet-testing.
 private IHost? _host;
 
 protected override async void OnStartup(StartupEventArgs e)

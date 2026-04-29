@@ -23,7 +23,10 @@ MyApp.Tests/
 
 ```xml
 <!-- MyApp.Tests.csproj -->
-<!-- xUnit v2 (stable, .NET 10 対応)。v3 に移行する場合は xunit.v3 + xunit.v3.runner.visualstudio パッケージに差し替える -->
+<!-- xUnit v2 (stable, .NET 10 対応)。v3 に移行する場合は xunit.v3 + xunit.v3.runner.visualstudio パッケージに差し替える。
+     v3 の主要な破壊的変更:
+       1. `async void` テストは廃止 — 必ず `Task` / `ValueTask` を返す (analyzer xUnit1048)。
+       2. 旧 `Xunit.Sdk` 配下の型 (`DataAttribute`, runner 系, `MaxConcurrencySyncContext` 等) は `Xunit.v3` 名前空間へ移動。 -->
 <PackageReference Include="xunit" Version="2.*" />
 <PackageReference Include="xunit.runner.visualstudio" Version="2.*" />
 <PackageReference Include="Moq" Version="4.*" />

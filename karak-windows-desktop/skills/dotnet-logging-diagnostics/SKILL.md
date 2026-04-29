@@ -185,6 +185,8 @@ AppEventSource.Log.ProjectLoaded(project.Id.ToString(), sw.ElapsedMilliseconds);
 
 ```bash
 # Collect custom EventSource traces (log events only — CPU/mem profiling → dotnet-performance)
+# --providers format: "<EventSourceName>:<KeywordsBitmask>:<EventLevel>"
+#   0xFFFFFFFF = all keywords, 5 = EventLevel.Verbose (Critical=1, Error=2, Warning=3, Informational=4, Verbose=5)
 dotnet-trace collect --process-id <pid> \
   --providers "MyApp-Diagnostics:0xFFFFFFFF:5"
 ```

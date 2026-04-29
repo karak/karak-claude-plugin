@@ -94,6 +94,7 @@ ViewModels belong here (or in Application for thin VMs). Never reference `DbCont
 public partial class ProjectViewModel(IMediator mediator) : ObservableObject
 {
     [ObservableProperty] private ProjectDto? _project;
+    [ObservableProperty] private string? _errorMessage;
 
     [RelayCommand]
     private async Task LoadAsync(Guid id)

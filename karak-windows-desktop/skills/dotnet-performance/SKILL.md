@@ -140,18 +140,37 @@ private async Task LoadAsync() =>
 
 ## GC Pressure
 
+### Object churn (small short-lived class allocations in hot loops)
+
 ```csharp
-// Bad: allocates a new DataPoint + string on every iteration
+// Bad: class instance heap-allocated on every iteration
+class DataPoint { public int Value; }
 for (int i = 0; i < 100_000; i++)
-    Process(new DataPoint { Label = $"Item {i}" });
+    Process(new DataPoint { Value = i });
 
-// Good (large byte buffers): rent from pool instead of allocating
-var buffer = ArrayPool<byte>.Shared.Rent(4096);
-try { /* use buffer */ }
-finally { ArrayPool<byte>.Shared.Return(buffer); }
+// Good: value-typed struct lives on the stack — no heap allocation
+readonly record struct DataPoint(int Value);
+for (int i = 0; i < 100_000; i++)
+    Process(new DataPoint(i));
+```
 
-// Good (object churn): use a struct when DataPoint is small and short-lived
-// struct DataPoint { public string Label; }  — stack-allocated, no heap pressure
+> Tradeoff: structs are copied by value when passed to methods. Keep them small (≤ 16 bytes is a common heuristic) and prefer `in` / `ref readonly` parameters when copies become measurable.
+
+### Large buffer churn (≥ 85KB allocations → LOH)
+
+```csharp
+// Bad: each allocation goes straight to the Large Object Heap
+for (int i = 0; i < 1000; i++) {
+    var buffer = new byte[128 * 1024];
+    Process(buffer);
+}
+
+// Good: rent from ArrayPool<T> / MemoryPool<T> — buffer is recycled
+for (int i = 0; i < 1000; i++) {
+    var buffer = ArrayPool<byte>.Shared.Rent(128 * 1024);
+    try { Process(buffer); }
+    finally { ArrayPool<byte>.Shared.Return(buffer); }
+}
 ```
 
 **LOH (Large Object Heap):** Objects ≥ 85KB go to LOH and are collected infrequently. Watch for `byte[]` or `string` allocations above this threshold in loops.
