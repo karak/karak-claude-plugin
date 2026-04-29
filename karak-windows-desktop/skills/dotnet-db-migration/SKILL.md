@@ -40,8 +40,9 @@ public static class DbStartup
 {
     public static async Task MigrateAsync(IServiceProvider services, ILogger logger)
     {
-        using var scope = services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        // Use IDbContextFactory — compatible with both AddDbContext and AddDbContextFactory registrations
+        var factory = services.GetRequiredService<IDbContextFactory<AppDbContext>>();
+        await using var db = await factory.CreateDbContextAsync();
 
         BackupIfSqlite(db, logger);
 
@@ -206,7 +207,7 @@ catch (Exception ex)
 
 | Mistake | Fix |
 |---------|-----|
-| No backup before `MigrateAsync` | Copy SQLite file to `<dbpath>.bak.<timestamp>` before calling MigrateAsync |
+| No backup before `MigrateAsync` | Use `SqliteConnection.BackupDatabase(dest)` (WAL-safe) before calling MigrateAsync |
 | Migration applied to wrong database | Use environment-specific connection strings; log the DB path at startup |
 | `__EFMigrationsHistory` not committed | Commit all `Migrations/` files including the snapshot |
 | Concurrent migration on multi-instance startup | Use a named `Mutex` — acquire with `WaitOne`, release in `finally` (see below) |
