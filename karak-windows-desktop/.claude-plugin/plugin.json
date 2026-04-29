@@ -1,0 +1,30 @@
+{
+  "name": "karak-windows-desktop",
+  "description": "Windows Desktop development skills for .NET 10 WPF/XAML apps: MVVM patterns, CommunityToolkit.Mvvm, Prism, Dapper, xUnit testing, and common pitfalls",
+  "author": {
+    "name": "karak"
+  },
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "dotnet",
+    "wpf",
+    "xaml",
+    "mvvm",
+    "csharp",
+    "windows-desktop",
+    "prism",
+    "xunit",
+    "moq",
+    "dapper",
+    "community-toolkit"
+  ],
+  "skills": [
+    "./skills/dotnet-wpf-expert",
+    "./skills/dotnet-testing"
+  ],
+  "agents": [
+    "./agents/dotnet-windows-developer.md"
+  ]
+}
