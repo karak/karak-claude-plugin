@@ -60,4 +60,4 @@ Use `WebFetch` against `https://learn.microsoft.com/...` for up-to-date document
 - CommunityToolkit.Mvvm
 - Prism library APIs
 
-If the user has the `context7` MCP server configured (e.g., via the `claude-plugins-official/context7` plugin), prefer its `query-docs` tool over `WebFetch` for tighter, version-aware answers.
+If the `context7` MCP server is available (e.g., via the `claude-plugins-official/context7` plugin), `query-docs` may be preferred over `WebFetch` for tighter, version-aware answers — otherwise use `WebFetch` directly.
