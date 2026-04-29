@@ -54,7 +54,7 @@
       "skill": "dotnet-db-migration",
       "eval_name": "sqlite-backup-before-migrate",
       "prompt": ".NET 10 WPF + SQLite + EF Core のアプリで、起動時に自動マイグレーションを実行しています。ユーザーの PC でマイグレーションが失敗した場合のリカバリが心配です。バックアップとエラーハンドリングのベストプラクティスを教えてください。",
-      "expected_output": "MigrateAsync 前の SQLite ファイルコピー（BackupIfSqliteAsync）のコード例、バックアップローテーション、try/catch でユーザー向けダイアログ表示の実装",
+      "expected_output": "MigrateAsync 前に SqliteConnection.BackupDatabase() を使った WAL 安全なオンラインバックアップのコード例（File.Copy は WAL モードで破損リスクあり）、バックアップローテーション、try/catch でユーザー向けダイアログ表示の実装",
       "files": []
     },
     {
@@ -71,6 +71,22 @@
       "eval_name": "dotnet-trace-memory-profiling",
       "prompt": "本番の .NET 10 WPF アプリでメモリが徐々に増え続けています。Visual Studio が使えない環境で dotnet-trace と dotnet-counters を使ってメモリリークを調査する手順を教えてください。",
       "expected_output": "dotnet-counters でリアルタイム GC 監視のコマンド、dotnet-trace でメモリトレース収集のコマンド、PerfView での結果の見方",
+      "files": []
+    },
+    {
+      "id": 9,
+      "skill": "dotnet-wpf-expert",
+      "eval_name": "mvvm-observableproperty-relaycommand",
+      "prompt": ".NET 10 WPF アプリで CommunityToolkit.Mvvm を使って ViewModel を実装したいです。[ObservableProperty] と [RelayCommand] を使ったデータバインディングと非同期コマンドのサンプルコードを教えてください。CanExecute の連動も含めてください。",
+      "expected_output": "[ObservableProperty] によるプロパティ定義（partial class + ObservableObject 継承）、[RelayCommand] による async Task コマンド定義、[NotifyCanExecuteChangedFor] と CanExecute メソッドによる SaveCommand の活性制御、XAML でのバインディング例",
+      "files": []
+    },
+    {
+      "id": 10,
+      "skill": "dotnet-testing",
+      "eval_name": "wpf-viewmodel-xunit-synchronizationcontext",
+      "prompt": "WPF ViewModel の [RelayCommand] メソッドを xUnit でテストしているのですが、テストは Pass するのにコマンドが実行されていないように見えます。また RelayCommand プロパティが null になることがあります。原因と対策を教えてください。",
+      "expected_output": "CommunityToolkit ソースジェネレータ未実行時に RelayCommand が null になる問題（dotnet build を先に実行する必要がある説明）、WPF Dispatcher を単体テストで呼ばない設計（ViewModel は async/await で UI スレッドに戻す）、FluentAssertions v6 を推奨する理由（v7+ 商用ライセンス）",
       "files": []
     }
   ]

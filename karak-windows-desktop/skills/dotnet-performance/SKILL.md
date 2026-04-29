@@ -100,6 +100,8 @@ void OnTimer() => StatusText = DateTime.Now.ToString("HH:mm:ss.fff");
 
 // Good: throttle with DispatcherTimer at 1Hz for display
 _displayTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+_displayTimer.Tick += (_, _) => StatusText = DateTime.Now.ToString("HH:mm:ss");
+_displayTimer.Start();
 ```
 
 ### DataTemplate type lookup

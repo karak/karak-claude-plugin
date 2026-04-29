@@ -37,7 +37,7 @@ Add the packaging project via Visual Studio: **Add > New Project > Windows Appli
   IgnorableNamespaces="rescap">
 
   <Identity
-    Name="com.mycompany.myapp"
+    Name="MyCompany.MyApp"
     Publisher="CN=MyCompany, O=MyCompany, C=JP"
     Version="1.2.0.0" />          <!-- Must be 4-part: major.minor.build.revision -->
 
@@ -120,7 +120,7 @@ Create `MyApp.appinstaller` alongside the MSIX on your distribution share:
 <AppInstaller Uri="https://releases.mycompany.com/MyApp.appinstaller"
               Version="1.2.0.0"
               xmlns="http://schemas.microsoft.com/appx/appinstaller/2018">
-  <MainPackage Name="com.mycompany.myapp"
+  <MainPackage Name="MyCompany.MyApp"
                Version="1.2.0.0"
                Publisher="CN=MyCompany, O=MyCompany, C=JP"
                Uri="https://releases.mycompany.com/MyApp_1.2.0.0_x64.msix" />
@@ -136,7 +136,7 @@ Create `MyApp.appinstaller` alongside the MSIX on your distribution share:
 // Check and trigger update programmatically
 var pm = new PackageManager();
 var package = pm.FindPackagesForUser("").FirstOrDefault(p =>
-    p.Id.FamilyName.StartsWith("com.mycompany.myapp"));
+    p.Id.FamilyName.StartsWith("MyCompany.MyApp"));
 // Prompt user to restart when update is available
 ```
 

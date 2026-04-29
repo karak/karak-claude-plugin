@@ -76,10 +76,13 @@ EF Core DbContext, Dapper repos, file system, external APIs — all behind Appli
 
 ```csharp
 // Infrastructure/Repositories/ProjectRepository.cs
-public class ProjectRepository(AppDbContext db) : IProjectRepository
+public class ProjectRepository(IDbContextFactory<AppDbContext> dbFactory) : IProjectRepository
 {
-    public async Task<Project?> GetByIdAsync(Guid id, CancellationToken ct) =>
-        await db.Projects.Include(p => p.Tasks).FirstOrDefaultAsync(p => p.Id == id, ct);
+    public async Task<Project?> GetByIdAsync(Guid id, CancellationToken ct)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync(ct);
+        return await db.Projects.Include(p => p.Tasks).FirstOrDefaultAsync(p => p.Id == id, ct);
+    }
 }
 ```
 
@@ -145,13 +148,16 @@ _host = Host.CreateDefaultBuilder()
     .ConfigureServices((ctx, services) =>
     {
         // MediatR — scans Application assembly
+        // Note: MediatR ≥ 13 (2025) requires a commercial license; v12 is the last free OSS version
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(GetProjectQuery).Assembly));
 
-        // Infrastructure
-        services.AddDbContext<AppDbContext>(o =>
+        // Infrastructure — AddDbContextFactory is required for WPF: there is no per-request scope
+        // boundary, so AddDbContext (Scoped) would resolve DbContext from the root provider as a
+        // process-lifetime singleton, causing change-tracker bloat and concurrent-access exceptions.
+        services.AddDbContextFactory<AppDbContext>(o =>
             o.UseSqlite(ctx.Configuration.GetConnectionString("Default")));
-        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddTransient<IProjectRepository, ProjectRepository>();
 
         // Presentation
         services.AddTransient<MainViewModel>();

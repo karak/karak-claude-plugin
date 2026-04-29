@@ -26,9 +26,12 @@ App/
 
 ```csharp
 // App.xaml.cs
-protected override void OnStartup(StartupEventArgs e)
+private IHost? _host;
+
+protected override async void OnStartup(StartupEventArgs e)
 {
-    var host = Host.CreateDefaultBuilder()
+    base.OnStartup(e);
+    _host = Host.CreateDefaultBuilder()
         .ConfigureServices(services =>
         {
             services.AddSingleton<MainWindow>();
@@ -36,7 +39,15 @@ protected override void OnStartup(StartupEventArgs e)
             services.AddTransient<IUserService, UserService>();
         })
         .Build();
-    host.Services.GetRequiredService<MainWindow>().Show();
+    await _host.StartAsync();
+    _host.Services.GetRequiredService<MainWindow>().Show();
+}
+
+protected override async void OnExit(ExitEventArgs e)
+{
+    await _host!.StopAsync();
+    _host.Dispose();
+    base.OnExit(e);
 }
 ```
 
@@ -55,9 +66,9 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private bool _isDirty;
 
-    private bool CanSaveAsync() => IsDirty;
+    private bool CanSave() => IsDirty;
 
-    [RelayCommand(CanExecute = nameof(CanSaveAsync))]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync(CancellationToken ct)
     {
         try
