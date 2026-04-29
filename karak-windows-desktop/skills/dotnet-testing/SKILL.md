@@ -23,7 +23,7 @@ MyApp.Tests/
 
 ```xml
 <!-- MyApp.Tests.csproj -->
-<!-- .NET 10 推奨: xunit.v3 (xUnit v3)。v2 系でも動作するが v3 は並列実行とパフォーマンスが向上 -->
+<!-- xUnit v2 (stable, .NET 10 対応)。v3 に移行する場合は xunit.v3 + xunit.v3.runner.visualstudio パッケージに差し替える -->
 <PackageReference Include="xunit" Version="2.*" />
 <PackageReference Include="xunit.runner.visualstudio" Version="2.*" />
 <PackageReference Include="Moq" Version="4.*" />

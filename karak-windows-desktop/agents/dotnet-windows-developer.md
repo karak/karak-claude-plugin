@@ -1,6 +1,7 @@
 ---
 name: dotnet-windows-developer
 description: Expert Windows Desktop developer agent for .NET 10 WPF/XAML applications. Use for implementing MVVM features, designing UI components, resolving WPF-specific issues, and architecting desktop application solutions.
+model: sonnet
 tools:
   - Read
   - Edit

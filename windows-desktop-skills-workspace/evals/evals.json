@@ -1,0 +1,77 @@
+{
+  "skill_name": "karak-windows-desktop-additional",
+  "evals": [
+    {
+      "id": 0,
+      "skill": "dotnet-clean-architecture",
+      "eval_name": "layer-placement-question",
+      "prompt": "WPF + .NET 10 のプロジェクトで、ViewModel が直接 EF Core の DbContext を new してクエリを実行しています。これをどう直すべきか、どのクラスをどのレイヤーに移動すればいいか具体的なコード例で教えてください。",
+      "expected_output": "Application層のインターフェース + Infrastructure層の実装に分離する方法、ViewModel は IMediator または Service インターフェース経由でアクセスするコード例",
+      "files": []
+    },
+    {
+      "id": 1,
+      "skill": "dotnet-clean-architecture",
+      "eval_name": "clean-vs-vertical-slice-choice",
+      "prompt": "社内向けの WPF 在庫管理アプリを .NET 10 で新規作成します。画面は10画面程度、CRUD 中心で複雑なドメインロジックはほぼありません。Clean Architecture と Vertical Slice Architecture どちらを使うべきですか？理由と推奨フォルダ構成を教えてください。",
+      "expected_output": "Vertical Slice の推奨理由（CRUD中心）、具体的なフォルダ構成例、Clean Architecture との比較トレードオフ",
+      "files": []
+    },
+    {
+      "id": 2,
+      "skill": "dotnet-packaging-msix",
+      "eval_name": "msix-signing-ci-pipeline",
+      "prompt": ".NET 10 WPF アプリを GitHub Actions で MSIX ビルド・署名して Release に添付したいです。PFX 証明書を GitHub Secrets に保存する方法から signtool での署名まで、完全な workflow YAML を作ってください。",
+      "expected_output": "完全な GitHub Actions YAML（証明書デコード・dotnet publish・msbuild・signtool・release upload のステップ）、Secrets の設定方法",
+      "files": []
+    },
+    {
+      "id": 3,
+      "skill": "dotnet-packaging-msix",
+      "eval_name": "msix-enterprise-gpo-deployment",
+      "prompt": "社内 100 台の Windows PC に WPF アプリの MSIX を GPO で自動インストールしたい。証明書の展開手順と PowerShell スクリプトの例を教えてください。",
+      "expected_output": "GPO による証明書配布手順、Add-AppxPackage または Add-AppxProvisionedPackage の使い方、証明書ストアへの登録方法",
+      "files": []
+    },
+    {
+      "id": 4,
+      "skill": "dotnet-logging-diagnostics",
+      "eval_name": "serilog-setup-with-generic-host",
+      "prompt": ".NET 10 WPF アプリに Serilog を導入したいです。Generic Host と appsettings.json ベースの設定で、ログをローカルファイルに日次ローテーションで書き、Warning 以上だけ Windows イベントログにも書く設定を完全なコードで教えてください。",
+      "expected_output": "App.xaml.cs の UseSerilog 設定、appsettings.json の Serilog セクション（File sink + EventLog sink + ローテーション設定）、必要な NuGet パッケージ一覧",
+      "files": []
+    },
+    {
+      "id": 5,
+      "skill": "dotnet-logging-diagnostics",
+      "eval_name": "crash-diagnostic-global-handler",
+      "prompt": "本番環境の WPF アプリが時々クラッシュするがログが残っていません。クラッシュ時に必ずログを書くにはどうすればいいですか？",
+      "expected_output": "DispatcherUnhandledException + TaskScheduler.UnobservedTaskException + AppDomain.UnhandledException の3つのハンドラ実装、Log.CloseAndFlush() の重要性の説明",
+      "files": []
+    },
+    {
+      "id": 6,
+      "skill": "dotnet-db-migration",
+      "eval_name": "sqlite-backup-before-migrate",
+      "prompt": ".NET 10 WPF + SQLite + EF Core のアプリで、起動時に自動マイグレーションを実行しています。ユーザーの PC でマイグレーションが失敗した場合のリカバリが心配です。バックアップとエラーハンドリングのベストプラクティスを教えてください。",
+      "expected_output": "MigrateAsync 前の SQLite ファイルコピー（BackupIfSqliteAsync）のコード例、バックアップローテーション、try/catch でユーザー向けダイアログ表示の実装",
+      "files": []
+    },
+    {
+      "id": 7,
+      "skill": "dotnet-performance",
+      "eval_name": "wpf-listbox-virtualization",
+      "prompt": "WPF の ItemsControl に 5000 件のデータを表示しているのですが、スクロールがカクカクして重いです。どう直せばいいですか？",
+      "expected_output": "VirtualizingStackPanel への切り替え（ListBox + IsVirtualizing + VirtualizationMode=Recycling）のコード例、なぜ速くなるかの説明",
+      "files": []
+    },
+    {
+      "id": 8,
+      "skill": "dotnet-performance",
+      "eval_name": "dotnet-trace-memory-profiling",
+      "prompt": "本番の .NET 10 WPF アプリでメモリが徐々に増え続けています。Visual Studio が使えない環境で dotnet-trace と dotnet-counters を使ってメモリリークを調査する手順を教えてください。",
+      "expected_output": "dotnet-counters でリアルタイム GC 監視のコマンド、dotnet-trace でメモリトレース収集のコマンド、PerfView での結果の見方",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "eval_id": 6,
+  "run_type": "without_skill",
+  "results": [
+    {
+      "text": "MigrateAsync前にSQLiteファイルをコピーするコードがある",
+      "passed": true,
+      "evidence": "var backupPath = Path.Combine(backupDir, $\"app_{timestamp}.db.bak\");\nFile.Copy(dbPath, backupPath, overwrite: false);"
+    },
+    {
+      "text": "マイグレーション失敗時にユーザー向けダイアログを表示する処理がある",
+      "passed": true,
+      "evidence": "private void ShowMigrationError(Exception ex)\n    {\n        var message =\n            \"データベースの更新中にエラーが発生しました。\\n\\n\" +\n            \"バックアップから自動的に復元しました。\""
+    },
+    {
+      "text": "MigrateAsyncをtry/catchで囲んでいる",
+      "passed": true,
+      "evidence": "try\n        {\n            await db.Database.MigrateAsync();\n            logger.LogInformation(\"Migration completed successfully.\");\n        }\n        catch (Exception ex)\n        {"
+    },
+    {
+      "text": "バックアップファイルのローテーション（世代管理）に触れている",
+      "passed": true,
+      "evidence": "// 古いバックアップを 5 世代まで保持\nPruneOldBackups(backupDir, keepCount: 5, logger);"
+    }
+  ]
+}

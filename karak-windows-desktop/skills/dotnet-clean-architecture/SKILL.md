@@ -93,8 +93,21 @@ public partial class ProjectViewModel(IMediator mediator) : ObservableObject
     [ObservableProperty] private ProjectDto? _project;
 
     [RelayCommand]
-    private async Task LoadAsync(Guid id) =>
-        Project = await mediator.Send(new GetProjectQuery(id));
+    private async Task LoadAsync(Guid id)
+    {
+        try
+        {
+            Project = await mediator.Send(new GetProjectQuery(id));
+        }
+        catch (NotFoundException)
+        {
+            ErrorMessage = "プロジェクトが見つかりません。";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
 }
 ```
 

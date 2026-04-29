@@ -1,0 +1,31 @@
+{
+  "eval_id": 2,
+  "run_type": "with_skill",
+  "results": [
+    {
+      "text": "完全なGitHub Actions workflow YAMLが含まれている",
+      "passed": true,
+      "evidence": "# .github/workflows/release.yml\nname: Build & Sign MSIX\n\non:\n  push:\n    tags:\n      - \"v*\""
+    },
+    {
+      "text": "signtoolコマンドがある（/fd SHA256含む）",
+      "passed": true,
+      "evidence": "signtool sign `\n  /fd SHA256 `\n  /tr http://timestamp.digicert.com `\n  /td SHA256 `\n  /f \"${{ github.workspace }}\\cert.pfx\""
+    },
+    {
+      "text": "GitHub SecretsにPFXを保存する手順がある（Base64エンコードなど）",
+      "passed": true,
+      "evidence": "### 3-2. PFX を Base64 文字列に変換\n[Convert]::ToBase64String([IO.File]::ReadAllBytes(\"MyApp.pfx\")) | Set-Clipboard"
+    },
+    {
+      "text": "一時証明書ファイルの削除ステップがある",
+      "passed": true,
+      "evidence": "- name: Cleanup certificate\n  if: always()\n  shell: pwsh\n  run: Remove-Item -Path \"${{ github.workspace }}\\cert.pfx\" -Force"
+    },
+    {
+      "text": "ReleaseへのMSIXアップロードステップがある",
+      "passed": true,
+      "evidence": "- name: Upload to GitHub Release\n  uses: softprops/action-gh-release@v2\n  with:\n    files: AppPackages/**/*.msix"
+    }
+  ]
+}

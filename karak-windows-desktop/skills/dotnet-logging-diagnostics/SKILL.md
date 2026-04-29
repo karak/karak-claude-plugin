@@ -133,13 +133,19 @@ public partial class App : Application
 
         TaskScheduler.UnobservedTaskException += (_, args) =>
         {
-            Log.Error(args.Exception, "Unobserved Task exception");
-            args.SetObserved(); // prevent process termination
+            // .NET Core+ does NOT terminate the process on unobserved Task exceptions by default.
+            // Log at Fatal to keep visibility; fix the root cause (unobserved Task in calling code).
+            Log.Fatal(args.Exception, "Unobserved Task exception — fix calling code to observe this Task");
+            args.SetObserved();
         };
 
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
-            Log.Fatal(args.ExceptionObject as Exception, "AppDomain unhandled exception");
+            var ex = args.ExceptionObject as Exception;
+            if (ex is not null)
+                Log.Fatal(ex, "AppDomain unhandled exception");
+            else
+                Log.Fatal("AppDomain unhandled exception (non-Exception): {ExceptionObject}", args.ExceptionObject);
             Log.CloseAndFlush();
         };
 

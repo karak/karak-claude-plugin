@@ -1,0 +1,31 @@
+{
+  "eval_id": 4,
+  "run_type": "with_skill",
+  "results": [
+    {
+      "text": "UseSerilog()でGeneric Hostに統合するコードがある",
+      "passed": true,
+      "evidence": "_host = Host.CreateDefaultBuilder(e.Args)\n    .UseSerilog((ctx, services, cfg) => cfg\n        .ReadFrom.Configuration(ctx.Configuration)"
+    },
+    {
+      "text": "appsettings.jsonのSerilogセクションがある",
+      "passed": true,
+      "evidence": "\"Serilog\": {\n    \"MinimumLevel\": {\n      \"Default\": \"Information\","
+    },
+    {
+      "text": "日次ローテーション設定がある（rollingInterval: Day）",
+      "passed": true,
+      "evidence": "\"rollingInterval\":        \"Day\",\n\"retainedFileCountLimit\": 30,"
+    },
+    {
+      "text": "EventLog sinkがWarning以上に制限されている",
+      "passed": true,
+      "evidence": "\"restrictedToMinimumLevel\":  \"Warning\""
+    },
+    {
+      "text": "必要なNuGetパッケージが列挙されている",
+      "passed": true,
+      "evidence": "<PackageReference Include=\"Serilog.Extensions.Hosting\"   Version=\"8.*\" />\n<PackageReference Include=\"Serilog.Settings.Configuration\" Version=\"8.*\" />\n<PackageReference Include=\"Serilog.Sinks.File\"            Version=\"5.*\" />\n<PackageReference Include=\"Serilog.Sinks.EventLog\"        Version=\"3.*\" />"
+    }
+  ]
+}

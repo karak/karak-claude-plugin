@@ -60,8 +60,16 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSaveAsync))]
     private async Task SaveAsync(CancellationToken ct)
     {
-        await _service.SaveAsync(ct);
-        IsDirty = false;
+        try
+        {
+            await _service.SaveAsync(ct);
+            IsDirty = false;
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message; // [ObservableProperty] string _errorMessage
+        }
     }
 }
 ```
@@ -98,10 +106,11 @@ _regionManager.RequestNavigate("ContentRegion", "User",
 <!-- コマンドバインディング -->
 <Button Command="{Binding SaveCommand}" CommandParameter="{Binding SelectedItem}" />
 
-<!-- DataTemplate -->
+<!-- DataTemplate: DataType は ResourceDictionary 内の暗黙テンプレートとして機能する。
+     ItemTemplate の中では効果なし — ここでは省略する -->
 <ItemsControl ItemsSource="{Binding Items}">
     <ItemsControl.ItemTemplate>
-        <DataTemplate DataType="{x:Type vm:ItemViewModel}">
+        <DataTemplate>
             <TextBlock Text="{Binding Name}" />
         </DataTemplate>
     </ItemsControl.ItemTemplate>

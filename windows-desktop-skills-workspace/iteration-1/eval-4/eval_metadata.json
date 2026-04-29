@@ -1,0 +1,12 @@
+{
+  "eval_id": 4,
+  "eval_name": "serilog-setup-with-generic-host",
+  "prompt": ".NET 10 WPF アプリに Serilog を導入したいです。Generic Host と appsettings.json ベースの設定で、ログをローカルファイルに日次ローテーションで書き、Warning 以上だけ Windows イベントログにも書く設定を完全なコードで教えてください。",
+  "assertions": [
+    {"id": "d0_use_serilog", "text": "UseSerilog()でGeneric Hostに統合するコードがある"},
+    {"id": "d1_appsettings", "text": "appsettings.jsonのSerilogセクションがある"},
+    {"id": "d2_file_rotation", "text": "日次ローテーション設定がある（rollingInterval: Day）"},
+    {"id": "d3_eventlog_warning", "text": "EventLog sinkがWarning以上に制限されている"},
+    {"id": "d4_nuget_packages", "text": "必要なNuGetパッケージが列挙されている"}
+  ]
+}

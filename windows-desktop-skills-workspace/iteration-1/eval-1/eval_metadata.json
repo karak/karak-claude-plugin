@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "clean-vs-vertical-slice-choice",
+  "prompt": "社内向けの WPF 在庫管理アプリを .NET 10 で新規作成します。画面は10画面程度、CRUD 中心で複雑なドメインロジックはほぼありません。Clean Architecture と Vertical Slice Architecture どちらを使うべきですか？理由と推奨フォルダ構成を教えてください。",
+  "assertions": [
+    {"id": "b0_recommend_vsa", "text": "Vertical Slice Architectureを推奨している"},
+    {"id": "b1_reason", "text": "CRUD中心・ドメイン複雑度が低いことを理由として挙げている"},
+    {"id": "b2_folder_structure", "text": "具体的なフォルダ構成例がある（Features/などの構造）"},
+    {"id": "b3_tradeoff", "text": "Clean Architectureとのトレードオフ比較がある"},
+    {"id": "b4_migration_note", "text": "後でClean Architectureに移行可能という言及またはそれに相当する内容"}
+  ]
+}

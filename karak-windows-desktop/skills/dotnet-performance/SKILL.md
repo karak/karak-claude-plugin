@@ -124,7 +124,7 @@ _displayTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
 ### UI thread blocking
 
 ```csharp
-// Bad: synchronous I/O blocks UI thread; async void swallows exceptions
+// Bad: synchronous I/O blocks UI thread
 void LoadButton_Click(object s, RoutedEventArgs e) =>
     Items = new ObservableCollection<Item>(_repo.GetAll()); // sync!
 
@@ -139,14 +139,17 @@ private async Task LoadAsync() =>
 ## GC Pressure
 
 ```csharp
-// Bad: allocates new string every frame in hot loop
+// Bad: allocates a new DataPoint + string on every iteration
 for (int i = 0; i < 100_000; i++)
     Process(new DataPoint { Label = $"Item {i}" });
 
-// Good: reuse from pool for large, short-lived arrays
+// Good (large byte buffers): rent from pool instead of allocating
 var buffer = ArrayPool<byte>.Shared.Rent(4096);
 try { /* use buffer */ }
 finally { ArrayPool<byte>.Shared.Return(buffer); }
+
+// Good (object churn): use a struct when DataPoint is small and short-lived
+// struct DataPoint { public string Label; }  — stack-allocated, no heap pressure
 ```
 
 **LOH (Large Object Heap):** Objects ≥ 85KB go to LOH and are collected infrequently. Watch for `byte[]` or `string` allocations above this threshold in loops.

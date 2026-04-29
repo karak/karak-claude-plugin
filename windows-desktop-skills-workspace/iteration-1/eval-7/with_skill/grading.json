@@ -1,0 +1,26 @@
+{
+  "eval_id": 7,
+  "run_type": "with_skill",
+  "results": [
+    {
+      "text": "VirtualizingStackPanel または ListBox + IsVirtualizingへの切り替えがある",
+      "passed": true,
+      "evidence": "<ListBox ItemsSource=\"{Binding Items}\"\n         VirtualizingStackPanel.IsVirtualizing=\"True\"\n         VirtualizingStackPanel.VirtualizationMode=\"Recycling\" />"
+    },
+    {
+      "text": "VirtualizationMode=RecyclingについてXAMLコード例がある",
+      "passed": true,
+      "evidence": "VirtualizingStackPanel.VirtualizationMode=\"Recycling\""
+    },
+    {
+      "text": "なぜ速くなるかの説明がある（Visual Tree / レンダリングの仕組み）",
+      "passed": true,
+      "evidence": "デフォルトでは **5000件すべての要素が一度にレンダリング** されます。画面外の要素も含めて Visual Tree が全構築されるため、スクロールが重くなります。"
+    },
+    {
+      "text": "具体的なXAMLコード例がある",
+      "passed": true,
+      "evidence": "<ItemsControl ItemsSource=\"{Binding Items}\"\n              VirtualizingStackPanel.IsVirtualizing=\"True\"\n              VirtualizingStackPanel.VirtualizationMode=\"Recycling\">"
+    }
+  ]
+}
