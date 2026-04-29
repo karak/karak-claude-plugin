@@ -14,10 +14,12 @@
   ],
   "skills": [
     "./skills/codex-review",
-    "./skills/google-design-docs"
+    "./skills/google-design-docs",
+    "./skills/nodejs-backend"
   ],
   "agents": [
     "./agents/code-refactorer.md",
-    "./agents/quality-assurance-manager.md"
+    "./agents/quality-assurance-manager.md",
+    "./agents/nodejs-backend-engineer.md"
   ]
 }
