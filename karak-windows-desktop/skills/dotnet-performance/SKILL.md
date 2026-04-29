@@ -144,9 +144,9 @@ private async Task LoadAsync() =>
 
 ```csharp
 // Bad: class instance heap-allocated on every iteration
-class DataPoint { public int Value; }
+class DataPoint(int Value) { public int Value { get; } = Value; }
 for (int i = 0; i < 100_000; i++)
-    Process(new DataPoint { Value = i });
+    Process(new DataPoint(i));
 
 // Good: value-typed struct lives on the stack — no heap allocation
 readonly record struct DataPoint(int Value);
@@ -155,6 +155,8 @@ for (int i = 0; i < 100_000; i++)
 ```
 
 > Tradeoff: structs are copied by value when passed to methods. Keep them small (≤ 16 bytes is a common heuristic) and prefer `in` / `ref readonly` parameters when copies become measurable.
+>
+> Watch for boxing: the win disappears if `Process` accepts `object` or an interface, since the struct is then boxed onto the heap on every call. Keep the parameter typed as `DataPoint` (or `in DataPoint`) end-to-end.
 
 ### Large buffer churn (≥ 85KB allocations → LOH)
 
