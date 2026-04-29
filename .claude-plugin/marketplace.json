@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Design, UX psychology, specialized cloud architecture, and Windows Desktop development tools for Claude Code",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "plugins": [
     {
@@ -121,8 +121,8 @@
     {
       "name": "karak-windows-desktop",
       "source": "./karak-windows-desktop",
-      "description": "Windows Desktop development skills: .NET 10 WPF/XAML, MVVM, CommunityToolkit.Mvvm, Prism, Dapper, xUnit, Moq, dotnet-windows-developer agent",
-      "version": "1.0.0",
+      "description": "Windows Desktop development skills: .NET 10 WPF/XAML, MVVM, Clean Architecture, Vertical Slice, MSIX packaging/signing/CI, Serilog diagnostics, EF Core migration (SQLite offline-safe), performance profiling, xUnit/Moq testing, dotnet-windows-developer agent",
+      "version": "1.1.0",
       "author": {
         "name": "karak"
       },
@@ -136,6 +136,12 @@
         "mvvm",
         "csharp",
         "windows-desktop",
+        "clean-architecture",
+        "vertical-slice",
+        "msix",
+        "serilog",
+        "ef-core",
+        "performance",
         "prism",
         "xunit",
         "moq",

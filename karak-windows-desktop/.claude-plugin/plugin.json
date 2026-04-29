@@ -1,6 +1,6 @@
 {
   "name": "karak-windows-desktop",
-  "description": "Windows Desktop development skills for .NET 10 WPF/XAML apps: MVVM patterns, CommunityToolkit.Mvvm, Prism, Dapper, xUnit testing, and common pitfalls",
+  "description": "Windows Desktop development skills for .NET 10 WPF/XAML apps: MVVM, Clean Architecture, Vertical Slice, MSIX packaging, Serilog diagnostics, EF Core migration, performance profiling, xUnit testing",
   "author": {
     "name": "karak"
   },
@@ -14,6 +14,12 @@
     "mvvm",
     "csharp",
     "windows-desktop",
+    "clean-architecture",
+    "vertical-slice",
+    "msix",
+    "serilog",
+    "ef-core",
+    "performance",
     "prism",
     "xunit",
     "moq",
@@ -22,7 +28,12 @@
   ],
   "skills": [
     "./skills/dotnet-wpf-expert",
-    "./skills/dotnet-testing"
+    "./skills/dotnet-testing",
+    "./skills/dotnet-clean-architecture",
+    "./skills/dotnet-packaging-msix",
+    "./skills/dotnet-logging-diagnostics",
+    "./skills/dotnet-db-migration",
+    "./skills/dotnet-performance"
   ],
   "agents": [
     "./agents/dotnet-windows-developer.md"
