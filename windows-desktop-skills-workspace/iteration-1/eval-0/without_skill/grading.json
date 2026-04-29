@@ -1,0 +1,31 @@
+{
+  "eval_id": 0,
+  "run_type": "without_skill",
+  "results": [
+    {
+      "text": "Application層のインターフェース（IRepositoryまたは類似）について言及している",
+      "passed": true,
+      "evidence": "// Application 層 (純粋なインターフェース。EF Core への依存なし)\npublic interface IProductRepository"
+    },
+    {
+      "text": "ViewModelがDbContextを直接持たない構成のコード例がある",
+      "passed": true,
+      "evidence": "// ✅ ViewModel は IProductRepository にのみ依存する\npublic partial class ProductListViewModel : ObservableObject"
+    },
+    {
+      "text": "依存方向（内向き）の説明がある",
+      "passed": false,
+      "evidence": "not found — the file describes layered structure but does not explicitly explain inward dependency direction"
+    },
+    {
+      "text": "具体的なC#コード例が含まれている",
+      "passed": true,
+      "evidence": "public sealed class EfProductRepository : IProductRepository\n{\n    private readonly AppDbContext _db;"
+    },
+    {
+      "text": "DIコンテナへの登録方法に触れている",
+      "passed": true,
+      "evidence": "services.AddScoped<IProductRepository, EfProductRepository>();\nservices.AddScoped<ProductListViewModel>();"
+    }
+  ]
+}

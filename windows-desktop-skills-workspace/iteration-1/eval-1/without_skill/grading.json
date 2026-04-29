@@ -1,0 +1,31 @@
+{
+  "eval_id": 1,
+  "run_type": "without_skill",
+  "results": [
+    {
+      "text": "Vertical Slice Architectureを推奨している",
+      "passed": true,
+      "evidence": "## 結論：Vertical Slice Architecture を推奨"
+    },
+    {
+      "text": "CRUD中心・ドメイン複雑度が低いことを理由として挙げている",
+      "passed": true,
+      "evidence": "今回の「社内向け・10画面・CRUD 中心」という要件ではいずれも該当しないため、VSA を選ぶ合理的な根拠が揃っています。"
+    },
+    {
+      "text": "具体的なフォルダ構成例がある（Features/などの構造）",
+      "passed": true,
+      "evidence": "InventoryApp/\n├── Features/                        # 機能スライス群\n│   │\n│   ├── Products/                    # 商品マスタ管理"
+    },
+    {
+      "text": "Clean Architectureとのトレードオフ比較がある",
+      "passed": true,
+      "evidence": "| 観点 | 評価 |\n|------|------|\n| 適合するプロジェクト規模 | 大規模・長期・複雑なドメインロジックあり |"
+    },
+    {
+      "text": "後でClean Architectureに移行可能という言及またはそれに相当する内容",
+      "passed": true,
+      "evidence": "## CA を選ぶべき例外ケース\n以下に該当する場合は CA を検討してください"
+    }
+  ]
+}

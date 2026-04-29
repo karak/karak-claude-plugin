@@ -1,0 +1,31 @@
+{
+  "eval_id": 0,
+  "run_type": "with_skill",
+  "results": [
+    {
+      "text": "Application層のインターフェース（IRepositoryまたは類似）について言及している",
+      "passed": true,
+      "evidence": "// Domain/Repositories/IProjectRepository.cs\npublic interface IProjectRepository"
+    },
+    {
+      "text": "ViewModelがDbContextを直接持たない構成のコード例がある",
+      "passed": true,
+      "evidence": "// DbContext も IProjectRepository も参照しない — IMediator だけ\npublic partial class ProjectListViewModel(IMediator mediator) : ObservableObject"
+    },
+    {
+      "text": "依存方向（内向き）の説明がある",
+      "passed": true,
+      "evidence": "Presentation  -->  Application (IMediator, Query/Command, DTO)\nApplication   -->  Domain      (IProjectRepository, Project entity)"
+    },
+    {
+      "text": "具体的なC#コード例が含まれている",
+      "passed": true,
+      "evidence": "public class GetAllProjectsHandler(IProjectRepository repo)\n    : IRequestHandler<GetAllProjectsQuery, IReadOnlyList<ProjectDto>>"
+    },
+    {
+      "text": "DIコンテナへの登録方法に触れている",
+      "passed": true,
+      "evidence": "services.AddScoped<IProjectRepository, ProjectRepository>();\nservices.AddTransient<ProjectListViewModel>();"
+    }
+  ]
+}

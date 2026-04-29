@@ -1,0 +1,31 @@
+{
+  "eval_id": 2,
+  "run_type": "without_skill",
+  "results": [
+    {
+      "text": "完全なGitHub Actions workflow YAMLが含まれている",
+      "passed": true,
+      "evidence": "# .github/workflows/release-msix.yml\nname: Release MSIX\n\non:\n  push:\n    tags:\n      - \"v*\""
+    },
+    {
+      "text": "signtoolコマンドがある（/fd SHA256含む）",
+      "passed": true,
+      "evidence": "& $signtool sign `\n  /fd SHA256 `\n  /td SHA256 `\n  /tr http://timestamp.digicert.com `\n  /f \"$env:PFX_PATH\""
+    },
+    {
+      "text": "GitHub SecretsにPFXを保存する手順がある（Base64エンコードなど）",
+      "passed": true,
+      "evidence": "### 2-1. PFX を Base64 文字列に変換\n[Convert]::ToBase64String([IO.File]::ReadAllBytes(\"MyCert.pfx\")) | Set-Clipboard"
+    },
+    {
+      "text": "一時証明書ファイルの削除ステップがある",
+      "passed": true,
+      "evidence": "- name: Remove temporary PFX\n  if: always()\n  shell: pwsh\n  run: |\n    if (Test-Path \"$env:PFX_PATH\") {\n      Remove-Item \"$env:PFX_PATH\" -Force"
+    },
+    {
+      "text": "ReleaseへのMSIXアップロードステップがある",
+      "passed": true,
+      "evidence": "- name: Create GitHub Release\n  uses: softprops/action-gh-release@v2\n  with:\n    files: |\n      ${{ env.SIGNED_OUTPUT_DIR }}/*.msixbundle\n      ${{ env.SIGNED_OUTPUT_DIR }}/*.msix"
+    }
+  ]
+}

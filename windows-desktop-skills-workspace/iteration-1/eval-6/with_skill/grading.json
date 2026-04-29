@@ -1,0 +1,26 @@
+{
+  "eval_id": 6,
+  "run_type": "with_skill",
+  "results": [
+    {
+      "text": "MigrateAsync前にSQLiteファイルをコピーするコードがある",
+      "passed": true,
+      "evidence": "var backupPath = dbPath + $\".bak.{DateTime.Now:yyyyMMddHHmmss}\";\nFile.Copy(dbPath, backupPath, overwrite: true);"
+    },
+    {
+      "text": "マイグレーション失敗時にユーザー向けダイアログを表示する処理がある",
+      "passed": true,
+      "evidence": "MessageBox.Show(\n    \"データベースの更新に失敗しました。\\nサポートにお問い合わせください。\\n\\n\" + ex.Message,\n    \"起動エラー\", MessageBoxButton.OK, MessageBoxImage.Error);"
+    },
+    {
+      "text": "MigrateAsyncをtry/catchで囲んでいる",
+      "passed": true,
+      "evidence": "try\n        {\n            await db.Database.MigrateAsync();\n        }\n        catch (Exception ex)\n        {"
+    },
+    {
+      "text": "バックアップファイルのローテーション（世代管理）に触れている",
+      "passed": true,
+      "evidence": "// 古いバックアップを削除（直近 5 件だけ保持）\nvar backups = Directory.GetFiles(Path.GetDirectoryName(dbPath)!, \"*.bak.*\")\n                        .OrderByDescending(f => f)\n                        .Skip(5);"
+    }
+  ]
+}

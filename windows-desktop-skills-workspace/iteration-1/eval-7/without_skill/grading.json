@@ -1,0 +1,26 @@
+{
+  "eval_id": 7,
+  "run_type": "without_skill",
+  "results": [
+    {
+      "text": "VirtualizingStackPanel または ListBox + IsVirtualizingへの切り替えがある",
+      "passed": true,
+      "evidence": "<ListBox ItemsSource=\"{Binding Items}\"\n         VirtualizingPanel.IsVirtualizing=\"True\"\n         VirtualizingPanel.VirtualizationMode=\"Recycling\">"
+    },
+    {
+      "text": "VirtualizationMode=RecyclingについてXAMLコード例がある",
+      "passed": true,
+      "evidence": "VirtualizingPanel.VirtualizationMode=\"Recycling\""
+    },
+    {
+      "text": "なぜ速くなるかの説明がある（Visual Tree / レンダリングの仕組み）",
+      "passed": true,
+      "evidence": "`ItemsControl` はデフォルトで **全アイテムのビジュアルを一度に生成・保持**します。5000件では5000個のUIオブジェクトがメモリ上に存在し、レイアウト計算・レンダリングのコストが爆発します。"
+    },
+    {
+      "text": "具体的なXAMLコード例がある",
+      "passed": true,
+      "evidence": "<ScrollViewer>\n    <ItemsControl ItemsSource=\"{Binding Items}\"\n                  VirtualizingPanel.IsVirtualizing=\"True\"\n                  VirtualizingPanel.VirtualizationMode=\"Recycling\">"
+    }
+  ]
+}

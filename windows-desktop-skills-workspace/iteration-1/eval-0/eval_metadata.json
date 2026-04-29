@@ -1,0 +1,12 @@
+{
+  "eval_id": 0,
+  "eval_name": "layer-placement-question",
+  "prompt": "WPF + .NET 10 のプロジェクトで、ViewModel が直接 EF Core の DbContext を new してクエリを実行しています。これをどう直すべきか、どのクラスをどのレイヤーに移動すればいいか具体的なコード例で教えてください。",
+  "assertions": [
+    {"id": "a0_interface", "text": "Application層のインターフェース（IRepositoryまたは類似）について言及している"},
+    {"id": "a1_no_dbcontext_vm", "text": "ViewModelがDbContextを直接持たない構成のコード例がある"},
+    {"id": "a2_dependency_direction", "text": "依存方向（内向き）の説明がある"},
+    {"id": "a3_code_example", "text": "具体的なC#コード例が含まれている"},
+    {"id": "a4_di_wiring", "text": "DIコンテナへの登録方法に触れている"}
+  ]
+}

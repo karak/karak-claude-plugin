@@ -1,0 +1,309 @@
+{
+  "metadata": {
+    "skill_name": "karak-windows-desktop-additional",
+    "skill_path": "/Users/yasushi/projects/karak-claude-plugin/.worktrees/feat/windows-desktop-plugin/karak-windows-desktop/skills",
+    "executor_model": "claude-sonnet-4-6",
+    "analyzer_model": "claude-sonnet-4-6",
+    "timestamp": "2026-04-29T00:00:00Z",
+    "evals_run": [0, 1, 2, 4, 6, 7],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "layer-placement-question",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 55.0,
+        "tokens": 17413,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Application層のインターフェース（IRepositoryまたは類似）について言及している", "passed": true, "evidence": "IProjectRepository interface defined in Domain layer"},
+        {"text": "ViewModelがDbContextを直接持たない構成のコード例がある", "passed": true, "evidence": "ProjectListViewModel takes only IMediator in constructor"},
+        {"text": "依存方向（内向き）の説明がある", "passed": true, "evidence": "Forbidden dependency directions explicitly listed"},
+        {"text": "具体的なC#コード例が含まれている", "passed": true, "evidence": "Multiple C# code blocks covering all layers"},
+        {"text": "DIコンテナへの登録方法に触れている", "passed": true, "evidence": "App.xaml.cs DI wiring example with Generic Host"}
+      ]
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "layer-placement-question",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 53.9,
+        "tokens": 15276,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Application層のインターフェース（IRepositoryまたは類似）について言及している", "passed": true, "evidence": "IProductRepository interface defined"},
+        {"text": "ViewModelがDbContextを直接持たない構成のコード例がある", "passed": true, "evidence": "ViewModel receives IProductRepository via constructor injection"},
+        {"text": "依存方向（内向き）の説明がある", "passed": false, "evidence": "Layered architecture described but no explicit dependency direction rule stated"},
+        {"text": "具体的なC#コード例が含まれている", "passed": true, "evidence": "Multiple C# code examples"},
+        {"text": "DIコンテナへの登録方法に触れている", "passed": true, "evidence": "DI registration with AddDbContext and AddScoped"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "clean-vs-vertical-slice-choice",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 48.7,
+        "tokens": 16629,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Vertical Slice Architectureを推奨している", "passed": true, "evidence": "VSA recommended based on skill selection criteria"},
+        {"text": "CRUD中心・ドメイン複雑度が低いことを理由として挙げている", "passed": true, "evidence": "CRUD中心・小〜中規模ドメインのシグナルに明確に該当"},
+        {"text": "具体的なフォルダ構成例がある（Features/などの構造）", "passed": true, "evidence": "Features/<機能名>/<操作>/ structure shown"},
+        {"text": "Clean Architectureとのトレードオフ比較がある", "passed": true, "evidence": "CA comparison included with migration note"},
+        {"text": "後でClean Architectureに移行可能という言及またはそれに相当する内容", "passed": true, "evidence": "間違った選択でも軽いリファクタで移行可能"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "clean-vs-vertical-slice-choice",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 54.8,
+        "tokens": 15619,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Vertical Slice Architectureを推奨している", "passed": true, "evidence": "VSA recommended"},
+        {"text": "CRUD中心・ドメイン複雑度が低いことを理由として挙げている", "passed": true, "evidence": "CRUD-centric reason explicitly stated"},
+        {"text": "具体的なフォルダ構成例がある（Features/などの構造）", "passed": true, "evidence": "Features/Products/, Features/Inventory/ structure"},
+        {"text": "Clean Architectureとのトレードオフ比較がある", "passed": true, "evidence": "5-dimension comparison table CA vs VSA"},
+        {"text": "後でClean Architectureに移行可能という言及またはそれに相当する内容", "passed": true, "evidence": "Exception cases for CA listed"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "msix-signing-ci-pipeline",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 64.3,
+        "tokens": 18313,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "完全なGitHub Actions workflow YAMLが含まれている", "passed": true, "evidence": "Full 10-step workflow YAML present"},
+        {"text": "signtoolコマンドがある（/fd SHA256含む）", "passed": true, "evidence": "signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256"},
+        {"text": "GitHub SecretsにPFXを保存する手順がある（Base64エンコードなど）", "passed": true, "evidence": "CERT_BASE64 and CERT_PASSWORD secrets setup"},
+        {"text": "一時証明書ファイルの削除ステップがある", "passed": true, "evidence": "Cleanup certificate step with if: always()"},
+        {"text": "ReleaseへのMSIXアップロードステップがある", "passed": true, "evidence": "softprops/action-gh-release@v2 upload step"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "msix-signing-ci-pipeline",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 75.9,
+        "tokens": 17056,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "完全なGitHub Actions workflow YAMLが含まれている", "passed": true, "evidence": "9-step workflow YAML present"},
+        {"text": "signtoolコマンドがある（/fd SHA256含む）", "passed": true, "evidence": "signtool sign /fd SHA256 /td SHA256 present"},
+        {"text": "GitHub SecretsにPFXを保存する手順がある（Base64エンコードなど）", "passed": true, "evidence": "SIGN_CERTIFICATE_BASE64 secret setup described"},
+        {"text": "一時証明書ファイルの削除ステップがある", "passed": true, "evidence": "if: always() cleanup step"},
+        {"text": "ReleaseへのMSIXアップロードステップがある", "passed": true, "evidence": "softprops/action-gh-release@v2 used"}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "serilog-setup-with-generic-host",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 48.7,
+        "tokens": 17847,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "UseSerilog()でGeneric Hostに統合するコードがある", "passed": true, "evidence": "UseSerilog() in host builder shown"},
+        {"text": "appsettings.jsonのSerilogセクションがある", "passed": true, "evidence": "Full Serilog JSON config section present"},
+        {"text": "日次ローテーション設定がある（rollingInterval: Day）", "passed": true, "evidence": "rollingInterval: Day + retainedFileCountLimit: 30"},
+        {"text": "EventLog sinkがWarning以上に制限されている", "passed": true, "evidence": "restrictedToMinimumLevel: Warning in EventLog sink"},
+        {"text": "必要なNuGetパッケージが列挙されている", "passed": true, "evidence": "6 NuGet packages listed"}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "serilog-setup-with-generic-host",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 62.2,
+        "tokens": 16135,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "UseSerilog()でGeneric Hostに統合するコードがある", "passed": true, "evidence": "UseSerilog() present"},
+        {"text": "appsettings.jsonのSerilogセクションがある", "passed": true, "evidence": "Serilog JSON config with two sinks"},
+        {"text": "日次ローテーション設定がある（rollingInterval: Day）", "passed": true, "evidence": "rollingInterval: Day present"},
+        {"text": "EventLog sinkがWarning以上に制限されている", "passed": true, "evidence": "Filter.ByIncludingOnly for Warning/Error/Fatal"},
+        {"text": "必要なNuGetパッケージが列挙されている", "passed": true, "evidence": "5 NuGet packages listed"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "sqlite-backup-before-migrate",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 50.6,
+        "tokens": 17130,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "MigrateAsync前にSQLiteファイルをコピーするコードがある", "passed": true, "evidence": "BackupIfSqliteAsync() with File.Copy before MigrateAsync"},
+        {"text": "マイグレーション失敗時にユーザー向けダイアログを表示する処理がある", "passed": true, "evidence": "MessageBox.Show on catch"},
+        {"text": "MigrateAsyncをtry/catchで囲んでいる", "passed": true, "evidence": "try/catch wrapping MigrateAsync"},
+        {"text": "バックアップファイルのローテーション（世代管理）に触れている", "passed": true, "evidence": "Keep last 5 backups with Skip(5) delete"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "sqlite-backup-before-migrate",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 51.5,
+        "tokens": 15205,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "MigrateAsync前にSQLiteファイルをコピーするコードがある", "passed": true, "evidence": "Pre-migration backup with File.Copy"},
+        {"text": "マイグレーション失敗時にユーザー向けダイアログを表示する処理がある", "passed": true, "evidence": "User-friendly dialog shown on exception"},
+        {"text": "MigrateAsyncをtry/catchで囲んでいる", "passed": true, "evidence": "try-catch present"},
+        {"text": "バックアップファイルのローテーション（世代管理）に触れている", "passed": true, "evidence": "Generation management mentioned"}
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "wpf-listbox-virtualization",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 38.3,
+        "tokens": 15918,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "VirtualizingStackPanel または ListBox + IsVirtualizingへの切り替えがある", "passed": true, "evidence": "ListBox with VirtualizingStackPanel.IsVirtualizing=True"},
+        {"text": "VirtualizationMode=RecyclingについてXAMLコード例がある", "passed": true, "evidence": "VirtualizationMode=Recycling in XAML example"},
+        {"text": "なぜ速くなるかの説明がある（Visual Tree / レンダリングの仕組み）", "passed": true, "evidence": "Explains only visible items have Visual Tree elements"},
+        {"text": "具体的なXAMLコード例がある", "passed": true, "evidence": "Complete XAML ListBox example"}
+      ]
+    },
+    {
+      "eval_id": 7,
+      "eval_name": "wpf-listbox-virtualization",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 43.2,
+        "tokens": 14688,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "VirtualizingStackPanel または ListBox + IsVirtualizingへの切り替えがある", "passed": true, "evidence": "VirtualizingStackPanel with CanContentScroll"},
+        {"text": "VirtualizationMode=RecyclingについてXAMLコード例がある", "passed": true, "evidence": "VirtualizationMode=Recycling mentioned"},
+        {"text": "なぜ速くなるかの説明がある（Visual Tree / レンダリングの仕組み）", "passed": true, "evidence": "Visual Tree creation for all items explained"},
+        {"text": "具体的なXAMLコード例がある", "passed": true, "evidence": "XAML example with ItemsControl and VirtualizingStackPanel"}
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 0.972, "stddev": 0.051, "min": 0.8, "max": 1.0},
+      "time_seconds": {"mean": 50.9, "stddev": 9.0, "min": 38.3, "max": 64.3},
+      "tokens": {"mean": 17208, "stddev": 934, "min": 15918, "max": 18313}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.964, "stddev": 0.073, "min": 0.8, "max": 1.0},
+      "time_seconds": {"mean": 56.9, "stddev": 10.7, "min": 43.2, "max": 75.9},
+      "tokens": {"mean": 15663, "stddev": 1085, "min": 14688, "max": 17056}
+    },
+    "delta": {
+      "pass_rate": "+0.008",
+      "time_seconds": "-6.0",
+      "tokens": "+1545"
+    }
+  },
+  "notes": [
+    "Most assertions pass in both configurations — topics (Serilog, MSIX, virtualization) are well-covered by base model knowledge",
+    "Skill adds value primarily in: explicit dependency direction rules (eval-0), desktop-specific migration patterns (backup rotation, version gap), and consistent .NET 10 + Generic Host wiring patterns",
+    "The only assertion failure (eval-0/without_skill/dependency direction) shows the skill adds structural clarity not present in baseline",
+    "with_skill answers are faster on average (50.9s vs 56.9s) — likely because the skill provides direct code templates rather than the model generating from scratch",
+    "Token overhead of skill (+1545 avg) reflects skill loading but produces more complete answers on architecture topics"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "eval_id": 7,
+  "eval_name": "wpf-listbox-virtualization",
+  "prompt": "WPF の ItemsControl に 5000 件のデータを表示しているのですが、スクロールがカクカクして重いです。どう直せばいいですか？",
+  "assertions": [
+    {"id": "f0_virtualization", "text": "VirtualizingStackPanel または ListBox + IsVirtualizingへの切り替えがある"},
+    {"id": "f1_recycling_mode", "text": "VirtualizationMode=RecyclingについてXAMLコード例がある"},
+    {"id": "f2_reason", "text": "なぜ速くなるかの説明がある（Visual Tree / レンダリングの仕組み）"},
+    {"id": "f3_xaml_example", "text": "具体的なXAMLコード例がある"}
+  ]
+}

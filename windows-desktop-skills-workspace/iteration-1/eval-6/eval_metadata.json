@@ -1,0 +1,11 @@
+{
+  "eval_id": 6,
+  "eval_name": "sqlite-backup-before-migrate",
+  "prompt": ".NET 10 WPF + SQLite + EF Core のアプリで、起動時に自動マイグレーションを実行しています。ユーザーの PC でマイグレーションが失敗した場合のリカバリが心配です。バックアップとエラーハンドリングのベストプラクティスを教えてください。",
+  "assertions": [
+    {"id": "e0_backup_code", "text": "MigrateAsync前にSQLiteファイルをコピーするコードがある"},
+    {"id": "e1_error_dialog", "text": "マイグレーション失敗時にユーザー向けダイアログを表示する処理がある"},
+    {"id": "e2_try_catch", "text": "MigrateAsyncをtry/catchで囲んでいる"},
+    {"id": "e3_backup_rotation", "text": "バックアップファイルのローテーション（世代管理）に触れている"}
+  ]
+}

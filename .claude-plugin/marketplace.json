@@ -4,8 +4,8 @@
     "name": "karak"
   },
   "metadata": {
-    "description": "Design, UX psychology, and specialized cloud architecture tools for Claude Code",
-    "version": "2.0.0"
+    "description": "Design, UX psychology, specialized cloud architecture, and Windows Desktop development tools for Claude Code",
+    "version": "2.1.0"
   },
   "plugins": [
     {
@@ -116,6 +116,48 @@
         "product-management",
         "agile",
         "requirements"
+      ]
+    },
+    {
+      "name": "karak-windows-desktop",
+      "source": "./karak-windows-desktop",
+      "description": "Windows Desktop development skills: .NET 10 WPF/XAML, MVVM, Clean Architecture, Vertical Slice, MSIX packaging/signing/CI, Serilog diagnostics, EF Core migration (SQLite offline-safe), performance profiling, xUnit/Moq testing, dotnet-windows-developer agent",
+      "version": "1.0.0",
+      "author": {
+        "name": "karak"
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "dotnet",
+        "wpf",
+        "xaml",
+        "mvvm",
+        "csharp",
+        "windows-desktop",
+        "clean-architecture",
+        "vertical-slice",
+        "msix",
+        "serilog",
+        "ef-core",
+        "performance",
+        "prism",
+        "xunit",
+        "moq",
+        "dapper",
+        "community-toolkit"
+      ],
+      "category": "development",
+      "tags": [
+        "dotnet",
+        "wpf",
+        "windows",
+        "mvvm",
+        "csharp",
+        "desktop",
+        "xunit",
+        "testing"
       ]
     }
   ]

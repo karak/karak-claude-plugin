@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "msix-signing-ci-pipeline",
+  "prompt": ".NET 10 WPF アプリを GitHub Actions で MSIX ビルド・署名して Release に添付したいです。PFX 証明書を GitHub Secrets に保存する方法から signtool での署名まで、完全な workflow YAML を作ってください。",
+  "assertions": [
+    {"id": "c0_yaml", "text": "完全なGitHub Actions workflow YAMLが含まれている"},
+    {"id": "c1_signtool", "text": "signtoolコマンドがある（/fd SHA256含む）"},
+    {"id": "c2_secrets", "text": "GitHub SecretsにPFXを保存する手順がある（Base64エンコードなど）"},
+    {"id": "c3_cleanup", "text": "一時証明書ファイルの削除ステップがある"},
+    {"id": "c4_release_upload", "text": "ReleaseへのMSIXアップロードステップがある"}
+  ]
+}
