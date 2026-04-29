@@ -1,22 +1,14 @@
 ---
 name: nodejs-backend
 description: |
-  Node.js 24 + TypeScript 5.8 バックエンド開発ガイド。Express 5 API、Drizzle/Prisma ORM、
-  Vitest 3 TDD、tsup/Vite 7・8 ビルドパイプラインの実装パターンと落とし穴を提供する。
-
-  以下のシーンで必ず使うこと:
-  (1) Node.js バックエンド、Express API、REST サーバーを新規作成・実装する
-  (2) TypeScript の tsconfig、import type、NodeNext モジュール解決でエラーが出る
-  (3) Drizzle または Prisma のスキーマ・マイグレーション・クエリを扱う
-  (4) Vitest や supertest でバックエンドのテストを書く・デバッグする
-  (5) tsup または Vite 7/8 でサーバーサイド TypeScript をビルドする
-  (6) Express 5 のルーティング（404、wildcard、path-to-regexp）を修正する
-  (7) Node.js 24 固有のエラー（erasableSyntaxOnly、import.meta.dirname、ESM）を解決する
-
-  Trigger: "Node.js バックエンド", "Express API", "バックエンドエンジニア",
-  "新しいAPIサーバー", "Prisma", "Drizzle", "マイグレーション",
-  "Vitest", "supertest", "tsup", "vite build", "nodejs backend",
-  "express server", "drizzle schema", "REST API", "バックエンド構築"
+  Use this skill whenever the user is building, debugging, or configuring a Node.js backend.
+  This covers: creating Express APIs or REST servers; fixing TypeScript errors (erasableSyntaxOnly,
+  NodeNext module resolution, import.meta.dirname); working with Drizzle ORM or Prisma (schemas,
+  migrations, drizzle-kit generate errors); writing or fixing Vitest / supertest tests including
+  "no such table" errors and pool:forks configuration for better-sqlite3 native addons; setting up
+  tsup or Vite 7/8 build pipelines for server-side TypeScript; and resolving any Node.js 24 /
+  TypeScript 5.8 specific issues. Use even when the user only mentions one keyword: Express,
+  Drizzle, Prisma, Vitest, supertest, tsup, better-sqlite3, pool:forks, or REST API.
 ---
 
 # Node.js 24 Backend Skill
