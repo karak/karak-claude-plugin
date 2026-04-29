@@ -40,13 +40,17 @@
 
 **深さ:** 深（パターン選択の判断基準・コード例・アンチパターン表を含む）
 
-**想定トリガー:** 「プロジェクト構成をどうするか」「どこに何を置くか」「依存が複雑になってきた」
+**想定トリガー:** 「新規プロジェクトのフォルダ構成・レイヤー設計をどうするか」「レイヤー境界を引き直したい（リファクタリング文脈）」「どのレイヤーにクラスを置くべきか判断できない」
+
+**隣接スキルとの区別:**
+- `dotnet-wpf-expert` → コンポーネント実装レベルの配線（バインディング・コマンド）を扱う
+- 本スキル → **レイヤー境界の設計判断**（どこに何を置くか、依存方向の設計）を扱う
 
 ---
 
 ### 2. `dotnet-packaging-msix`（出荷フェーズ）
 
-**目的:** .NET 10 WPF アプリを MSIX パッケージとしてビルド・署名・配布するための完全ガイド。
+**目的:** .NET 10 WPF アプリを MSIX パッケージとしてビルド・署名・配布するための完全ガイド。Windows Installer（WiX/MSI）は本スキルの非スコープとし、MSIX のみを扱う。
 
 **カバー内容:**
 
@@ -76,7 +80,7 @@
 - Enricher（ThreadId, MachineName, Application version）
 - 構造化ログの書き方（message template のベストプラクティス）
 - ログレベル戦略（Verbose/Debug/Info/Warning/Error/Fatal の使い分け）
-- ETW（Event Tracing for Windows）の基礎と `dotnet-trace` での収集
+- ETW（Event Tracing for Windows）の基礎と `dotnet-trace` によるカスタム EventSource ログ収集（CPU/メモリプロファイリング用途の `dotnet-trace` は `dotnet-performance` スキルに委譲）
 - Windows Event Log への書き込み（`EventLog` sink + ソース登録）
 - グローバル例外ハンドリング（`Application.DispatcherUnhandledException`, `TaskScheduler.UnobservedTaskException`）
 - ログファイルのローテーション・保持ポリシー
@@ -101,6 +105,8 @@
 - スキーマバージョン管理テーブル（`__EFMigrationsHistory`）
 - データ移行のシードとべき等性
 - よくある落とし穴（マイグレーション競合、本番 DB への誤適用防止）
+- デスクトップ特有: 起動前の SQLite ファイルバックアップ（`MigrateAsync` 前に `.db` をコピー）
+- バージョンギャップ検出（v1 → v3 へのスキップアップグレード）と失敗時のユーザー通知パターン
 
 **深さ:** 薄〜中（標準的なワークフローと主要コマンド、よくある落とし穴に絞る）
 
@@ -114,7 +120,7 @@
 
 **カバー内容:**
 
-- `dotnet-trace` / `dotnet-counters` による CPU・メモリ収集
+- `dotnet-trace` / `dotnet-counters` による CPU・メモリ収集（カスタム EventSource ログ収集は `dotnet-logging-diagnostics` スキルに委譲）
 - PerfView の基本操作（フレームグラフ・GC ビュー）
 - Visual Studio Diagnostic Tools（メモリスナップショット・CPU サンプリング）
 - WPF UI パフォーマンスの落とし穴（不必要な DataTemplate 再生成、Visual Tree の肥大化、頻繁な `INotifyPropertyChanged` 発火）
@@ -158,3 +164,6 @@
 - WinUI 3 / MAUI への移行ガイド（別スキルとして将来検討）
 - Azure DevOps パイプライン（GitHub Actions のみカバー）
 - MEF プラグインシステム（今回のスコープ外）
+- Windows Installer（WiX / MSI / NSIS）— `dotnet-packaging-msix` は MSIX 専用。WiX は将来スキルとして検討
+- `dotnet-trace` のカスタム EventSource 以外のログ収集機能 → `dotnet-logging-diagnostics` に集約
+- CPU/メモリプロファイリング目的の `dotnet-trace` → `dotnet-performance` に集約
