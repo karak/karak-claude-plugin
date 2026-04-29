@@ -122,7 +122,7 @@
       "name": "karak-windows-desktop",
       "source": "./karak-windows-desktop",
       "description": "Windows Desktop development skills: .NET 10 WPF/XAML, MVVM, Clean Architecture, Vertical Slice, MSIX packaging/signing/CI, Serilog diagnostics, EF Core migration (SQLite offline-safe), performance profiling, xUnit/Moq testing, dotnet-windows-developer agent",
-      "version": "1.1.0",
+      "version": "1.0.0",
       "author": {
         "name": "karak"
       },
