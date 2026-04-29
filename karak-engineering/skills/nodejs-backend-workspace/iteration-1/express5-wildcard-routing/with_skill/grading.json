@@ -1,0 +1,30 @@
+{
+  "eval_id": 1,
+  "eval_name": "express5-wildcard-routing",
+  "run": "with_skill",
+  "expectations": [
+    {
+      "text": "identifies path-to-regexp v8 as the root cause",
+      "passed": true,
+      "evidence": "Summary: 'Express 5 は path-to-regexp を 0.x から 8.x に更新した'"
+    },
+    {
+      "text": "provides correct Express 5 wildcard syntax",
+      "passed": true,
+      "evidence": "Summary: gives both '/api/v1/{*path}' and '/api/v1/(.*)' as correct syntaxes"
+    },
+    {
+      "text": "mentions this is an Express 5 breaking change",
+      "passed": true,
+      "evidence": "Summary frames the issue as Express 4→5 migration breaking change"
+    },
+    {
+      "text": "mentions invalid patterns throw at startup in Express 5",
+      "passed": true,
+      "evidence": "Summary: '起動時に例外がスローされる'"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0
+}

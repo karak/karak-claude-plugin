@@ -1,0 +1,89 @@
+{
+  "skill_name": "nodejs-backend",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "new-project-setup",
+      "prompt": "Node.js 24 + Express 5 + Drizzle ORM + better-sqlite3 + Vitest を使った新規バックエンドAPIプロジェクトをセットアップする手順を教えてください。package.json、tsconfig.json、Drizzle設定、Vitest設定の重要なポイントを含めてください。",
+      "expected_output": "pool:forks + WHY, DB_FILE :memory:, programmatic migrate(), drizzle.config.ts relative paths + CJS reason, erasableSyntaxOnly",
+      "iterations": [1, 2],
+      "assertions": [
+        {
+          "text": "mentions pool:forks in vitest config",
+          "check": "response mentions pool: 'forks' or pool:forks in vitest configuration"
+        },
+        {
+          "text": "explains why pool:forks is required (native addon / better-sqlite3)",
+          "check": "response explains that better-sqlite3 is a native addon that crashes under worker_threads, requiring pool:forks"
+        },
+        {
+          "text": "mentions DB_FILE :memory: for tests",
+          "check": "response mentions using DB_FILE: ':memory:' environment variable for test isolation"
+        },
+        {
+          "text": "mentions programmatic migrate() in setup — not drizzle-kit CLI",
+          "check": "response mentions calling migrate() programmatically in beforeAll/setup.ts rather than relying on drizzle-kit CLI for tests"
+        },
+        {
+          "text": "drizzle.config.ts uses relative paths (not import.meta.dirname)",
+          "check": "response shows drizzle.config.ts with relative path strings or explains the CJS compilation issue"
+        },
+        {
+          "text": "mentions erasableSyntaxOnly in tsconfig",
+          "check": "response mentions erasableSyntaxOnly: true in tsconfig.json"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "drizzle-sync-api",
+      "prompt": "Drizzle ORM + better-sqlite3 を使ったコードで await を付けています。問題がありますか？ Express 5 のエラーハンドラに DB エラーが届かないケースがあります。原因と正しい書き方を教えてください。",
+      "expected_output": "better-sqlite3は同期API — awaitは不要、awaiting非Promiseは即resolveで無害だが誤解を招く、同期throwはasyncハンドラ内でExpressに届く、pgはasyncなので対照的",
+      "iterations": [2],
+      "note": "Replaces eval-1 (express5-wildcard-routing) from iteration 1 which was non-discriminating",
+      "assertions": [
+        {
+          "text": "identifies better-sqlite3 as synchronous (no await needed)",
+          "check": "response explains that better-sqlite3 driver makes Drizzle queries synchronous — they return values directly, not Promises"
+        },
+        {
+          "text": "explains that await on non-Promise is harmless but misleading",
+          "check": "response notes that awaiting a non-Promise value resolves immediately (is not an error), but creates incorrect mental model"
+        },
+        {
+          "text": "explains correct error handling with sync queries in Express 5",
+          "check": "response explains that synchronous Drizzle throws propagate through Express 5 async handlers automatically"
+        },
+        {
+          "text": "contrasts with async drivers (PostgreSQL/mysql2)",
+          "check": "response notes that pg/mysql2 drivers ARE async and do need await, making this driver-specific"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "vitest-drizzle-no-such-table",
+      "prompt": "Drizzle ORM + better-sqlite3 を使った Vitest テストで SqliteError: no such table: todos エラーが出ます。pool設定なし、DB_FILE:':memory:'あり、setup.tsでmigrate()あり。何が問題か。",
+      "expected_output": "pool:forks missing (native addon crash) + relative ./drizzle path (import.meta.dirname fix) + each fork = own :memory: DB",
+      "iterations": [1, 2],
+      "assertions": [
+        {
+          "text": "identifies missing pool:forks as a root cause",
+          "check": "response identifies that pool: 'forks' is missing from vitest config"
+        },
+        {
+          "text": "explains native addon / worker_threads incompatibility",
+          "check": "response explains WHY pool:forks is needed — better-sqlite3 is a native .node addon that crashes in worker_threads"
+        },
+        {
+          "text": "identifies relative migrationsFolder path as an issue",
+          "check": "response notes that './drizzle' is a relative path that may resolve incorrectly"
+        },
+        {
+          "text": "notes that each fork gets its own :memory: DB instance",
+          "check": "response explains that pool:forks means each test FILE gets its own process with its own :memory: DB"
+        }
+      ]
+    }
+  ]
+}

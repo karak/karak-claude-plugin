@@ -1,0 +1,30 @@
+{
+  "eval_id": 1,
+  "eval_name": "express5-wildcard-routing",
+  "run": "without_skill",
+  "expectations": [
+    {
+      "text": "identifies path-to-regexp v8 as the root cause",
+      "passed": true,
+      "evidence": "Summary: 'Express 5 upgraded its path matching engine to path-to-regexp v8'"
+    },
+    {
+      "text": "provides correct Express 5 wildcard syntax",
+      "passed": true,
+      "evidence": "Summary: gives '/api/v1/{*splat}' as correct syntax"
+    },
+    {
+      "text": "mentions this is an Express 5 breaking change",
+      "passed": true,
+      "evidence": "Summary clearly frames as Express 4→5 breaking change"
+    },
+    {
+      "text": "mentions invalid patterns throw at startup in Express 5",
+      "passed": true,
+      "evidence": "Summary: 'Invalid regex patterns that Express 4 silently ignored will now throw errors in Express 5'"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0
+}
