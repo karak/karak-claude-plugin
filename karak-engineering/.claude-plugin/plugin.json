@@ -1,6 +1,6 @@
 {
   "name": "karak-engineering",
-  "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management",
+  "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management, and Node.js 24 backend development (Express, Drizzle/Prisma, Vitest, tsup)",
   "author": {
     "name": "karak"
   },
@@ -10,7 +10,16 @@
   "keywords": [
     "code-review",
     "code-quality",
-    "google-design-docs"
+    "google-design-docs",
+    "nodejs",
+    "typescript",
+    "express",
+    "drizzle",
+    "prisma",
+    "vitest",
+    "tsup",
+    "backend",
+    "rest-api"
   ],
   "skills": [
     "./skills/codex-review",

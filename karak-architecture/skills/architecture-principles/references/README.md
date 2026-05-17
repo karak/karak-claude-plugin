@@ -1,6 +1,6 @@
 # architecture-principles / references
 
-`architecture-principles` スキル（フェーズ2で SKILL.md 化予定）のための **ナレッジベース**。
+`architecture-principles` スキル（`../SKILL.md`）のための **ナレッジベース**。
 
 このディレクトリの内容は、特定言語・特定クラウド・特定実装に依存しない
 「組織運営と事業価値に接続する」アーキテクチャ原則の用語と概念マップを提供する。
@@ -11,7 +11,7 @@
 |---|---|---|
 | [glossary.ja.md](./glossary.ja.md) | 用語集（日本語、原語併記、出典付き）。2024-2025 追加概念（DX Core 4 / DevEx / Architecture Modernization / AMET / Rework Rate / Aporetic / Product Operating Model / Continuous Delivery / Trunk-based / IDP）含む | スキル本体・他スキルからの参照元 |
 | [industry-weights.ja.md](./industry-weights.ja.md) | 業界シグナル収集と重みづけ評価（★1〜★5）。Gartner / Tech Radar / DORA / カンファレンス / 採用事例の一次データ | 重みづけの根拠資料 |
-| [overall-map.ja.md](./overall-map.ja.md) | **業界シグナル重みづけ版 全体マップ**。5層モデル + 問題領域 × 重み + 2024-2025 シフト + 関係グラフ + 更新シナリオ + アンチパターン | **フェーズ2 SKILL.md の一次参照** |
+| [overall-map.ja.md](./overall-map.ja.md) | **業界シグナル重みづけ版 全体マップ**。5層モデル + 問題領域 × 重み + 2024-2025 シフト + 関係グラフ + 更新シナリオ + アンチパターン | **`../SKILL.md` の一次参照** |
 | [concept-map.ja.md](./concept-map.ja.md) | 旧版マップ：4文献起点・8問題領域 × 概念の処方系統樹 | 詳細解説リファレンスとして併存 |
 
 ## カバーする文献
@@ -48,7 +48,7 @@
 
 - **フェーズ1a（完了）**: 用語集 + 概念マップ（文献起点）の整理。
 - **フェーズ1b（完了）**: 業界シグナル収集 + 重みづけ + フラット全体マップ（業界起点）の構築。
-- **フェーズ2（次回）**: 本 references を参照する `SKILL.md` を `../SKILL.md` として作成。`overall-map.ja.md` の §7 に方針記載済。
+- **フェーズ2（完了）**: 本 references を参照する `SKILL.md` を `../SKILL.md` として作成。`overall-map.ja.md` の §7 に方針記載済。
 - **フェーズ3（任意）**: 各問題領域の診断テンプレート / ADR テンプレートを `templates/` 配下に追加。
 
 ## 重みづけ方針（要約）
@@ -63,9 +63,14 @@
 
 調査日: **2026-05-16**。半年で陳腐化しうるため適宜更新する。
 
-## 関連スキル
+## 関連スキル・エージェント
+
+スキル:
 
 - `karak-architecture:adr-architect` — アーキテクチャ意思決定の記録
 - `karak-architecture:write-c4-diagram` — C4 モデルによるアーキテクチャ可視化
+
+エージェント:
+
 - `karak-product:requirements-analyst` — 要件定義（Outcomes → Requirements）
 - `karak-product:agile-project-manager` — クロスプラットフォーム開発のプロジェクト計画

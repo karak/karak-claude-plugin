@@ -143,7 +143,7 @@ description: |
 ### Step 7: ADR テンプレートと次アクション
 
 意思決定は ADR で残すことを推奨し、**`karak-architecture:adr-architect` スキル連携** を提示。
-可視化が必要なら **`karak-architecture:write-c4-diagram`** を、要件接続は **`karak-product:requirements-analyst`** を案内。
+可視化が必要なら **`karak-architecture:write-c4-diagram`** スキルを、要件接続は **`karak-product:requirements-analyst`** エージェントを案内。
 
 ---
 
@@ -223,9 +223,14 @@ description: |
 
 ---
 
-## 隣接スキル連携
+## 隣接スキル・エージェント連携
+
+スキル:
 
 - `karak-architecture:adr-architect` — 意思決定の記録（毎回の出力で提案）
 - `karak-architecture:write-c4-diagram` — Layer 2/3 の可視化
+
+エージェント:
+
 - `karak-product:requirements-analyst` — Layer 1 の Outcome 定義
 - `karak-product:agile-project-manager` — Layer 1 → 5 の進捗計画
