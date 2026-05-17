@@ -1,0 +1,40 @@
+{
+  "skill_name": "record-learning-candidate",
+  "evals": [
+    {
+      "id": 0,
+      "name": "normal-stop-after-24h",
+      "prompt": "You just finished a long debugging session where you fixed a bug in `karak-meta/scripts/stop_learning_candidate.py` — specifically a 24h-boundary off-by-one that used `<= WINDOW_SECONDS` instead of `< WINDOW_SECONDS`. The fix landed; tests passed.\n\nThe karak-meta Stop hook just fired. The injected instruction in your context says:\n\n```\nThe karak-meta Stop hook fired its 24h learning-candidate gate. Use the `record-learning-candidate` skill to log a one-line pointer to the current session into auto-memory.\n\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/abc123.jsonl\n  date: 2026-05-19\n  since: 2026-05-18T05:23:00Z\n\nExtract ≤31-char grep keywords from this session, write `learning-candidate-2026-05-19.md`, and update `MEMORY.md`. Keep the memory body to the four-bullet template — this is a breadcrumb, not a journal.\n```\n\nThe memory directory `/Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/memory/` already exists and contains `MEMORY.md`, `codex-sessions.md`, and `feedback_websearch_tool.md`. There is no existing `learning-candidate-*.md` file for today.\n\nExecute the recording step. Write the file and update MEMORY.md as instructed.",
+      "expected_output": "A new file `learning-candidate-2026-05-19.md` with the four-bullet template, a ≤31-char Keywords line that names the specific bug (e.g. 'Stop hook 24h off-by-one fix'), and one new line appended to MEMORY.md.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "same-day-append",
+      "prompt": "Earlier today (2026-05-19 at 09:14) you already wrote a `learning-candidate-2026-05-19.md` for a Cloud Run rewrite fix. The file lives at `/Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/memory/learning-candidate-2026-05-19.md` and its current contents are:\n\n```markdown\n---\nname: learning-candidate-2026-05-19\ndescription: Learning-candidate pointer for 2026-05-19 — keywords: Cloud Run rewrite 404 fix\nmetadata:\n  type: reference\n---\n\n## 09:14\n\n- **Transcript:** `/Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/morning.jsonl`\n- **Keywords:** `Cloud Run rewrite 404 fix`\n- **Hook range:** since `2026-05-17T22:00:00Z` until `2026-05-19T00:14:00Z`\n- **Why this might matter:** Captured the firebase.json + Cloud Run path-rewrite interaction that produced 404s on /api/*.\n```\n\nMEMORY.md already contains the index line for 2026-05-19.\n\nThe Stop hook just fired AGAIN, against your expectation (it shouldn't if the 24h gate is working, but maybe an admin manually touched the file). The injected instruction is:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/afternoon.jsonl\n  date: 2026-05-19\n  since: 2026-05-19T00:14:00Z\n```\n\nDuring this afternoon session you wrote a SwiftData V2 migration with a rollback path. Record the new pointer correctly given that a file for today already exists.",
+      "expected_output": "Append a new `## HH:MM` section to the existing file (not overwrite, not create a second file). Skip updating MEMORY.md (already indexed). New section keywords name the SwiftData migration work, ≤31 chars.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "date-rollover-no-prior",
+      "prompt": "It is 2026-05-19 at 00:08 local time. You worked through midnight. The auto-memory directory `/Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/memory/` has no `learning-candidate-*.md` files at all — this is the very first time the hook is firing successfully for this project.\n\nThe Stop hook injected:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/midnight.jsonl\n  date: 2026-05-19\n  since: null (no prior record found)\n```\n\nThe session has been about implementing the karak-meta plugin itself: writing the Stop-hook script, the SKILL.md, and registering in marketplace.json. Make sure the keywords disambiguate from any other plugin work you might do in the future (don't just write 'plugin work').\n\nExecute the recording step.",
+      "expected_output": "A fresh `learning-candidate-2026-05-19.md` is created. Keywords reference karak-meta / Stop hook / learning-candidate specifically. MEMORY.md gets a new index line. Body stays within the four-bullet template.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "no-real-learning",
+      "prompt": "The Stop hook just fired. Injected:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/clarify.jsonl\n  date: 2026-05-19\n  since: 2026-05-17T22:00:00Z\n```\n\nThe session contents: the user asked you to summarize their PR backlog, you asked three clarifying questions, and the user replied 'never mind, I'll figure it out' and stopped engaging. No code was written. No decisions made. No real learning happened.\n\nFollow the skill anyway. Decide what to record.",
+      "expected_output": "A pointer file IS still written, but the Keywords line explicitly marks it as 'no learning' (e.g. '<no learning — clarify only>' or similar), so future-you doesn't re-scan. MEMORY.md still gets an index entry. The Why-this-might-matter line acknowledges nothing of substance to recover.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "keyword-budget-overflow",
+      "prompt": "Stop hook just fired. Injected:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/long.jsonl\n  date: 2026-05-19\n  since: 2026-05-18T05:00:00Z\n```\n\nIn this session you did THREE somewhat-independent things:\n1. Migrated the Firebase Hosting rewrites to a new Cloud Run revision\n2. Diagnosed a flaky MSW test that needed `server.resetHandlers()` in `afterEach`\n3. Bumped Vitest from 1.6 to 2.0 and updated three test files for the breaking changes\n\nYou want to record a pointer. But you only get 31 characters for keywords. Make the call: which subset goes into the keyword string (and the rest into the 'Why' line), and write the file. You may NOT write three separate files.",
+      "expected_output": "A single learning-candidate file. Keywords ≤31 chars, names the highest-signal/most-distinctive token combination (likely the Vitest 2.0 bump or the MSW reset — the Cloud Run thing was already captured in an earlier eval). The Why-this-might-matter line acknowledges the other items so they're still findable by reading the file. MEMORY.md updated.",
+      "files": []
+    }
+  ]
+}
