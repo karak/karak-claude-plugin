@@ -27,7 +27,7 @@ A single Markdown memory file plus a one-line entry in `MEMORY.md`. The point is
 
 The encoded directory is the same one that already holds `MEMORY.md` and other auto-memory files in this session. Resolve it by stripping the filename off the path of an existing entry like `MEMORY.md`. Do not hardcode the project name.
 
-If a file for today's date already exists, **append to it** (multiple Stop events on the same day — the hook will only call you once per 24h but boundary days can collide). Append a new bullet under a fresh `## <HH:MM>` header rather than overwriting.
+If a file for today's date already exists, **append to it** rather than overwriting. The 24h mtime gate makes same-day collisions improbable, but timezone shifts (e.g. DST), manual hook reruns, and edits that bump mtime without writing a new record can still produce them. Append a new bullet under a fresh `## <HH:MM>` header.
 
 ### File contents
 

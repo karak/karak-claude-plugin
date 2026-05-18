@@ -12,6 +12,11 @@ inject a one-line instruction telling the agent to run the
     prior record exists. The literal ``null`` is a sentinel the skill matches
     on; it is not JSON.
 
+Note: ``date`` is **local-time** (matches the on-disk filename buckets) while
+``since`` is **UTC** (Z-suffixed). The two are intentionally not comparable as
+strings — unifying them would either misalign the filename bucket for non-UTC
+users or break the round-trippable mtime semantics of ``since``.
+
 We fire if-and-only-if BOTH of the following hold:
 
   - ``stop_hook_active`` is falsy (otherwise we would infinite-loop), AND
@@ -59,7 +64,8 @@ def encode_cwd(cwd: str) -> str:
     so the output preserves them. Verified against real entries under
     ``~/.claude/projects/`` (e.g. ``/Volumes/Mac external HDD/Projects`` →
     ``-Volumes-Mac-external-HDD-Projects``). A leading ``/`` yields a
-    leading ``-``.
+    leading ``-``. Consecutive non-alphanumerics are NOT collapsed — each
+    character becomes its own ``-`` (e.g. ``//foo`` → ``--foo``).
     """
     return re.sub(r"[^A-Za-z0-9]", "-", cwd)
 
@@ -180,12 +186,18 @@ def main() -> int:
         if not cwd:
             # Malformed envelope. Do not guess with os.getcwd() — that would
             # mis-file the breadcrumb under whatever directory python3 was
-            # spawned from.
+            # spawned from. Leave a home-fallback breadcrumb so a schema change
+            # in Claude Code's Stop envelope does not silently disable the hook
+            # forever.
+            log_diagnostic(None, "envelope missing cwd")
             return 0
 
         transcript_path = payload.get("transcript_path")
         if not transcript_path:
             # Without a transcript path the skill has nothing useful to record.
+            # Log per-project (cwd is known) so the trail lives with the rest
+            # of the project's diagnostic history.
+            log_diagnostic(memory_dir(cwd), "envelope missing transcript_path")
             return 0
 
         mem_dir = memory_dir(cwd)

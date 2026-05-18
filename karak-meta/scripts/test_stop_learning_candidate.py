@@ -122,6 +122,87 @@ def test_exactly_24h_boundary_fires(tmp_path):
     assert result.stdout.strip(), "expected a block decision at exactly 24h"
 
 
+def test_uses_mtime_not_filename_date(tmp_path):
+    """Filename date is bucketing-only; only mtime gates the 24h window.
+
+    Regression guard: a candidate file named with an ancient date but a recent
+    mtime must keep the hook silent. Without this assertion, a refactor that
+    parsed the date out of the filename would pass every other test.
+    """
+    cwd = "/Users/x/proj"
+    mem_dir = encoded_dir(tmp_path, cwd)
+    mem_dir.mkdir(parents=True)
+    # Filename suggests 2020, mtime is 1h ago → silent (mtime is authoritative).
+    ancient_name = mem_dir / "learning-candidate-2020-01-01.md"
+    ancient_name.write_text("")
+    one_hour_ago = time.time() - 3600
+    os.utime(ancient_name, (one_hour_ago, one_hour_ago))
+
+    result = run_hook(
+        json.dumps({"cwd": cwd, "transcript_path": "/x/y.jsonl"}),
+        tmp_path,
+    )
+    assert result.returncode == 0
+    assert result.stdout == "", (
+        "filename date was used instead of mtime — the 2020 filename should "
+        "not have overridden the recent mtime"
+    )
+
+
+def test_date_is_local_since_is_utc(tmp_path):
+    """`date` uses local TZ; `since` uses UTC. The asymmetry is load-bearing —
+    a refactor unifying them would silently shift the date field for non-UTC
+    users. Lock it in by running under a non-UTC TZ and verifying the script's
+    `date` matches local LA time, not UTC."""
+    try:
+        import zoneinfo
+    except ImportError:  # pragma: no cover — stdlib in 3.9+
+        pytest.skip("zoneinfo not available")
+    try:
+        la_tz = zoneinfo.ZoneInfo("America/Los_Angeles")
+    except zoneinfo.ZoneInfoNotFoundError:  # pragma: no cover — tzdata missing
+        pytest.skip("America/Los_Angeles tzdata not available")
+
+    cwd = "/Users/x/proj"
+    mem_dir = encoded_dir(tmp_path, cwd)
+    mem_dir.mkdir(parents=True)
+    f = mem_dir / "learning-candidate-2026-05-01.md"
+    f.write_text("")
+    twenty_five_hours = time.time() - (25 * 60 * 60)
+    os.utime(f, (twenty_five_hours, twenty_five_hours))
+
+    la_date_before = datetime.now(la_tz).strftime("%Y-%m-%d")
+    result = run_hook(
+        json.dumps({"cwd": cwd, "transcript_path": "/x/y.jsonl"}),
+        tmp_path,
+        env_extra={"TZ": "America/Los_Angeles"},
+    )
+    la_date_after = datetime.now(la_tz).strftime("%Y-%m-%d")
+
+    assert result.returncode == 0
+    decision = json.loads(result.stdout)
+    reason = decision["reason"]
+
+    # `since` is UTC — must end in `Z`.
+    m_since = re.search(
+        r"^\s*since:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)\s*$",
+        reason,
+        re.MULTILINE,
+    )
+    assert m_since, f"since field missing or non-UTC: {reason!r}"
+
+    # `date` is local — should equal "now" in Los_Angeles, even when that
+    # differs from the UTC date. Accept the LA date measured either side of
+    # the subprocess call to tolerate a midnight-LA rollover during the run.
+    m_date = re.search(r"^\s*date:\s*(\d{4}-\d{2}-\d{2})\s*$", reason, re.MULTILINE)
+    assert m_date, f"date field missing: {reason!r}"
+    assert m_date.group(1) in {la_date_before, la_date_after}, (
+        f"date={m_date.group(1)!r} did not match local LA date "
+        f"(expected {la_date_before!r} or {la_date_after!r}) — "
+        "script may be using UTC instead of local TZ"
+    )
+
+
 # ---------- silent skip paths ----------
 
 
@@ -157,9 +238,16 @@ def test_silent_when_stop_hook_active(tmp_path):
 
 
 def test_silent_when_no_transcript_path(tmp_path):
-    result = run_hook(json.dumps({"cwd": "/Users/x/proj"}), tmp_path)
+    cwd = "/Users/x/proj"
+    result = run_hook(json.dumps({"cwd": cwd}), tmp_path)
     assert result.returncode == 0
     assert result.stdout == ""
+    # Bail must leave a breadcrumb — a schema change in Claude Code's Stop
+    # envelope (renaming transcript_path) would otherwise silently disable
+    # the hook with no diagnostic trail.
+    log_path = encoded_dir(tmp_path, cwd) / ".karak-meta-hook.log"
+    assert log_path.exists(), "expected per-project diagnostic log"
+    assert "missing transcript_path" in log_path.read_text()
 
 
 def test_silent_when_no_cwd(tmp_path):
@@ -167,6 +255,11 @@ def test_silent_when_no_cwd(tmp_path):
     result = run_hook(json.dumps({"transcript_path": "/x/y.jsonl"}), tmp_path)
     assert result.returncode == 0
     assert result.stdout == ""
+    # Bail must leave a breadcrumb in the home-rooted fallback log — without
+    # cwd, the per-project log dir is unresolvable.
+    fallback = tmp_path / ".claude" / "karak-meta-hook.log"
+    assert fallback.exists(), "expected home-fallback diagnostic log"
+    assert "missing cwd" in fallback.read_text()
 
 
 def test_silent_on_empty_stdin(tmp_path):
@@ -277,11 +370,18 @@ def test_latest_candidate_mtime_logs_when_all_stats_fail(tmp_path, monkeypatch, 
     (mem_dir / "learning-candidate-2026-05-17.md").write_text("")
     (mem_dir / "learning-candidate-2026-05-16.md").write_text("")
 
-    monkeypatch.setattr(
-        Path,
-        "stat",
-        lambda self, *a, **kw: (_ for _ in ()).throw(PermissionError("denied")),
-    )
+    real_stat = Path.stat
+
+    def fake_stat(self, *a, **kw):
+        # Patch selectively: `mem_dir.is_dir()` (called before the scan on
+        # Python 3.13+) internally invokes `stat`, so a blanket patch would
+        # raise before the matched-but-all-failed branch is ever reached.
+        # Only fail stats on the candidate files themselves.
+        if self.name.startswith("learning-candidate-"):
+            raise PermissionError("denied")
+        return real_stat(self, *a, **kw)
+
+    monkeypatch.setattr(Path, "stat", fake_stat)
 
     logged: list[tuple[Path | None, str]] = []
     monkeypatch.setattr(
