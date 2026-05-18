@@ -1,0 +1,30 @@
+{
+  "eval_id": 2,
+  "eval_name": "vitest-drizzle-no-such-table",
+  "run": "with_skill",
+  "expectations": [
+    {
+      "text": "identifies missing pool:forks as a root cause",
+      "passed": true,
+      "evidence": "'pool: forks が未設定（根本原因)'"
+    },
+    {
+      "text": "explains native addon / worker_threads incompatibility",
+      "passed": true,
+      "evidence": "'better-sqlite3 はネイティブアドオン（.node バイナリ）のため、pool: threads（worker_threads）ではクラッシュやテーブル未発見エラーが発生します'"
+    },
+    {
+      "text": "identifies relative migrationsFolder path as an issue",
+      "passed": true,
+      "evidence": "'migrationsFolder が相対パス' with fix using join(import.meta.dirname, '../../drizzle')"
+    },
+    {
+      "text": "notes that each fork gets its own :memory: DB instance",
+      "passed": true,
+      "evidence": "Explains pool:forks = each file in child_process; plus notes drizzle-kit CLI incompatibility with :memory:"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0
+}

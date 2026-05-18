@@ -1,0 +1,40 @@
+{
+  "eval_id": 0,
+  "eval_name": "new-project-setup",
+  "run": "with_skill",
+  "expectations": [
+    {
+      "text": "mentions pool:forks in vitest config",
+      "passed": true,
+      "evidence": "'pool: forks が必須・非交渉'"
+    },
+    {
+      "text": "explains why pool:forks is required (native addon / better-sqlite3)",
+      "passed": true,
+      "evidence": "'better-sqlite3 はネイティブ addon であり、pool: threads ではセグメンテーションフォルトが発生する'"
+    },
+    {
+      "text": "mentions DB_FILE :memory: for tests",
+      "passed": true,
+      "evidence": "vitest.config.ts shows env: { DB_FILE: ':memory:' }"
+    },
+    {
+      "text": "mentions programmatic migrate() in setup — not drizzle-kit CLI",
+      "passed": true,
+      "evidence": "setup.ts with migrate() shown; notes drizzle-kit generate must run before npm test"
+    },
+    {
+      "text": "drizzle.config.ts uses relative paths (not import.meta.dirname)",
+      "passed": true,
+      "evidence": "'import.meta は使用不可（drizzle-kit が esbuild CJS でコンパイルするため）。相対パスを直接書く'"
+    },
+    {
+      "text": "mentions erasableSyntaxOnly in tsconfig",
+      "passed": true,
+      "evidence": "'erasableSyntaxOnly: true の 4 点セット'"
+    }
+  ],
+  "pass_count": 6,
+  "total_count": 6,
+  "pass_rate": 1.0
+}

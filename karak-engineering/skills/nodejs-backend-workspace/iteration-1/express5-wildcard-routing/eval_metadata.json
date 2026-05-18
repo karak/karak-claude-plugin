@@ -1,0 +1,23 @@
+{
+  "eval_id": 1,
+  "eval_name": "express5-wildcard-routing",
+  "prompt": "Express 5 でルートが404になります。次のコードが動きません:\n\napp.get('/api/v1/*', (req, res) => res.json({ ok: true }))\n\n原因と修正方法を教えてください。",
+  "assertions": [
+    {
+      "text": "identifies path-to-regexp v8 as the root cause",
+      "check": "response identifies path-to-regexp v8 (or the upgrade from path-to-regexp 0.x) as the reason the wildcard syntax changed"
+    },
+    {
+      "text": "provides correct Express 5 wildcard syntax",
+      "check": "response shows the correct syntax: /api/v1/(.*) or /api/v1/{*path}"
+    },
+    {
+      "text": "mentions this is an Express 5 breaking change",
+      "check": "response frames this as an Express 4→5 migration breaking change, not a generic Express issue"
+    },
+    {
+      "text": "mentions invalid patterns throw at startup in Express 5",
+      "check": "response notes that Express 5 throws an error at server startup for invalid patterns, rather than silently failing"
+    }
+  ]
+}

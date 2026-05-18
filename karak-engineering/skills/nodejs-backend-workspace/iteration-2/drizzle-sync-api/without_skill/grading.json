@@ -1,0 +1,31 @@
+{
+  "eval_id": 1,
+  "eval_name": "drizzle-sync-api",
+  "run": "without_skill",
+  "expectations": [
+    {
+      "text": "identifies better-sqlite3 as synchronous (no await needed)",
+      "passed": true,
+      "evidence": "'better-sqlite3 は すべての操作が同期（synchronous）で完了するドライバである'"
+    },
+    {
+      "text": "explains that await on non-Promise is harmless but misleading",
+      "passed": true,
+      "evidence": "'await は技術的に no-op（副作用なし）になる。通常ケースでは動いているように見えるが、意味的に誤りであり、後述するエラー処理の誤解を生む'"
+    },
+    {
+      "text": "explains correct error handling with sync queries in Express 5",
+      "passed": true,
+      "evidence": "'async ハンドラ内なら、JavaScript 仕様によって同期例外も自動的に Promise rejection に包まれ、Express 5 が捕捉できる'"
+    },
+    {
+      "text": "contrasts with async drivers (PostgreSQL/mysql2)",
+      "passed": true,
+      "evidence": "Comparison table shows pg is async/await mandatory vs better-sqlite3 synchronous"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0,
+  "note": "Non-discriminating eval — both configs score 4/4. The synchronous API is general knowledge not specific to the skill."
+}

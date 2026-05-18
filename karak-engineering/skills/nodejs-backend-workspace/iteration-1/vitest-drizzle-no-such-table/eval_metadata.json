@@ -1,0 +1,23 @@
+{
+  "eval_id": 2,
+  "eval_name": "vitest-drizzle-no-such-table",
+  "prompt": "Drizzle ORM + better-sqlite3 を使った Vitest テストで SqliteError: no such table: todos エラーが出ます。pool設定なし、DB_FILE:':memory:'あり、setup.tsでmigrate()あり。何が問題か。",
+  "assertions": [
+    {
+      "text": "identifies missing pool:forks as a root cause",
+      "check": "response identifies that pool: 'forks' is missing from vitest config and this causes the native addon (better-sqlite3) to crash or the :memory: DB state to not persist"
+    },
+    {
+      "text": "explains native addon / worker_threads incompatibility",
+      "check": "response explains WHY pool:forks is needed — better-sqlite3 is a native .node addon that crashes in worker_threads (pool:threads)"
+    },
+    {
+      "text": "identifies relative migrationsFolder path as an issue",
+      "check": "response notes that './drizzle' is a relative path that may resolve incorrectly in the fork process; should use import.meta.dirname or an absolute path"
+    },
+    {
+      "text": "notes that each fork gets its own :memory: DB instance",
+      "check": "response explains that pool:forks means each test FILE gets its own process with its own :memory: DB, so migrations must run in each process via beforeAll"
+    }
+  ]
+}

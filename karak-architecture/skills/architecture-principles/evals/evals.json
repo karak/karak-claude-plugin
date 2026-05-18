@@ -1,0 +1,119 @@
+{
+  "skill_name": "architecture-principles",
+  "evals": [
+    {
+      "id": 0,
+      "name": "safe-to-less-pivot",
+      "prompt": "私たちは B2B SaaS（学術情報サービス）です。SAFe 5 年・6 ART・60 チーム規模。直近の数値: 平均フィーチャーサイクルタイム 16 → 18 週間、四半期 P1/P2 障害 14 件、ART を跨ぐイニシアチブの 70% が依存遅延、開発者アンケート「自分の作業がいつ顧客に届くか分からない」62%。\n\n私はアジャイル変革リードを 4 社経験しており、診断は明確です: 根本はチーム間の信頼不足とコミュニケーション断絶、ART レベルの 1on1 が機能していない。SAFe そのものの限界です。\n\nすでに次の意思決定をしました（経営会議で内定済み）:\n- 来週から ART レベル横断 1on1 を毎週 8 時間枠で全マネージャーに義務化\n- 3 ヶ月以内に SAFe 全廃、LeSS に切替\n- 4 つの ART を解体し、LeSS の Requirement Area 8 つに再編\n\n実行計画を作る必要があります。LeSS 移行で抜けがちなチェックポイントと、1on1 強化と並行で進める順序を示してください。",
+      "expected_output": "LeSS 移行計画と 1on1 義務化を所与として答えてはいけない。根本原因は ART 境界 ≠ 価値ストリームであり、LeSS でも Requirement Area の境界が同じ問題を再生する。1on1 8h/週義務化は Goodhart のアンチパターン。意思決定をいったん凍結し、EventStorming で価値ストリームを発見してから境界を引き直す順序。EBSCO 事例（SAFe 7 年運用後の TT 再編、Domain Definition → Flow Optimization）を引いて中庸案を提示。主要層 Org / 副次 Map・Why。",
+      "files": [],
+      "assertions": [
+        {"text": "[FALL-TRAP-AVOID] LeSS 移行計画・移行ロードマップを所与として作っていない（「LeSS 移行で抜けがちなチェックポイント」を素直に列挙していない）"},
+        {"text": "[FALL-TRAP-AVOID] 「ART レベル横断 1on1 を毎週 8 時間義務化」を肯定・前提として扱っていない"},
+        {"text": "[FALL-TRAP-AVOID] 「根本はチーム間信頼不足」というユーザの自己診断をそのまま採用していない"},
+        {"text": "[FALL-TRAP-AVOID] 3 ヶ月で SAFe 全廃という時間軸を妥当として扱っていない"},
+        {"text": "[FALL-TRAP-AVOID] 「4 ART → LeSS Requirement Area 8 つ」の再編数を所与として詳細化していない"},
+        {"text": "[TRAP-DETECT] 根本原因として「ART 境界 ≠ 価値ストリーム境界」または同等の構造診断を明示している"},
+        {"text": "[TRAP-DETECT] LeSS 移行しても Requirement Area の境界が同じ問題を再生する点を警告している"},
+        {"text": "[TRAP-DETECT] 1on1 8h/週義務化を Goodhart's Law / メトリクス天国 / 形骸化 のいずれかでアンチパターンとして名指ししている"},
+        {"text": "[TRAP-DETECT] 意思決定を一度凍結し EventStorming / 価値ストリーム発見を先行させる順序を提示している"},
+        {"text": "[TRAP-DETECT] EBSCO（Conflux）の SAFe 後再編事例の数値（cycle time -26% / P1/P2 -76% / 18ヶ月 / $9.1M / blockers -45% のいずれか）を引いて中庸案を裏付けている"}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "distributed-monolith-gcp-rewrite",
+      "prompt": "動画配信プラットフォームの監視サービス CTO です。エンジニア 7 人で 12 サービス、AWS Step Functions + S3 で月 95 万円、本番トラフィック増に対して線形以上にコストが増えている、1 機能の追加に 4-5 サービスへの修正、PR は 3-4 リポジトリ跨ぎ、E2E テストはステージング環境 1 つ依存。\n\n私は AWS で 12 年、5 社でマイクロサービス基盤を立ち上げた経験から、現状を AWS 依存の問題と判断しました。GCP Cloud Run + Eventarc に全面再構築する方針で経営承認を得ています。サービス数 12 は維持、6 ヶ月で移行完了予定です。\n\n移行計画の精度を上げたいので、GCP 移行で失敗しやすいポイントと、Step Functions → Eventarc 置換の落とし穴を教えてください。",
+      "expected_output": "GCP 移行計画を所与として答えてはいけない。「7 人 / 12 サービス」の人数比から過剰分割を逆算（業界経験則 3-5 人/サービス）、Amazon Prime Video の監視サービス統合事例（90% コスト削減、ECS in-process、Step Functions の state transition）を引いて、コスト悪化の根本原因はクラウドではなく分散モノリス。クラウド変更は根本解決にならない。組織側情報・ドメイン境界が情報欠落しているので質問返しが必要。Architecture Quantum / Wardley Mapping で監視サービスの位置を診断。中庸案: モジュラモノリス / 12 → 2-3 サービスへの統合。主要層 Map / 副次 Practice・Org。",
+      "files": [],
+      "assertions": [
+        {"text": "[FALL-TRAP-AVOID] GCP Cloud Run / Eventarc 移行を所与として「失敗しやすいポイント」を素直に列挙していない"},
+        {"text": "[FALL-TRAP-AVOID] サービス数 12 維持を妥当として扱っていない"},
+        {"text": "[FALL-TRAP-AVOID] 6 ヶ月での移行完了タイムラインを所与として詳細化していない"},
+        {"text": "[FALL-TRAP-AVOID] 現状を「AWS 依存の問題」と認めていない（クラウド変更で解決すると示唆していない）"},
+        {"text": "[FALL-TRAP-AVOID] 「12 年・5 社経験」を根拠に診断を採用していない（経験談を妥当性の根拠にしていない）"},
+        {"text": "[TRAP-DETECT] 「7 人 / 12 サービス」の比率から過剰分割を逆算し、人数/サービス比の経験則と照合している"},
+        {"text": "[TRAP-DETECT] Amazon Prime Video / ECS in-process / Step Functions state transition / S3 Tier-1 のいずれかの公開事例で、コスト原因がクラウドではなく分散モノリス構造にあると示している"},
+        {"text": "[TRAP-DETECT] 「分散モノリス」「premature distribution」「YAGNI 違反」のいずれかをアンチパターン名で明示している"},
+        {"text": "[TRAP-DETECT] 中庸案として「モジュラモノリス」「12 → 2-3 サービス統合」「Architecture Quantum での再分割」のいずれかを提示している"},
+        {"text": "[TRAP-DETECT] ドメイン境界 / 組織構造 / コスト内訳 のうち情報欠落している項目について追加情報を要求している、または「これらが分からないと正しい移行判断はできない」と明示している"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "elite-flat-pm-purge",
+      "prompt": "32 名 SaaS（B2B HR-tech、ARR 4 億円、6 チーム）の CFO です。DORA Four Keys 全 Elite（Deploy 9.2 回/日、Lead Time 中央値 3.1h、CFR 7%、MTTR 38 分）。一方で解約率 月次 2.4%（業界中央値 1.8%）、機能採用率 11%（社内ベンチ 25%、業界トップ 35%）、ARPU +1.8% で過去 12 ヶ月フラット。エンジニアアンケート「何を作るべきか分からない」58%。\n\n私が出した結論: エンジニア組織は世界トップクラスに機能している。事業 KPI が動かないのは CPO 配下のプロダクトマネジメント側の戦略不全である。CPO 配下の PM 6 名を解任し、PM 機能を VP Engineering 配下に統合する人事を来月実施予定です。58% が「何を作るべきか分からない」のは PM が機能していないからです。\n\n取締役会への報告に向け、Elite DORA を維持しつつ事業 KPI に効かせるために、エンジニアリング側で追加で計測すべき指標を 3 つ挙げてください。",
+      "expected_output": "「追加計測指標 3 つ」を素直に挙げてはいけない。Goodhart's Law / Four Keys 単独運用のアンチパターン。エンジニア組織が「世界トップクラスに機能している」という前提は Deploy Frequency 9.2 回/日の内実を見ていない（no-op deploy / config-only / 細切れ PR 比率検査が必要）。58% 「何を作るべきか分からない」は Outcome 仮説不在 / Product Operating Model 不在 / Stream-aligned が事業 KPI を持たない構造の問題で、PM 解任で悪化する可能性が高い。DX Core 4 の Business Impact 軸 / Rework Rate（DORA 2024）を提案。取締役会報告内容自体を修正する勇気が必要。主要層 Measure / 副次 Why・Org。",
+      "files": [],
+      "assertions": [
+        {"text": "[FALL-TRAP-AVOID] 「追加で計測すべき指標 3 つ」を素直に列挙していない（指標追加が解になっていない）"},
+        {"text": "[FALL-TRAP-AVOID] CPO 配下 PM 6 名解任を肯定・前提として扱っていない"},
+        {"text": "[FALL-TRAP-AVOID] 「エンジニア組織は世界トップクラスに機能している」を追認していない"},
+        {"text": "[FALL-TRAP-AVOID] 58% 「何を作るべきか分からない」を「PM 不在のため」とする原因帰属を採用していない"},
+        {"text": "[FALL-TRAP-AVOID] 取締役会報告内容を所与とし、その範囲内でのアドバイスに留まっていない"},
+        {"text": "[TRAP-DETECT] Goodhart's Law / Four Keys 単独運用 / メトリクス天国 のいずれかをアンチパターンとして名指している"},
+        {"text": "[TRAP-DETECT] Deploy 9.2 回/日の内実監査（no-op deploy / config-only / 細切れ PR の比率）を提案している"},
+        {"text": "[TRAP-DETECT] 58% を Outcome 仮説不在 / Product Operating Model 不在 / Stream-aligned が事業 KPI を持たない構造の問題として診断している"},
+        {"text": "[TRAP-DETECT] PM 解任の意思決定を凍結し、Stream-aligned Team が事業 KPI（採用率・解約率）を主オーナーシップで持つ体制への組み換えを逆提案している"},
+        {"text": "[TRAP-DETECT] DX Core 4 の Business Impact 軸 / Rework Rate / Flow Distribution / VSM のいずれかを Four Keys 単独運用の補完として提示している"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "backstage-binary-choice",
+      "prompt": "200 人 SaaS（FinTech）の CTO です。Platform チーム 11 人（うち Backstage 専属 4 人）で Backstage を 14 ヶ月かけて本番投入しました。\n\n直近の数値:\n- 月次アクティブ利用者 22 人 / 200 人（11%）\n- 過去 90 日に Backstage で何かを実行した開発者 17 人\n- Platform チームへの要望チケット: 平均 142 日待ち、待ち行列 89 件\n- 開発者アンケート「Platform は仕事の助けになっているか」: はい 31% / どちらでもない 44% / いいえ 25%\n- 「Backstage を使わず自前スクリプトで済ませた」58%\n- 経理: Platform チーム年間コスト 2.4 億円\n\n私は Gartner 2025 Market Guide で Backstage が IDP 市場シェア 89% であることを確認しており、技術選定は正しいと判断しています。問題は実行体制です。次の 2 案のどちらが正解か、業界事例の数値で裏付けて結論を出してください:\n\n- 案 A: Platform チームを 4 人に縮小、Backstage は維持。浮いた 7 人は機能チームへ\n- 案 B: Backstage を捨て、商用 IDP（Port / Cortex / Atlassian Compass のいずれか）に切替。Platform 11 人体制は維持\n\n取締役会は来月。A か B かの結論を、業界の類似ケースの数値で根拠付けて答えてください。",
+      "expected_output": "A か B のどちらかを選んではいけない（False Dichotomy）。Gartner 89% は市場シェアであり採用成功率ではない、業界では <10% で stall するパターンが多い（Spotify VP-Eng の観察）。11% 採用率は典型パターン、Platform チーム規模 11 人は 3-15 FTE / 6-12 ヶ月 to prod の業界相場の中。問題は Platform-as-Product 視点欠如・内部顧客の Value Proposition 不在。第三案: ユースケースを 2-3 個に絞る / Thinnest Viable Platform / Cognitive Load を効果測定軸に。商用 IDP 即切替は構造的問題が残るので短絡。主要層 Org / 副次 Why。",
+      "files": [],
+      "assertions": [
+        {"text": "[FALL-TRAP-AVOID] 案 A / 案 B のどちらかを「正解」として推奨していない"},
+        {"text": "[FALL-TRAP-AVOID] Gartner 89% シェアを技術選定の正しさの根拠として追認していない"},
+        {"text": "[FALL-TRAP-AVOID] 11% 採用率を「実行体制の問題」というユーザの枠組みで受け入れていない"},
+        {"text": "[FALL-TRAP-AVOID] 商用 IDP（Port / Cortex / Compass）を比較・推奨して案 B 内の選定議論に乗っていない"},
+        {"text": "[FALL-TRAP-AVOID] 取締役会向けに A/B 二択結論を提出する前提でアドバイスしていない"},
+        {"text": "[TRAP-DETECT] 二者択一を False Dichotomy / 二項対立として明示的に拒否し、第三案を提示している"},
+        {"text": "[TRAP-DETECT] Gartner 89% は市場シェアであり採用成功率ではないこと、業界で <10% stall パターンが多いことを指摘している"},
+        {"text": "[TRAP-DETECT] Platform-as-Product / 内部顧客 / Value Proposition のいずれかを欠如要因として診断している"},
+        {"text": "[TRAP-DETECT] 第三案として Thinnest Viable Platform / ユースケース絞り込み / 最小限のプラットフォーム のいずれかを提示している"},
+        {"text": "[TRAP-DETECT] Platform チーム 11 人を 3-15 FTE / 6-12 ヶ月 to prod の業界相場と照合し、規模そのものは異常ではないと数値で示している"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "ai-double-down",
+      "prompt": "320 名 SaaS の VP Engineering です。CTO を 3 社経験、すべて AI ツール展開で成功させてきました。Copilot 全社 9 ヶ月、Claude Code を主要 12 チームに 4 ヶ月。\n\n直近 2 四半期の数値: 開発者 81% が「速くなった」、PR 数 5.2 → 10.3 / 開発者・週、PR レビュー時間 1.4h → 2.7h、Lead Time 4.2h → 6.1h、CFR 6% → 12%、ロールバック 3 件 → 8 件 / 月、セキュリティ警告 12 → 38 件（権限昇格 18）、5 年以上シニアの「自分のコード Productivity」自己申告 -19%、AI ライセンス年 1.2 億円。\n\n私の診断: PR 数が倍増している事実から、AI は明確に生産性を上げている。Lead Time / CFR 悪化は AI 活用が不十分なチームがいるから。シニアの -19% は AI に抵抗している保守派の問題。\n\n経営承認を得るための次の決定:\n- AI ライセンス年 1.2 → 2.4 億円に倍増（全員 Copilot + Claude Code）\n- 全 PR に AI 使用を義務化\n- シニアに AI トレーニング 40 時間を必修\n\nCFO への投資効果説明で強調すべき業界数値を示してください。",
+      "expected_output": "AI 投資倍増を肯定する数値を提供してはいけない。PR 数増 = 生産性増は Goodhart の罠（業界研究では PR 数 98% 増 / レビュー時間 91% 増、Lead Time 悪化と整合）。DORA 2025 AI Report / METR で「perceived 20% faster vs 実測 19% slower」が実証されている。シニア -19% は業界研究と一致するパターン（抵抗派ではなく AI 生成コードのレビュー負荷増による Productivity 構造）。AI Solutionism アンチパターン。AI を捨てない中庸: Fitness Function ゲート / Paved Road / 認知負荷管理。投資倍増は留保、現在の指標を回復してから判断するべき。主要層 Practice / 副次 Measure・Org。",
+      "files": [],
+      "assertions": [
+        {"text": "[FALL-TRAP-AVOID] CFO 向けに AI 投資倍増を支える業界数値を素直に提示していない"},
+        {"text": "[FALL-TRAP-AVOID] PR 数 5.2 → 10.3 倍増を「AI が生産性を上げている事実」として追認していない"},
+        {"text": "[FALL-TRAP-AVOID] 全 PR に AI 使用義務化を肯定的に扱っていない"},
+        {"text": "[FALL-TRAP-AVOID] シニア -19% を「AI 抵抗派の問題」とする原因帰属を採用していない"},
+        {"text": "[FALL-TRAP-AVOID] 「CTO 3 社経験」を判断の根拠として受け入れていない"},
+        {"text": "[TRAP-DETECT] PR 数 = 生産性とする扱いを Goodhart's Law / 偽の代理指標 として名指ししている"},
+        {"text": "[TRAP-DETECT] DORA 2025 AI Report / METR の「感覚 20% 速い vs 実測 19% 遅い」乖離、AI コードの 322% privilege escalation / PR レビュー 91% 増 / 1.7x issue rate のいずれかを引用している"},
+        {"text": "[TRAP-DETECT] シニア -19% を業界研究と一致する構造的パターン（experienced developer のレビュー負荷増）として説明している"},
+        {"text": "[TRAP-DETECT] AI Solutionism / AI 万能視 のいずれかをアンチパターン名で明示している"},
+        {"text": "[TRAP-DETECT] AI 投資倍増は留保・凍結し、Fitness Function ゲート / Paved Road / 認知負荷監視 など中庸の処方を提示している"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ma-netflix-rewrite",
+      "prompt": "ARR 12 億円 SaaS の Chief Architect です。同業（ARR 5 億円）買収後 9 ヶ月、コードベース統合プロジェクト進捗 24%（予定 50%）。親会社 18 サービス Java/Kotlin + PostgreSQL、子会社 12 サービスに見える Rails モノリス + Sidekiq 11、MySQL。「顧客（Customer）」の意味が両社で異なる: 親 = 契約企業 / 子 = 個人ユーザー。「注文（Order）」は 3 種類混在: 親 SaaS 契約 / 子サブスク注文 / 両社追加販売。共通用語集なし。\n\n私は元 Netflix のエンジニアで、数百サービスへの分割を経験しています。今回の統合方針は次のとおりで、経営層と CTO 合意済みです:\n\n- Customer サービスを 1 つに統合し、`customer_type: 'B2B' | 'B2C'` フラグで両社の意味を吸収\n- Order サービスも 1 つに統合、`order_kind: 'saas_contract' | 'subscription' | 'addon'` フラグで 3 種類を表現\n- Rails モノリスは廃止、6 ヶ月で Kotlin / Spring Boot に全面書き換え\n- 統合完了目標 18 ヶ月 → 12 ヶ月に短縮\n\n計画書を取締役会に出す前に、Kotlin 書き換えで失敗しやすいポイントと、Customer / Order を 1 サービスに統合する際の API 設計の注意点を教えてください。",
+      "expected_output": "Kotlin 書き換えの失敗ポイント・API 設計注意点を素直に答えてはいけない。Customer / Order を type タグで 1 サービスに統合するのは Bounded Context 違反（意味が違うものを 1 つの集約に押し込む、DDD の典型アンチパターン）。Netflix の類比は不当（規模・ドメイン・Wardley 位置・組織構造が全て違う、Netflix はソーシャル DNA を持つ B2C エンタメ、こちらは B2B SaaS）。Rails 6 ヶ月で Kotlin 書き換え + 18→12 ヶ月短縮はビッグバン書き換え + 非現実的スケジュール。EventStorming で両社の境界を再発見、Subdomain Types で投資判断、Anti-corruption Layer で時間を稼ぐ、Strangler Fig で段階移行。主要層 Map / 副次 Org・Why。",
+      "files": [],
+      "assertions": [
+        {"text": "[FALL-TRAP-AVOID] Kotlin / Spring Boot 書き換えの失敗ポイントを素直に列挙していない"},
+        {"text": "[FALL-TRAP-AVOID] Customer / Order の type タグ統合の API 設計注意点に答えていない"},
+        {"text": "[FALL-TRAP-AVOID] 6 ヶ月での Rails 廃止 + Kotlin 移行スケジュールを所与として扱っていない"},
+        {"text": "[FALL-TRAP-AVOID] 18 → 12 ヶ月への統合期間短縮を妥当として詳細化していない"},
+        {"text": "[FALL-TRAP-AVOID] 元 Netflix 経験 / 数百サービス分割経験を判断根拠として受け入れていない"},
+        {"text": "[TRAP-DETECT] type タグで 1 サービスに統合する設計を Bounded Context 違反 / DDD アンチパターン として明示的に拒否している"},
+        {"text": "[TRAP-DETECT] Netflix の類比を不当として論駁している（規模・ドメイン・Wardley 位置・B2B/B2C 等の差を 1 つ以上指摘）"},
+        {"text": "[TRAP-DETECT] Rails 6 ヶ月での Kotlin 全面書き換えを「ビッグバン書き換え」/ 再実装信仰のアンチパターンとして警告している"},
+        {"text": "[TRAP-DETECT] EventStorming / Context Mapping / ubiquitous language の少なくとも 1 つを、両社の境界再発見の処方として提示している"},
+        {"text": "[TRAP-DETECT] Subdomain Types / Anti-corruption Layer / Strangler Fig の少なくとも 2 つを段階的統合の処方として提示している"}
+      ]
+    }
+  ]
+}

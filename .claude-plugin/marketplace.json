@@ -4,8 +4,8 @@
     "name": "karak"
   },
   "metadata": {
-    "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, and meta (session-aware) tools for Claude Code",
-    "version": "2.2.0"
+    "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Node.js backend development, and meta (session-aware) tools for Claude Code",
+    "version": "2.3.0"
   },
   "plugins": [
     {
@@ -45,8 +45,8 @@
     {
       "name": "karak-architecture",
       "source": "./karak-architecture",
-      "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure",
-      "version": "1.0.0",
+      "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure, architecture-principles (modernization / Team Topologies / evolutionary architecture / DORA)",
+      "version": "1.1.0",
       "author": {
         "name": "karak"
       },
@@ -59,7 +59,17 @@
         "cloud-architecture",
         "gcp",
         "adr",
-        "decision-record"
+        "decision-record",
+        "architecture-modernization",
+        "team-topologies",
+        "evolutionary-architecture",
+        "dora",
+        "four-keys",
+        "fitness-functions",
+        "bvssh",
+        "platform-engineering",
+        "ddd",
+        "wardley-mapping"
       ],
       "category": "development",
       "tags": [
@@ -69,14 +79,21 @@
         "cloud",
         "gcp",
         "adr",
-        "decision-record"
+        "decision-record",
+        "architecture-modernization",
+        "team-topologies",
+        "evolutionary-architecture",
+        "dora",
+        "platform-engineering",
+        "ddd",
+        "wardley-mapping"
       ]
     },
     {
       "name": "karak-engineering",
       "source": "./karak-engineering",
-      "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management",
-      "version": "1.0.0",
+      "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management, and Node.js 24 backend development (Express, Drizzle/Prisma, Vitest, tsup)",
+      "version": "1.1.0",
       "author": {
         "name": "karak"
       },
@@ -86,13 +103,28 @@
       "keywords": [
         "code-review",
         "code-quality",
-        "google-design-docs"
+        "google-design-docs",
+        "nodejs",
+        "typescript",
+        "express",
+        "drizzle",
+        "prisma",
+        "vitest",
+        "tsup",
+        "backend",
+        "rest-api"
       ],
       "category": "development",
       "tags": [
         "code-quality",
         "code-review",
-        "google-design-docs"
+        "google-design-docs",
+        "nodejs",
+        "typescript",
+        "backend",
+        "express",
+        "drizzle",
+        "vitest"
       ]
     },
     {

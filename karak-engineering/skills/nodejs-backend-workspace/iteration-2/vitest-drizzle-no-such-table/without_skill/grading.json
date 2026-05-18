@@ -1,0 +1,30 @@
+{
+  "eval_id": 2,
+  "eval_name": "vitest-drizzle-no-such-table",
+  "run": "without_skill",
+  "expectations": [
+    {
+      "text": "identifies missing pool:forks as a root cause",
+      "passed": false,
+      "evidence": "Not mentioned. Focuses on missing await on migrate(), missing setupFiles config, and different db instances."
+    },
+    {
+      "text": "explains native addon / worker_threads incompatibility",
+      "passed": false,
+      "evidence": "Not mentioned anywhere in the response."
+    },
+    {
+      "text": "identifies relative migrationsFolder path as an issue",
+      "passed": false,
+      "evidence": "Not identified. Summary does not mention path resolution as a cause."
+    },
+    {
+      "text": "notes that each fork gets its own :memory: DB instance",
+      "passed": false,
+      "evidence": "Not mentioned. Fork isolation concept entirely absent."
+    }
+  ],
+  "pass_count": 0,
+  "total_count": 4,
+  "pass_rate": 0.0
+}

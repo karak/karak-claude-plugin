@@ -1,0 +1,30 @@
+{
+  "eval_id": 2,
+  "eval_name": "vitest-drizzle-no-such-table",
+  "run": "with_skill",
+  "expectations": [
+    {
+      "text": "identifies missing pool:forks as a root cause",
+      "passed": true,
+      "evidence": "Issue 1 header: 'pool: forks が未設定（クラッシュ・不安定動作）'"
+    },
+    {
+      "text": "explains native addon / worker_threads incompatibility",
+      "passed": true,
+      "evidence": "Lines 24-27: 'worker_threads は V8 ヒープを共有するため、ネイティブアドオンをロードするとセグメンテーションフォルトやメモリ破壊が発生する'"
+    },
+    {
+      "text": "identifies relative migrationsFolder path as an issue",
+      "passed": true,
+      "evidence": "Issue 2: './drizzle は相対パス...' with fix using join(import.meta.dirname, '../../drizzle')"
+    },
+    {
+      "text": "notes that each fork gets its own :memory: DB instance",
+      "passed": true,
+      "evidence": "Line 141: ':memory: DB は pool: forks によってテストファイル単位で分離される'; also explains child_process isolation in Issue 1"
+    }
+  ],
+  "pass_count": 4,
+  "total_count": 4,
+  "pass_rate": 1.0
+}
