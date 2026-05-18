@@ -9,11 +9,11 @@ metadata:
 
 ## When this fires
 
-The `karak-meta` plugin installs a Stop hook that runs after every Claude turn finishes. The hook checks whether ≥24h have elapsed since the most recent `learning-candidate-*.md` in the auto-memory directory. If yes, it injects a short instruction into the next turn telling you to use this skill. The hook also passes:
+The `karak-meta` plugin installs a Stop hook that runs on Stop events (when Claude attempts to end an agent turn). The hook checks whether ≥24h have elapsed since the most recent `learning-candidate-*.md` in the auto-memory directory; the comparison is inclusive on the upper bound, so an mtime exactly 24h old fires. If the gate fires, the hook injects a short instruction into the next turn telling you to use this skill. The hook also passes:
 
 - `transcript_path` — absolute path to the current session's `.jsonl` transcript
 - `date` — today's date in `YYYY-MM-DD` (local time)
-- `since` — UTC timestamp of the previous record (or `null` if none)
+- `since` — UTC timestamp of the previous record (ISO-8601), or the literal four-character sentinel `null` if no prior record exists. The sentinel is plain text, not JSON.
 
 If the hook did **not** fire (no instruction in context, no transcript_path mentioned), do not run this skill spontaneously — the user did not ask for it.
 
@@ -81,7 +81,7 @@ You have the full conversation context loaded already — that is by design. The
 
 ## Steps to execute
 
-1. **Read the hook instruction** from the latest user-style message in context. Extract `transcript_path`, `date`, and `since` (or note `since=null`).
+1. **Read the hook instruction** from the latest user-style message in context. Extract `transcript_path`, `date`, and `since`. If the `since` value is the literal four-character text `null`, treat it as "no prior record" — do not put the word `null` into the memory file body; either omit the `Hook range:` start ("since first record") or write `n/a`.
 2. **Resolve the memory directory** by reading one existing memory file's path (e.g. `MEMORY.md`). Construct the new filename from `date`.
 3. **Check whether today's file exists.** If yes, plan to append; if no, plan to create.
 4. **Extract keywords** following the guidance above. Verify length ≤31 chars.

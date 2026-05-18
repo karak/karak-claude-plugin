@@ -2,3 +2,6 @@
 **/.DS_Store
 .worktrees/
 *-workspace/
+__pycache__/
+*.py[cod]
+.pytest_cache/

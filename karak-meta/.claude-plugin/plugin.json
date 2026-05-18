@@ -1,7 +1,6 @@
 {
   "name": "karak-meta",
   "description": "Meta-skills that observe the Claude Code session itself: Stop-hook gated learning-candidate recording, session-pointer breadcrumbs into auto-memory",
-  "version": "1.0.0",
   "author": {
     "name": "karak"
   },
@@ -17,10 +16,7 @@
     "breadcrumb",
     "auto-memory"
   ],
-  "category": "productivity",
-  "tags": [
-    "hooks",
-    "memory",
-    "session"
+  "skills": [
+    "./skills/record-learning-candidate"
   ]
 }

@@ -18,7 +18,7 @@
     {
       "id": 2,
       "name": "date-rollover-no-prior",
-      "prompt": "It is 2026-05-19 at 00:08 local time. You worked through midnight. The auto-memory directory `/Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/memory/` has no `learning-candidate-*.md` files at all — this is the very first time the hook is firing successfully for this project.\n\nThe Stop hook injected:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/midnight.jsonl\n  date: 2026-05-19\n  since: null (no prior record found)\n```\n\nThe session has been about implementing the karak-meta plugin itself: writing the Stop-hook script, the SKILL.md, and registering in marketplace.json. Make sure the keywords disambiguate from any other plugin work you might do in the future (don't just write 'plugin work').\n\nExecute the recording step.",
+      "prompt": "It is 2026-05-19 at 00:08 local time. You worked through midnight. The auto-memory directory `/Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/memory/` has no `learning-candidate-*.md` files at all — this is the very first time the hook is firing successfully for this project.\n\nThe Stop hook injected:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/midnight.jsonl\n  date: 2026-05-19\n  since: null\n```\n\nThe session has been about implementing the karak-meta plugin itself: writing the Stop-hook script, the SKILL.md, and registering in marketplace.json. Make sure the keywords disambiguate from any other plugin work you might do in the future (don't just write 'plugin work').\n\nExecute the recording step.",
       "expected_output": "A fresh `learning-candidate-2026-05-19.md` is created. Keywords reference karak-meta / Stop hook / learning-candidate specifically. MEMORY.md gets a new index line. Body stays within the four-bullet template.",
       "files": []
     },
@@ -33,7 +33,14 @@
       "id": 4,
       "name": "keyword-budget-overflow",
       "prompt": "Stop hook just fired. Injected:\n\n```\n  transcript_path: /Users/yasushi/.claude/projects/-Users-yasushi-projects-karak-claude-plugin/long.jsonl\n  date: 2026-05-19\n  since: 2026-05-18T05:00:00Z\n```\n\nIn this session you did THREE somewhat-independent things:\n1. Migrated the Firebase Hosting rewrites to a new Cloud Run revision\n2. Diagnosed a flaky MSW test that needed `server.resetHandlers()` in `afterEach`\n3. Bumped Vitest from 1.6 to 2.0 and updated three test files for the breaking changes\n\nYou want to record a pointer. But you only get 31 characters for keywords. Make the call: which subset goes into the keyword string (and the rest into the 'Why' line), and write the file. You may NOT write three separate files.",
-      "expected_output": "A single learning-candidate file. Keywords ≤31 chars, names the highest-signal/most-distinctive token combination (likely the Vitest 2.0 bump or the MSW reset — the Cloud Run thing was already captured in an earlier eval). The Why-this-might-matter line acknowledges the other items so they're still findable by reading the file. MEMORY.md updated.",
+      "expected_output": "A single learning-candidate file. Keywords ≤31 chars, names the highest-signal/most-distinctive token combination from the three items. The Why-this-might-matter line acknowledges the other items so they're still findable by reading the file. MEMORY.md updated.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "no-hook-injection-do-not-fire",
+      "prompt": "The user says: \"Hey, can you summarize today's learnings? Maybe write a note about what we did.\"\n\nThere is NO hook instruction in your context. No `transcript_path:` line was injected. No `since:` line was injected. The karak-meta Stop hook did not fire — the user is just asking conversationally.\n\nThe `record-learning-candidate` skill SKILL.md says: \"If the hook did not fire (no instruction in context, no transcript_path mentioned), do not run this skill spontaneously — the user did not ask for it.\"\n\nDecide what to do. Do you invoke the skill?",
+      "expected_output": "Do NOT invoke the record-learning-candidate skill. The skill is gated on the Stop hook injection, not on user requests for summaries. The correct response is to either (a) summarize conversationally without writing a learning-candidate file, or (b) ask whether the user wants the formal skill invoked and, if yes, run it with a manually-chosen date — but never write a learning-candidate-*.md file silently in response to a conversational ask.",
       "files": []
     }
   ]
