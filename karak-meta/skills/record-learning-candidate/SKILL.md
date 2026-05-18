@@ -9,7 +9,7 @@ metadata:
 
 ## When this fires
 
-The `karak-meta` plugin installs a Stop hook that runs on Stop events (when Claude attempts to end an agent turn). The hook checks whether ≥24h have elapsed since the most recent `learning-candidate-*.md` in the auto-memory directory; the comparison is inclusive on the upper bound, so an mtime exactly 24h old fires. If the gate fires, the hook injects a short instruction into the next turn telling you to use this skill. The hook also passes:
+The `karak-meta` plugin installs a Stop hook that runs on Stop events (when Claude attempts to end an agent turn). The hook checks whether ≥24h have elapsed since the most recent `learning-candidate-*.md` in the auto-memory directory; the silent window is exclusive on the upper bound (strict `<`), so an mtime exactly 24h old falls outside it and fires. If the gate fires, the hook injects a short instruction into the next turn telling you to use this skill. The hook also passes:
 
 - `transcript_path` — absolute path to the current session's `.jsonl` transcript
 - `date` — today's date in `YYYY-MM-DD` (local time)

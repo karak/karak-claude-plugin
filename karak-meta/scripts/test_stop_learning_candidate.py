@@ -20,6 +20,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -83,12 +84,24 @@ def test_fires_when_mtime_older_than_24h(tmp_path):
     assert result.returncode == 0
     decision = json.loads(result.stdout)
     assert decision["decision"] == "block"
-    # since is ISO-8601, not "null", because a prior file exists
-    assert re.search(
-        r"^\s*since:\s*\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\s*$",
+    # since is ISO-8601 (Z-suffixed UTC), not "null", because a prior file
+    # exists. Verify both the shape AND that the value actually corresponds
+    # to the mtime we set — a regression that converted to local time would
+    # still produce a Z-suffixed string but with the wrong value.
+    m = re.search(
+        r"^\s*since:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)\s*$",
         decision["reason"],
         re.MULTILINE,
     )
+    assert m, decision["reason"]
+    parsed = datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%SZ").replace(
+        tzinfo=timezone.utc
+    )
+    expected = datetime.fromtimestamp(twenty_five_hours, tz=timezone.utc)
+    # The script formats with second precision; tolerate <2s drift from the
+    # truncation + subprocess startup.
+    drift = abs((parsed - expected).total_seconds())
+    assert drift < 2, f"since={parsed} expected≈{expected} drift={drift}s"
 
 
 def test_exactly_24h_boundary_fires(tmp_path):
@@ -166,9 +179,10 @@ def test_silent_on_malformed_json(tmp_path):
     result = run_hook("{not json", tmp_path)
     assert result.returncode == 0
     assert result.stdout == ""
-    # stderr is OK to populate here (Claude drops it on exit 0, but the
-    # contract is "log + exit 0", not "silence everything").
-    assert "bad stdin" in result.stderr or result.stderr == ""
+    # The diagnostic now goes to the home-fallback log
+    # (test_bad_stdin_logs_to_home_fallback covers the log content); stderr
+    # stays empty.
+    assert result.stderr == ""
 
 
 # ---------- encode_cwd edges ----------
@@ -205,55 +219,177 @@ def test_encode_cwd_matches_claude_codes_encoding(raw, encoded, tmp_path):
     )
 
 
-# ---------- robustness ----------
+# ---------- robustness (in-process) ----------
+#
+# These tests import the module directly so we can monkeypatch internals
+# (Path.stat, log_diagnostic) — something subprocess tests cannot do. The
+# subprocess tests above cover the stdin→stdout contract; these cover the
+# narrow internal behaviors that the docstring claims load-bearing.
 
 
-def test_race_between_iterdir_and_stat(tmp_path, monkeypatch):
-    """If a candidate disappears mid-scan, the script must not crash."""
-    cwd = "/Users/x/proj"
-    mem_dir = encoded_dir(tmp_path, cwd)
-    mem_dir.mkdir(parents=True)
-    a = mem_dir / "learning-candidate-2026-05-17.md"
-    b = mem_dir / "learning-candidate-2026-05-16.md"
-    a.write_text("")
-    b.write_text("")
-    twenty_five_hours = time.time() - (25 * 60 * 60)
-    os.utime(a, (twenty_five_hours, twenty_five_hours))
-    os.utime(b, (twenty_five_hours, twenty_five_hours))
-
-    # Race simulation: we can't easily inject a deletion between iterdir
-    # and stat() in a subprocess. Instead verify that the script's outer
-    # try/except handles arbitrary OSError by importing the function and
-    # exercising it directly with a doomed path.
+@pytest.fixture
+def hook_module():
     sys.path.insert(0, str(SCRIPT.parent))
     try:
         import stop_learning_candidate as mod
 
-        # latest_candidate_mtime should ignore unreadable files, not raise.
-        ghost_dir = tmp_path / "ghost"
-        ghost_dir.mkdir()
-        # Empty dir → None
-        assert mod.latest_candidate_mtime(ghost_dir) is None
-        # Non-existent dir → None
-        assert mod.latest_candidate_mtime(tmp_path / "nope") is None
+        yield mod
     finally:
         sys.path.remove(str(SCRIPT.parent))
 
 
-def test_unhandled_exception_does_not_block(tmp_path, monkeypatch):
-    """If anything raises past the inner stdin guard, we still exit 0."""
-    cwd = "/Users/x/proj"
-    # Make HOME unreadable to force an OSError in memory_dir's downstream
-    # access — but Path.is_dir() on a non-existent path just returns False,
-    # so we instead exercise the broader contract: the script must not
-    # propagate any uncaught exception. The cleanest way is to make HOME
-    # point at a non-directory file.
-    fake_home = tmp_path / "not_a_dir"
-    fake_home.write_text("")  # regular file, not a dir
-    result = run_hook(
-        json.dumps({"cwd": cwd, "transcript_path": "/x/y.jsonl"}),
-        fake_home.parent,
-        env_extra={"HOME": str(fake_home)},
+def test_latest_candidate_mtime_handles_empty_and_missing(tmp_path, hook_module):
+    ghost_dir = tmp_path / "ghost"
+    ghost_dir.mkdir()
+    assert hook_module.latest_candidate_mtime(ghost_dir) is None
+    assert hook_module.latest_candidate_mtime(tmp_path / "nope") is None
+
+
+def test_latest_candidate_mtime_swallows_stat_race(tmp_path, monkeypatch, hook_module):
+    """If `stat()` raises mid-scan, return the surviving mtimes, never propagate."""
+    mem_dir = tmp_path / "memory"
+    mem_dir.mkdir()
+    survivor = mem_dir / "learning-candidate-2026-05-17.md"
+    doomed = mem_dir / "learning-candidate-2026-05-16.md"
+    survivor.write_text("")
+    doomed.write_text("")
+    survivor_mtime = time.time() - (25 * 60 * 60)
+    os.utime(survivor, (survivor_mtime, survivor_mtime))
+
+    real_stat = Path.stat
+
+    def fake_stat(self, *a, **kw):
+        if self.name == doomed.name:
+            raise OSError("simulated disappearance between iterdir and stat")
+        return real_stat(self, *a, **kw)
+
+    monkeypatch.setattr(Path, "stat", fake_stat)
+
+    result = hook_module.latest_candidate_mtime(mem_dir)
+    assert result == pytest.approx(survivor_mtime, abs=1.0)
+
+
+def test_latest_candidate_mtime_logs_when_all_stats_fail(tmp_path, monkeypatch, hook_module):
+    """Pattern matched files but every stat() failed → log so a permissions
+    storm is debuggable, and still return None (treated as no-candidate)."""
+    mem_dir = tmp_path / "memory"
+    mem_dir.mkdir()
+    (mem_dir / "learning-candidate-2026-05-17.md").write_text("")
+    (mem_dir / "learning-candidate-2026-05-16.md").write_text("")
+
+    monkeypatch.setattr(
+        Path,
+        "stat",
+        lambda self, *a, **kw: (_ for _ in ()).throw(PermissionError("denied")),
     )
-    # Must exit 0 regardless — that is the docstring's load-bearing promise.
-    assert result.returncode == 0
+
+    logged: list[tuple[Path | None, str]] = []
+    monkeypatch.setattr(
+        hook_module,
+        "log_diagnostic",
+        lambda mem, msg: logged.append((mem, msg)),
+    )
+
+    result = hook_module.latest_candidate_mtime(mem_dir)
+    assert result is None
+    assert len(logged) == 1
+    assert "every stat() raised OSError" in logged[0][1]
+
+
+def test_log_diagnostic_rotates_when_exceeds_cap(tmp_path, hook_module):
+    """Pre-existing log over LOG_BYTE_CAP gets truncated; new line is the only
+    content. Guards against a regression that drops rotation and lets the log
+    grow unbounded under recurring crashes."""
+    mem_dir = tmp_path / "memory"
+    mem_dir.mkdir()
+    log_path = mem_dir / ".karak-meta-hook.log"
+    # Seed > LOG_BYTE_CAP bytes
+    log_path.write_text("x" * (hook_module.LOG_BYTE_CAP + 10))
+    assert log_path.stat().st_size > hook_module.LOG_BYTE_CAP
+
+    hook_module.log_diagnostic(mem_dir, "post-rotation marker")
+
+    content = log_path.read_text()
+    # The old "xxxx…" payload must be gone; only the new line remains.
+    assert "x" * 100 not in content
+    assert "post-rotation marker" in content
+    assert content.count("\n") == 1
+
+
+def test_log_diagnostic_falls_back_to_home_when_mem_dir_is_none(tmp_path, monkeypatch, hook_module):
+    """When the hook crashes before parsing cwd, log_diagnostic must still
+    leave a breadcrumb at ~/.claude/karak-meta-hook.log — otherwise the most
+    likely real-world failure modes (bad stdin, non-dict payload) leave no
+    trace."""
+    fake_home = tmp_path / "home"
+    fake_home.mkdir()
+    # Re-point the module-level constant at our temp home.
+    fallback = fake_home / ".claude" / "karak-meta-hook.log"
+    monkeypatch.setattr(hook_module, "HOME_FALLBACK_LOG", fallback)
+
+    hook_module.log_diagnostic(None, "homeless diagnostic")
+
+    assert fallback.exists()
+    assert "homeless diagnostic" in fallback.read_text()
+
+
+def test_unhandled_exception_logs_traceback(tmp_path, monkeypatch, hook_module):
+    """Force a crash after mem_dir_for_log is set; assert main returns 0 AND
+    the per-project log captures the traceback. The docstring promises both
+    halves — exit 0 alone is not enough."""
+    cwd = "/Users/x/proj"
+    encoded = encoded_dir(tmp_path, cwd)
+    monkeypatch.setenv("HOME", str(tmp_path))
+
+    def boom(_mem_dir):
+        raise RuntimeError("simulated post-cwd crash")
+
+    monkeypatch.setattr(hook_module, "latest_candidate_mtime", boom)
+    monkeypatch.setattr(
+        "sys.stdin",
+        _StringIOStdin(json.dumps({"cwd": cwd, "transcript_path": "/x/y.jsonl"})),
+    )
+
+    assert hook_module.main() == 0
+
+    log_path = encoded / ".karak-meta-hook.log"
+    assert log_path.exists(), "expected per-project log file"
+    content = log_path.read_text()
+    assert "simulated post-cwd crash" in content
+    assert "unhandled exception" in content
+
+
+def test_bad_stdin_logs_to_home_fallback(tmp_path, monkeypatch, hook_module):
+    """Malformed JSON happens before cwd is parsed → must land in the
+    home-rooted fallback log, not silently vanish."""
+    fallback = tmp_path / ".claude" / "karak-meta-hook.log"
+    monkeypatch.setattr(hook_module, "HOME_FALLBACK_LOG", fallback)
+    monkeypatch.setattr("sys.stdin", _StringIOStdin("{not json"))
+
+    rc = hook_module.main()
+    assert rc == 0
+    assert fallback.exists()
+    assert "bad stdin" in fallback.read_text()
+
+
+def test_non_dict_payload_logs_to_home_fallback(tmp_path, monkeypatch, hook_module):
+    """Valid JSON but not an object (null, list, scalar) → bail before
+    payload.get() would AttributeError, log to home fallback."""
+    fallback = tmp_path / ".claude" / "karak-meta-hook.log"
+    monkeypatch.setattr(hook_module, "HOME_FALLBACK_LOG", fallback)
+    monkeypatch.setattr("sys.stdin", _StringIOStdin("null"))
+
+    rc = hook_module.main()
+    assert rc == 0
+    assert fallback.exists()
+    assert "not a JSON object" in fallback.read_text()
+
+
+class _StringIOStdin:
+    """Minimal stdin stand-in: we only need .read()."""
+
+    def __init__(self, payload: str):
+        self._payload = payload
+
+    def read(self) -> str:
+        return self._payload

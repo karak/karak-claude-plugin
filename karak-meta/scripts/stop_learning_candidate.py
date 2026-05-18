@@ -21,14 +21,18 @@ We fire if-and-only-if BOTH of the following hold:
 The 24h check intentionally uses file mtime rather than parsing the date out of
 the filename: filenames are local-date-bucketed and a date-rollover at 00:01
 should NOT immediately trigger a second record. mtime gives us a rolling
-window with an inclusive upper bound — exactly-24h-old fires.
+window that is exclusive on the upper bound (strict ``<``) — so an mtime
+exactly 24h old falls OUTSIDE the silent window and fires.
 
 Exit behavior:
   - Print the JSON decision to stdout, exit 0.
-  - On unexpected errors, append a diagnostic line to the per-project log file
-    (``~/.claude/projects/<encoded-cwd>/memory/.karak-meta-hook.log``) and
-    exit 0 (a hook crash must never block the user's Stop). Claude Code drops
-    stderr on exit 0, so the log file is the only diagnostic side-channel.
+  - On unexpected errors, append a diagnostic line to the per-project log
+    file (``~/.claude/projects/<encoded-cwd>/memory/.karak-meta-hook.log``)
+    and exit 0 (a hook crash must never block the user's Stop). When the
+    project directory is not yet known (e.g. malformed stdin, before the
+    envelope is parsed), the line goes to the home-rooted fallback log at
+    ``~/.claude/karak-meta-hook.log`` instead. Claude Code drops stderr on
+    exit 0, so these log files are the only diagnostic side-channel.
 """
 
 from __future__ import annotations
@@ -43,16 +47,19 @@ from pathlib import Path
 
 WINDOW_SECONDS = 24 * 60 * 60
 LOG_BYTE_CAP = 100 * 1024  # rotate the diagnostic log at ~100 KB
+HOME_FALLBACK_LOG = Path(os.path.expanduser("~")) / ".claude" / "karak-meta-hook.log"
 
 
 def encode_cwd(cwd: str) -> str:
     """Mirror Claude Code's project-dir encoding.
 
     Claude Code replaces every non-alphanumeric character in the absolute
-    cwd with a single ``-``. Existing hyphens are preserved. Verified against
-    real entries under ``~/.claude/projects/`` (e.g. ``/Volumes/Mac external
-    HDD/Projects`` → ``-Volumes-Mac-external-HDD-Projects``). A leading ``/``
-    yields a leading ``-``.
+    cwd with a single ``-``. Existing hyphens also match the non-alphanumeric
+    class and pass through the substitution, but ``-`` → ``-`` is identity,
+    so the output preserves them. Verified against real entries under
+    ``~/.claude/projects/`` (e.g. ``/Volumes/Mac external HDD/Projects`` →
+    ``-Volumes-Mac-external-HDD-Projects``). A leading ``/`` yields a
+    leading ``-``.
     """
     return re.sub(r"[^A-Za-z0-9]", "-", cwd)
 
@@ -67,9 +74,11 @@ def latest_candidate_mtime(mem_dir: Path) -> float | None:
         return None
     pattern = re.compile(r"^learning-candidate-\d{4}-\d{2}-\d{2}\.md$")
     mtimes: list[float] = []
+    matched = 0
     for p in mem_dir.iterdir():
         if not pattern.match(p.name):
             continue
+        matched += 1
         try:
             mtimes.append(p.stat().st_mtime)
         except OSError:
@@ -78,6 +87,14 @@ def latest_candidate_mtime(mem_dir: Path) -> float | None:
             # is harmless; dropping the whole computation would drop the
             # breadcrumb.
             continue
+    if not mtimes and matched > 0:
+        # Pattern matched files but every stat() failed. Permissions storm,
+        # not "no candidate yet" — log so the user can distinguish the two.
+        log_diagnostic(
+            mem_dir,
+            f"latest_candidate_mtime: {matched} candidate file(s) matched "
+            f"but every stat() raised OSError in {mem_dir}",
+        )
     return max(mtimes) if mtimes else None
 
 
@@ -98,17 +115,25 @@ def build_reason(transcript_path: str, today: str, since_iso: str | None) -> str
 
 
 def log_diagnostic(mem_dir: Path | None, message: str) -> None:
-    """Append a diagnostic line to the per-project hook log.
+    """Append a diagnostic line to the hook log.
 
     Never raises. The hook is silent-by-design under Claude Code (stderr is
-    dropped on exit 0); this file is the only place a user can grep for
+    dropped on exit 0); the log file is the only place a user can grep for
     "why didn't my hook fire today?".
+
+    If ``mem_dir`` is provided, writes to the per-project log at
+    ``<mem_dir>/.karak-meta-hook.log``. If ``mem_dir`` is None (e.g. the hook
+    crashed before parsing ``cwd``), falls back to a home-rooted log at
+    ``~/.claude/karak-meta-hook.log`` — otherwise the most likely real-world
+    failure modes (malformed stdin, non-dict payload) would leave no trace.
     """
-    if mem_dir is None:
-        return
+    log_path = (
+        (mem_dir / ".karak-meta-hook.log")
+        if mem_dir is not None
+        else HOME_FALLBACK_LOG
+    )
     try:
-        mem_dir.mkdir(parents=True, exist_ok=True)
-        log_path = mem_dir / ".karak-meta-hook.log"
+        log_path.parent.mkdir(parents=True, exist_ok=True)
         if log_path.exists() and log_path.stat().st_size > LOG_BYTE_CAP:
             # Truncate; lose old context to keep the file bounded.
             log_path.write_text("")
@@ -130,7 +155,20 @@ def main() -> int:
                 return 0
             payload = json.loads(raw)
         except (json.JSONDecodeError, OSError) as exc:
-            print(f"karak-meta stop hook: bad stdin: {exc}", file=sys.stderr)
+            # No mem_dir yet — log_diagnostic falls back to the home-rooted
+            # log so this failure mode is not invisible.
+            log_diagnostic(None, f"bad stdin: {exc}")
+            return 0
+
+        if not isinstance(payload, dict):
+            # Valid JSON but not an object (e.g. ``null``, ``[]``, ``"foo"``).
+            # ``payload.get(...)`` below would AttributeError; bail explicitly
+            # so the outer guard does not have to swallow the traceback at a
+            # point where mem_dir_for_log is still None.
+            log_diagnostic(
+                None,
+                f"payload is not a JSON object (type={type(payload).__name__})",
+            )
             return 0
 
         # Loop guard: if Claude already ran us once this turn and blocked, do
