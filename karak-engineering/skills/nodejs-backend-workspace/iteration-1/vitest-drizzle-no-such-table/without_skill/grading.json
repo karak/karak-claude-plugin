@@ -1,0 +1,30 @@
+{
+  "eval_id": 2,
+  "eval_name": "vitest-drizzle-no-such-table",
+  "run": "without_skill",
+  "expectations": [
+    {
+      "text": "identifies missing pool:forks as a root cause",
+      "passed": false,
+      "evidence": "Never mentions pool:forks. Root cause listed as 'DB instance not shared'. pool:forks is not mentioned anywhere in the response."
+    },
+    {
+      "text": "explains native addon / worker_threads incompatibility",
+      "passed": false,
+      "evidence": "No mention of native addon, worker_threads, or V8 heap sharing anywhere in the response"
+    },
+    {
+      "text": "identifies relative migrationsFolder path as an issue",
+      "passed": true,
+      "evidence": "Issue 5 correctly identifies './drizzle' as relative path with cwd dependency; gives absolute path fix (though uses fileURLToPath instead of import.meta.dirname)"
+    },
+    {
+      "text": "notes that each fork gets its own :memory: DB instance",
+      "passed": false,
+      "evidence": "No mention of fork isolation. Response focuses on singleton DB pattern instead."
+    }
+  ],
+  "pass_count": 1,
+  "total_count": 4,
+  "pass_rate": 0.25
+}
