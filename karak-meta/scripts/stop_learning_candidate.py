@@ -132,6 +132,11 @@ def log_diagnostic(mem_dir: Path | None, message: str) -> None:
     crashed before parsing ``cwd``), falls back to a home-rooted log at
     ``~/.claude/karak-meta-hook.log`` — otherwise the most likely real-world
     failure modes (malformed stdin, non-dict payload) would leave no trace.
+
+    The mkdir/rotate/append steps run in separate try blocks so a failed
+    rotation (e.g. ENOSPC on the truncate, permission flip on the file) does
+    NOT prevent the append below — otherwise a wedged rotation would silently
+    disable all future diagnostic logging.
     """
     log_path = (
         (mem_dir / ".karak-meta-hook.log")
@@ -140,9 +145,22 @@ def log_diagnostic(mem_dir: Path | None, message: str) -> None:
     )
     try:
         log_path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # Cannot create the parent directory → there is nothing more to do.
+        # Without a writable parent the append below would also fail.
+        return
+
+    try:
         if log_path.exists() and log_path.stat().st_size > LOG_BYTE_CAP:
             # Truncate; lose old context to keep the file bounded.
             log_path.write_text("")
+    except OSError:
+        # Rotation is best-effort. If the truncate fails, fall through and
+        # still try to append — the log may grow beyond the cap for a while,
+        # but losing the diagnostic stream entirely is strictly worse.
+        pass
+
+    try:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         with log_path.open("a", encoding="utf-8") as fh:
             fh.write(f"{ts} {message}\n")
@@ -158,6 +176,12 @@ def main() -> int:
         try:
             raw = sys.stdin.read()
             if not raw.strip():
+                # Empty stdin is the exact failure mode a user hits when
+                # invoking the hook manually to debug ("I ran it from a shell
+                # and nothing happened"). Without a breadcrumb the situation
+                # is un-grep-able. Use the home fallback because cwd is not
+                # yet known.
+                log_diagnostic(None, "empty stdin (hook invoked without JSON envelope)")
                 return 0
             payload = json.loads(raw)
         except (json.JSONDecodeError, OSError) as exc:
@@ -183,21 +207,33 @@ def main() -> int:
             return 0
 
         cwd = payload.get("cwd")
-        if not cwd:
+        if not isinstance(cwd, str) or not cwd:
             # Malformed envelope. Do not guess with os.getcwd() — that would
             # mis-file the breadcrumb under whatever directory python3 was
             # spawned from. Leave a home-fallback breadcrumb so a schema change
             # in Claude Code's Stop envelope does not silently disable the hook
-            # forever.
-            log_diagnostic(None, "envelope missing cwd")
+            # forever. Type-check explicitly: a future schema where cwd is
+            # wrapped in an object (e.g. ``{"cwd": {"path": "..."}}``) would
+            # otherwise pass the truthy check and then TypeError inside
+            # ``re.sub`` deep in ``encode_cwd``, surfacing as an opaque
+            # "unhandled exception" without the type-mismatch hint.
+            log_diagnostic(
+                None,
+                f"envelope missing cwd (type={type(cwd).__name__}, value={cwd!r})",
+            )
             return 0
 
         transcript_path = payload.get("transcript_path")
-        if not transcript_path:
+        if not isinstance(transcript_path, str) or not transcript_path:
             # Without a transcript path the skill has nothing useful to record.
             # Log per-project (cwd is known) so the trail lives with the rest
-            # of the project's diagnostic history.
-            log_diagnostic(memory_dir(cwd), "envelope missing transcript_path")
+            # of the project's diagnostic history. Same type-check rationale
+            # as ``cwd`` above.
+            log_diagnostic(
+                memory_dir(cwd),
+                f"envelope missing transcript_path "
+                f"(type={type(transcript_path).__name__}, value={transcript_path!r})",
+            )
             return 0
 
         mem_dir = memory_dir(cwd)
@@ -221,8 +257,29 @@ def main() -> int:
             "decision": "block",
             "reason": build_reason(transcript_path, today_local, since_iso),
         }
-        json.dump(decision, sys.stdout)
-        sys.stdout.write("\n")
+        # Serialize first, then write atomically. ``json.dump`` writes
+        # incrementally — if stdout dies mid-encode (BrokenPipeError, ENOSPC
+        # on a redirected stdout, encoding hiccup), Claude Code would receive
+        # a half-formed JSON block decision. Building the string up-front and
+        # emitting it in a single write closes that partial-write window AND
+        # lets us distinguish "couldn't build decision" from "couldn't emit".
+        try:
+            payload_out = json.dumps(decision) + "\n"
+        except (TypeError, ValueError) as exc:
+            log_diagnostic(
+                mem_dir_for_log,
+                f"failed to serialize decision: {exc}",
+            )
+            return 0
+        try:
+            sys.stdout.write(payload_out)
+            sys.stdout.flush()
+        except OSError as exc:
+            log_diagnostic(
+                mem_dir_for_log,
+                f"failed to emit decision to stdout: {exc}",
+            )
+            return 0
         return 0
     except Exception:  # noqa: BLE001 — boundary swallow, see docstring
         # Honor the contract: a hook crash must never block the user's Stop.

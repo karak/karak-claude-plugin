@@ -266,6 +266,12 @@ def test_silent_on_empty_stdin(tmp_path):
     result = run_hook("", tmp_path)
     assert result.returncode == 0
     assert result.stdout == ""
+    # Empty stdin must leave a home-fallback breadcrumb — otherwise the
+    # exact failure mode a user hits when running the hook manually to
+    # debug ("nothing happened") is un-grep-able.
+    fallback = tmp_path / ".claude" / "karak-meta-hook.log"
+    assert fallback.exists(), "expected home-fallback diagnostic log on empty stdin"
+    assert "empty stdin" in fallback.read_text()
 
 
 def test_silent_on_malformed_json(tmp_path):
@@ -483,6 +489,101 @@ def test_non_dict_payload_logs_to_home_fallback(tmp_path, monkeypatch, hook_modu
     assert rc == 0
     assert fallback.exists()
     assert "not a JSON object" in fallback.read_text()
+
+
+def test_non_string_cwd_logs_with_type_hint(tmp_path, monkeypatch, hook_module):
+    """A future schema where ``cwd`` is wrapped (e.g. an object or int) must
+    surface a typed diagnostic — not pass the truthy check and then TypeError
+    deep inside ``encode_cwd``. The log line must include the type name so a
+    user grepping the fallback can see what shape they actually got."""
+    fallback = tmp_path / ".claude" / "karak-meta-hook.log"
+    monkeypatch.setattr(hook_module, "HOME_FALLBACK_LOG", fallback)
+    monkeypatch.setattr(
+        "sys.stdin",
+        _StringIOStdin(json.dumps({"cwd": {"path": "/Users/x/proj"}, "transcript_path": "/x/y.jsonl"})),
+    )
+
+    rc = hook_module.main()
+    assert rc == 0
+    text = fallback.read_text()
+    assert "missing cwd" in text
+    assert "type=dict" in text, f"expected type hint in log: {text!r}"
+
+
+def test_non_string_transcript_path_logs_with_type_hint(tmp_path, monkeypatch, hook_module):
+    """Same type-check contract for ``transcript_path``: a non-string value
+    must produce a typed per-project log entry, not crash the build_reason
+    string concatenation later."""
+    cwd = "/Users/x/proj"
+    encoded = encoded_dir(tmp_path, cwd)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(
+        "sys.stdin",
+        _StringIOStdin(json.dumps({"cwd": cwd, "transcript_path": 42})),
+    )
+
+    rc = hook_module.main()
+    assert rc == 0
+    log_path = encoded / ".karak-meta-hook.log"
+    assert log_path.exists(), "expected per-project log (cwd is valid)"
+    text = log_path.read_text()
+    assert "missing transcript_path" in text
+    assert "type=int" in text, f"expected type hint in log: {text!r}"
+
+
+def test_log_diagnostic_appends_even_when_rotation_fails(tmp_path, monkeypatch, hook_module):
+    """Rotation is best-effort. A failed truncate (ENOSPC, permission flip,
+    filesystem hiccup) must NOT block the append — otherwise a wedged
+    rotation silently disables all future diagnostic logging."""
+    mem_dir = tmp_path / "memory"
+    mem_dir.mkdir()
+    log_path = mem_dir / ".karak-meta-hook.log"
+    log_path.write_text("x" * (hook_module.LOG_BYTE_CAP + 10))
+    pre_size = log_path.stat().st_size
+
+    real_write_text = Path.write_text
+
+    def fail_write_text(self, *a, **kw):
+        # Fail only the rotation-truncate call (write_text(""));
+        # leave normal writes alone in case any other path uses it.
+        if self == log_path and (a == ("",) or kw.get("data") == ""):
+            raise OSError("simulated rotation failure")
+        return real_write_text(self, *a, **kw)
+
+    monkeypatch.setattr(Path, "write_text", fail_write_text)
+
+    hook_module.log_diagnostic(mem_dir, "appended despite rotation failure")
+
+    content = log_path.read_text()
+    # The pre-existing payload must still be there (rotation failed), AND the
+    # new line must have been appended on top of it.
+    assert "appended despite rotation failure" in content
+    assert log_path.stat().st_size > pre_size, (
+        "expected append-on-top after rotation failure, "
+        "got identical-or-smaller file size"
+    )
+
+
+def test_log_diagnostic_silent_when_parent_dir_cannot_be_created(
+    tmp_path, monkeypatch, hook_module
+):
+    """If even ``mkdir`` fails (read-only filesystem, etc.), the call must
+    return cleanly without propagating — and without leaving any partial
+    file behind."""
+    target_dir = tmp_path / "unreachable"
+    real_mkdir = Path.mkdir
+
+    def fail_mkdir(self, *a, **kw):
+        if target_dir in self.parents or self == target_dir:
+            raise OSError("simulated read-only fs")
+        return real_mkdir(self, *a, **kw)
+
+    monkeypatch.setattr(Path, "mkdir", fail_mkdir)
+
+    # Should not raise.
+    hook_module.log_diagnostic(target_dir, "untriggerable diagnostic")
+
+    assert not (target_dir / ".karak-meta-hook.log").exists()
 
 
 class _StringIOStdin:
