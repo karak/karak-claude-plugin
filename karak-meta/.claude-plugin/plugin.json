@@ -1,0 +1,22 @@
+{
+  "name": "karak-meta",
+  "description": "Meta-skills that observe the Claude Code session itself: Stop-hook gated learning-candidate recording, session-pointer breadcrumbs into auto-memory",
+  "author": {
+    "name": "karak"
+  },
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "meta",
+    "stop-hook",
+    "memory",
+    "learning",
+    "session-log",
+    "breadcrumb",
+    "auto-memory"
+  ],
+  "skills": [
+    "./skills/record-learning-candidate"
+  ]
+}
