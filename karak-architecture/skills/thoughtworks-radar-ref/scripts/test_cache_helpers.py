@@ -41,13 +41,30 @@ def fake_cache_home(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
+def _discover_volume_numbers() -> list[int]:
+    """Enumerate volumes by directory walk under references/volumes/. The
+    directory layout is the source of truth — source_info.json carries only
+    latest_volume, so we don't double-track availability.
+    """
+    volumes_root = REFERENCES_DIR / "volumes"
+    nums = []
+    for p in volumes_root.iterdir():
+        if p.is_dir() and p.name.startswith("v") and p.name[1:].isdigit():
+            nums.append(int(p.name[1:]))
+    return sorted(nums)
+
+
 def test_every_theme_related_blip_resolves_to_a_real_blip():
     """themes.related_blip_names must reference names that exist in blips.json
     for the same volume. The PR's own self-check documents this rule; the
     test makes it actually enforceable.
+
+    Iterates every volume present on disk, not just the latest — protects
+    against regressions in older volumes when v35/v36 land.
     """
-    source_info = json.loads((REFERENCES_DIR / "source_info.json").read_text())
-    for vol in [source_info["latest_volume"]]:
+    volume_numbers = _discover_volume_numbers()
+    assert volume_numbers, "no volume directories found under references/volumes/"
+    for vol in volume_numbers:
         blips = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "blips.json").read_text())
         themes = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "themes.json").read_text())
         blip_names = {b["name"] for b in blips}
