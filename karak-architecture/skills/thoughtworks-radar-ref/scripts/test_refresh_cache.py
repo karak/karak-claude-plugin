@@ -1,8 +1,9 @@
 """Tests for refresh_cache.py.
 
-Covers fetch() error paths (incl. the retry logic added for #17),
-extract_blip_summary fallback, refresh_blips empty-ratio gate,
-and the --limit / --refetch flags.
+Covers fetch() error paths including retry on transient failures
+(HTTP 5xx, TimeoutError), the extract_blip_summary fallback chain,
+the refresh_blips/refresh_themes empty-ratio gate, and the
+--limit / --refetch flags.
 
 Network is fully mocked via monkeypatch on urllib.request.urlopen and
 on time.sleep (so retries don't burn wall-clock).
@@ -176,6 +177,24 @@ def test_fetch_retries_on_timeout_then_succeeds(monkeypatch):
     assert calls["n"] == 3
 
 
+def test_fetch_backoff_sequence_is_exponential(monkeypatch):
+    """Pin the exponential schedule (1s, 2s, ...) so a refactor that
+    accidentally flattens the curve or doubles the base is caught. The
+    autouse no-sleep fixture is overridden here by re-patching last.
+    """
+    sleeps: list[float] = []
+    monkeypatch.setattr(rc.time, "sleep", lambda s: sleeps.append(s))
+    _install_urlopen(
+        monkeypatch,
+        [_httperror(503), _httperror(503), _httperror(503)],
+    )
+    with pytest.raises(HTTPError):
+        rc.fetch("https://example.com/x")
+    # Sleeps happen between attempts: after attempt 1 and after attempt 2.
+    # The final (3rd) attempt re-raises without sleeping.
+    assert sleeps == [1.0, 2.0], f"expected exponential 1s→2s, got {sleeps}"
+
+
 def test_fetch_does_not_retry_on_non_timeout_urlerror(monkeypatch):
     """A bare URLError (e.g. DNS failure) is not in the retry whitelist —
     surface it immediately rather than masking config issues with backoff.
@@ -231,6 +250,11 @@ def test_refresh_blips_skip_then_no_empties_returns_zero(fake_cache_home, monkey
     """When fetch raises a recoverable error for every blip (all SKIPs, no
     empties), main() should still return 0 — the empty-ratio gate is about
     extractor breakage, not network outage.
+
+    Intentional consequence: a fully-offline run is indistinguishable from
+    a fully-successful no-op by exit code. Callers that need to detect
+    "cache did not advance" should inspect ``attempted`` vs ``updated``
+    in the final stdout summary rather than relying on exit code alone.
     """
     monkeypatch.setattr(
         rc,
@@ -238,6 +262,45 @@ def test_refresh_blips_skip_then_no_empties_returns_zero(fake_cache_home, monkey
         lambda url, timeout=20.0: (_ for _ in ()).throw(URLError("offline")),
     )
     rc_main_rc = rc.main(["--volume", "34", "--blips-only", "--limit", "3"])
+    assert rc_main_rc == 0
+
+
+def test_refresh_themes_returns_exit_2_when_titles_missing(
+    fake_cache_home, monkeypatch
+):
+    """Symmetric to the blip-side gate: if Thoughtworks restructures the
+    themes page so theme titles no longer appear in the served HTML, every
+    extraction empties and main() must return 2 instead of silently
+    caching nav-chrome.
+    """
+    monkeypatch.setattr(
+        rc, "fetch", lambda url, timeout=20.0: "<html><body>unrelated content</body></html>"
+    )
+    rc_main_rc = rc.main(["--volume", "34", "--themes-only"])
+    assert rc_main_rc == 2
+
+
+def test_refresh_themes_single_theme_below_attempted_threshold_returns_zero(
+    fake_cache_home, monkeypatch
+):
+    """The gate requires ``themes_attempted >= 2`` to avoid tripping on a
+    single transient miss. Stub load_themes to return exactly one record
+    and verify a 1/1 empty ratio does NOT return 2.
+    """
+    one_theme = [
+        {
+            "id": "x-only",
+            "title": "Definitely Not Present",
+            "source_url": "https://example.com/radar",
+            "volume": 34,
+            "related_blip_names": [],
+        }
+    ]
+    monkeypatch.setattr(rc, "load_themes", lambda v: one_theme)
+    monkeypatch.setattr(
+        rc, "fetch", lambda url, timeout=20.0: "<html><body>no match here</body></html>"
+    )
+    rc_main_rc = rc.main(["--volume", "34", "--themes-only"])
     assert rc_main_rc == 0
 
 

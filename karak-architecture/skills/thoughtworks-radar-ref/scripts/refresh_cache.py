@@ -73,8 +73,15 @@ RETRY_BACKOFF_BASE_SECONDS = 1.0
 
 
 def _fetch_once(url: str, timeout: float) -> str:
-    """Single fetch attempt. Raises HTTPError / URLError / TimeoutError to the
-    caller untouched so the retry layer can decide whether to retry."""
+    """Single fetch attempt.
+
+    Raises ``FetchError`` for any non-200 status, non-HTML content-type,
+    or body containing a known interstitial marker so callers never
+    silently cache CAPTCHA pages or JSON error blobs as the canonical
+    Thoughtworks summary.
+
+    ``HTTPError`` / ``URLError`` / ``TimeoutError`` propagate untouched so
+    the retry layer can decide whether to retry."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         status = getattr(resp, "status", 200)
@@ -105,11 +112,8 @@ def fetch(url: str, timeout: float = 20.0) -> str:
     4xx HTTPError, FetchError (non-HTML / interstitial / non-200 other than
     5xx-as-HTTPError), and any other ``URLError`` are surfaced immediately —
     they signal structural / content problems, not transient ones, and
-    retrying just delays the SKIP.
-
-    The final exception is re-raised so the existing
-    ``except (URLError, TimeoutError, FetchError)`` in ``refresh_blips()`` /
-    ``refresh_themes()`` continues to SKIP correctly.
+    retrying just delays the SKIP. The final exception is re-raised
+    unchanged so callers can distinguish transient from structural failures.
     """
     last_exc: BaseException | None = None
     for attempt in range(1, MAX_FETCH_ATTEMPTS + 1):

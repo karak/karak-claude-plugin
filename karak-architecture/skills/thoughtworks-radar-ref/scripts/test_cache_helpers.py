@@ -59,8 +59,8 @@ def test_every_theme_related_blip_resolves_to_a_real_blip():
     for the same volume. The PR's own self-check documents this rule; the
     test makes it actually enforceable.
 
-    Iterates every volume present on disk, not just the latest — protects
-    against regressions in older volumes when v35/v36 land.
+    Iterates every volume on disk so regressions in older volumes are
+    caught, not just the latest.
     """
     volume_numbers = _discover_volume_numbers()
     assert volume_numbers, "no volume directories found under references/volumes/"
