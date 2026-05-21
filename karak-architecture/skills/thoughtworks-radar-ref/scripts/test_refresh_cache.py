@@ -246,15 +246,12 @@ def test_refresh_blips_returns_exit_2_when_empty_ratio_exceeds_threshold(
     assert rc_main_rc == 2
 
 
-def test_refresh_blips_skip_then_no_empties_returns_zero(fake_cache_home, monkeypatch):
-    """When fetch raises a recoverable error for every blip (all SKIPs, no
-    empties), main() should still return 0 — the empty-ratio gate is about
-    extractor breakage, not network outage.
-
-    Intentional consequence: a fully-offline run is indistinguishable from
-    a fully-successful no-op by exit code. Callers that need to detect
-    "cache did not advance" should inspect ``attempted`` vs ``updated``
-    in the final stdout summary rather than relying on exit code alone.
+def test_refresh_blips_below_floor_all_skipped_returns_zero(fake_cache_home, monkeypatch):
+    """Below the gate floor (``attempted < 5``), a fully-failed run still
+    returns 0. The floor is a noise-suppression heuristic — a tiny smoke
+    test that runs offline shouldn't trip the gate. The zero-update gate
+    catches the real concern (``attempted >= 5 and updated == 0``); see
+    ``test_refresh_blips_all_skipped_at_floor_returns_exit_2``.
     """
     monkeypatch.setattr(
         rc,
@@ -263,6 +260,53 @@ def test_refresh_blips_skip_then_no_empties_returns_zero(fake_cache_home, monkey
     )
     rc_main_rc = rc.main(["--volume", "34", "--blips-only", "--limit", "3"])
     assert rc_main_rc == 0
+
+
+def test_refresh_blips_all_skipped_at_floor_returns_exit_2(fake_cache_home, monkeypatch):
+    """When ``attempted >= 5`` and every fetch raises a recoverable error
+    (URLError / TimeoutError / FetchError), main() must return 2. The
+    empty-ratio gate stays silent here (empties=0, so extractor is fine),
+    but no work was done — without this gate, an all-offline run looks
+    indistinguishable from a successful no-op by exit code.
+    """
+    monkeypatch.setattr(
+        rc,
+        "fetch",
+        lambda url, timeout=20.0: (_ for _ in ()).throw(URLError("offline")),
+    )
+    rc_main_rc = rc.main(["--volume", "34", "--blips-only", "--limit", "5"])
+    assert rc_main_rc == 2
+
+
+def test_refresh_themes_all_skipped_at_floor_returns_exit_2(fake_cache_home, monkeypatch):
+    """Symmetric to the blip-side zero-update gate. With themes_attempted
+    >= 2 and every fetch failing, the empty-ratio gate cannot fire (no
+    empties to count) but the run produced zero updates — exit 2.
+    """
+    two_themes = [
+        {
+            "id": "first-theme",
+            "title": "First Theme",
+            "source_url": "https://example.com/radar#first",
+            "volume": 34,
+            "related_blip_names": [],
+        },
+        {
+            "id": "second-theme",
+            "title": "Second Theme",
+            "source_url": "https://example.com/radar#second",
+            "volume": 34,
+            "related_blip_names": [],
+        },
+    ]
+    monkeypatch.setattr(rc, "load_themes", lambda v: two_themes)
+    monkeypatch.setattr(
+        rc,
+        "fetch",
+        lambda url, timeout=20.0: (_ for _ in ()).throw(URLError("offline")),
+    )
+    rc_main_rc = rc.main(["--volume", "34", "--themes-only"])
+    assert rc_main_rc == 2
 
 
 def test_refresh_themes_returns_exit_2_when_titles_missing(

@@ -106,14 +106,23 @@ def fetch(url: str, timeout: float = 20.0) -> str:
     (1s, 2s, ...). Retries only on signals that suggest transient
     infrastructure problems:
 
-    - ``TimeoutError`` (also raised through ``URLError`` by ``urlopen``).
-    - ``HTTPError`` with status in the 5xx range.
+    - ``TimeoutError`` — raised directly by ``urlopen(timeout=...)``.
+      Since Python 3.10 ``socket.timeout`` is an alias for ``TimeoutError``
+      and is a sibling of, not a subclass of, ``URLError``.
+    - ``HTTPError`` with status in the 5xx range. ``HTTPError`` IS a
+      ``URLError`` subclass, but only the 5xx branch is retried — see below.
 
-    4xx HTTPError, FetchError (non-HTML / interstitial / non-200 other than
-    5xx-as-HTTPError), and any other ``URLError`` are surfaced immediately —
-    they signal structural / content problems, not transient ones, and
-    retrying just delays the SKIP. The final exception is re-raised
-    unchanged so callers can distinguish transient from structural failures.
+    Surfaced immediately (no retry):
+
+    - ``HTTPError`` with 4xx status — structural problem on the server side;
+      retrying just delays the SKIP.
+    - ``FetchError`` (non-HTML content-type or interstitial marker) — same
+      reasoning; the body will not become cacheable on a retry.
+    - ``URLError`` with any other ``.reason`` (e.g. DNS failure, connection
+      refused). These are config / environment issues, not transient hiccups.
+
+    The final exception is re-raised unchanged so callers can distinguish
+    transient from structural failures by exception type.
     """
     last_exc: BaseException | None = None
     for attempt in range(1, MAX_FETCH_ATTEMPTS + 1):
@@ -121,11 +130,15 @@ def fetch(url: str, timeout: float = 20.0) -> str:
             return _fetch_once(url, timeout)
         except urllib.error.HTTPError as exc:
             last_exc = exc
-            if not (500 <= exc.code < 600) or attempt == MAX_FETCH_ATTEMPTS:
+            is_retryable = 500 <= exc.code < 600
+            is_last = attempt == MAX_FETCH_ATTEMPTS
+            if not is_retryable or is_last:
+                _log_fetch_give_up(url, exc, attempt, retryable=is_retryable)
                 raise
         except TimeoutError as exc:
             last_exc = exc
             if attempt == MAX_FETCH_ATTEMPTS:
+                _log_fetch_give_up(url, exc, attempt, retryable=True)
                 raise
         # Non-retried: FetchError, non-HTTPError URLError, anything else —
         # let it propagate without entering the except clauses above.
@@ -139,6 +152,24 @@ def fetch(url: str, timeout: float = 20.0) -> str:
     # Unreachable — the loop either returns or raises.
     assert last_exc is not None
     raise last_exc
+
+
+def _log_fetch_give_up(
+    url: str, exc: BaseException, attempt: int, retryable: bool
+) -> None:
+    """Stderr log when fetch() exits via a terminal raise.
+
+    Symmetric with the RETRY log so a reader of stderr always sees an
+    explicit terminal line. Without this, a 5xx exhaustion looked like
+    "RETRY 1/3 ... RETRY 2/3 ..." with the third failure invisible —
+    only the caller's single-line SKIP appeared, without attempt count.
+    """
+    reason = "exhausted retries" if retryable else "non-retryable"
+    print(
+        f"  GIVE UP {url}: {exc!r} "
+        f"(attempt {attempt}/{MAX_FETCH_ATTEMPTS}, {reason})",
+        file=sys.stderr,
+    )
 
 
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -270,11 +301,12 @@ def main(argv: Iterable[str] | None = None) -> int:
         f"Themes: updated={themes_updated} attempted={themes_attempted} empties={themes_empties}."
     )
 
-    # If extraction broke wholesale (most attempts returned empty), exit
-    # non-zero so the user notices the structure change instead of trusting
-    # a silent "Updated: 0" as success.
+    # Gate 1: extractor broke wholesale (most attempts returned empty) —
+    # signals a Thoughtworks-side HTML structure change.
     EMPTY_RATIO_THRESHOLD = 0.5
-    if blips_attempted >= 5 and blips_empties / blips_attempted >= EMPTY_RATIO_THRESHOLD:
+    BLIPS_GATE_FLOOR = 5
+    THEMES_GATE_FLOOR = 2
+    if blips_attempted >= BLIPS_GATE_FLOOR and blips_empties / blips_attempted >= EMPTY_RATIO_THRESHOLD:
         print(
             f"ERROR: {blips_empties}/{blips_attempted} blip extractions were empty — "
             "Thoughtworks HTML structure likely changed. Update extract_blip_summary() "
@@ -282,10 +314,36 @@ def main(argv: Iterable[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
-    if themes_attempted >= 2 and themes_empties / themes_attempted >= EMPTY_RATIO_THRESHOLD:
+    if themes_attempted >= THEMES_GATE_FLOOR and themes_empties / themes_attempted >= EMPTY_RATIO_THRESHOLD:
         print(
             f"ERROR: {themes_empties}/{themes_attempted} theme extractions were empty — "
             "Thoughtworks themes page structure likely changed.",
+            file=sys.stderr,
+        )
+        return 2
+
+    # Gate 2: zero updates despite a non-trivial number of attempts. Catches
+    # the all-offline / all-SKIP case the empty-ratio gate cannot see
+    # (empties=0 means extractor is fine — but no work was done). Without
+    # this, a fully-failed network run exits 0 and the operator assumes the
+    # cache is fresh.
+    if blips_attempted >= BLIPS_GATE_FLOOR and blips_updated == 0:
+        blips_skips = blips_attempted - blips_empties - blips_updated
+        print(
+            f"ERROR: 0/{blips_attempted} blips were updated "
+            f"(empties={blips_empties}, skips={blips_skips}) — "
+            "all fetches failed or every extraction was empty. "
+            "Check network and rerun.",
+            file=sys.stderr,
+        )
+        return 2
+    if themes_attempted >= THEMES_GATE_FLOOR and themes_updated == 0:
+        themes_skips = themes_attempted - themes_empties - themes_updated
+        print(
+            f"ERROR: 0/{themes_attempted} themes were updated "
+            f"(empties={themes_empties}, skips={themes_skips}) — "
+            "all fetches failed or every extraction was empty. "
+            "Check network and rerun.",
             file=sys.stderr,
         )
         return 2
