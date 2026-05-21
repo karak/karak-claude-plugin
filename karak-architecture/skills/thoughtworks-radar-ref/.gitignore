@@ -1,0 +1,4 @@
+# Cache directory must never be committed (contains Thoughtworks-authored prose)
+cache/
+**/blip_summaries.json
+**/theme_narratives.json

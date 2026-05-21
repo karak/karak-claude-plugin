@@ -41,13 +41,30 @@ def fake_cache_home(tmp_path, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
+def _discover_volume_numbers() -> list[int]:
+    """Enumerate volumes by directory walk under references/volumes/. The
+    directory layout is the source of truth — source_info.json carries only
+    latest_volume, so we don't double-track availability.
+    """
+    volumes_root = REFERENCES_DIR / "volumes"
+    nums = []
+    for p in volumes_root.iterdir():
+        if p.is_dir() and p.name.startswith("v") and p.name[1:].isdigit():
+            nums.append(int(p.name[1:]))
+    return sorted(nums)
+
+
 def test_every_theme_related_blip_resolves_to_a_real_blip():
     """themes.related_blip_names must reference names that exist in blips.json
     for the same volume. The PR's own self-check documents this rule; the
     test makes it actually enforceable.
+
+    Iterates every volume on disk so regressions in older volumes are
+    caught, not just the latest.
     """
-    source_info = json.loads((REFERENCES_DIR / "source_info.json").read_text())
-    for vol in [source_info["latest_volume"]]:
+    volume_numbers = _discover_volume_numbers()
+    assert volume_numbers, "no volume directories found under references/volumes/"
+    for vol in volume_numbers:
         blips = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "blips.json").read_text())
         themes = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "themes.json").read_text())
         blip_names = {b["name"] for b in blips}
@@ -177,6 +194,56 @@ def test_get_or_fetch_summary_returns_none_when_blip_unknown(fake_cache_home):
 def test_get_or_fetch_summary_no_fetcher_acts_as_pure_read(fake_cache_home):
     # Cache miss + fetcher=None must return None, not raise.
     assert ch.get_or_fetch_summary("OpenClaw", fetcher=None, volume=34) is None
+
+
+# ---------------------------------------------------------------------------
+# Theme narrative cache + find_theme (twin of the blip-side tests above)
+# ---------------------------------------------------------------------------
+
+
+def test_get_or_fetch_theme_narrative_round_trip(fake_cache_home):
+    """Miss → fetcher invoked once → second call hits cache, fetcher not
+    invoked again. Mirrors the blip-summary contract.
+    """
+    called = []
+
+    def fetcher(url):
+        called.append(url)
+        return "fetched-narrative"
+
+    theme_id = "putting-coding-agents-on-a-leash"
+    result = ch.get_or_fetch_theme_narrative(theme_id, fetcher=fetcher, volume=34)
+    assert result == "fetched-narrative"
+    assert len(called) == 1
+
+    result2 = ch.get_or_fetch_theme_narrative(theme_id, fetcher=fetcher, volume=34)
+    assert result2 == "fetched-narrative"
+    assert len(called) == 1, "second call must come from cache, not fetcher"
+
+
+def test_get_or_fetch_theme_narrative_returns_none_for_unknown_id(fake_cache_home):
+    assert (
+        ch.get_or_fetch_theme_narrative(
+            "definitely-not-a-real-theme", fetcher=lambda u: "x", volume=34
+        )
+        is None
+    )
+
+
+def test_find_theme_returns_none_for_unknown_id():
+    assert ch.find_theme("definitely-not-a-real-theme", volume=34) is None
+
+
+def test_find_theme_resolves_within_volume():
+    """find_theme scopes to the requested volume and returns the matching
+    record. Multi-volume "latest wins" semantics are NOT part of the current
+    contract — the function takes a volume and looks only there.
+    """
+    theme_id = "putting-coding-agents-on-a-leash"
+    theme = ch.find_theme(theme_id, volume=34)
+    assert theme is not None
+    assert theme["id"] == theme_id
+    assert theme["volume"] == 34
 
 
 # ---------------------------------------------------------------------------
