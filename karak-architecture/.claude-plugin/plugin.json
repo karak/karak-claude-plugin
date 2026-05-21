@@ -1,6 +1,6 @@
 {
   "name": "karak-architecture",
-  "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure, architecture-principles (modernization / Team Topologies / evolutionary architecture / DORA)",
+  "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure, architecture-principles (modernization / Team Topologies / evolutionary architecture / DORA), Thoughtworks Tech Radar structural index + themes (volume-stamped)",
   "author": { "name": "karak" },
   "homepage": "https://github.com/karak-developer/karak-claude-plugin",
   "repository": "https://github.com/karak-developer/karak-claude-plugin",
@@ -21,12 +21,16 @@
     "bvssh",
     "platform-engineering",
     "ddd",
-    "wardley-mapping"
+    "wardley-mapping",
+    "thoughtworks-tech-radar",
+    "tech-radar",
+    "industry-signals"
   ],
   "skills": [
     "./skills/write-c4-diagram",
     "./skills/adr-architect",
-    "./skills/architecture-principles"
+    "./skills/architecture-principles",
+    "./skills/thoughtworks-radar-ref"
   ],
   "agents": ["./agents/system-designer.md", "./agents/gcp-infrastructure-engineer.md"]
 }

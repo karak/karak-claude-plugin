@@ -1,0 +1,27 @@
+{
+  "volume": 34,
+  "date": "2026-04",
+  "ring_vocabulary": ["Adopt", "Trial", "Assess", "Caution"],
+  "ring_changes_from_prev": {
+    "from": "Hold",
+    "to": "Caution",
+    "semantic_shift": "passive 'do not use' → evaluative 'proceed with care and awareness of risks'"
+  },
+  "quadrant_urls": {
+    "Techniques": "https://www.thoughtworks.com/radar/techniques",
+    "Platforms": "https://www.thoughtworks.com/radar/platforms",
+    "Tools": "https://www.thoughtworks.com/radar/tools",
+    "Languages & Frameworks": "https://www.thoughtworks.com/radar/languages-and-frameworks"
+  },
+  "themes_hosted_at": "https://www.thoughtworks.com/radar",
+  "snapshot_fetched_at": "2026-05-19",
+  "blip_counts": {
+    "Techniques": 41,
+    "Platforms": 24,
+    "Tools": 32,
+    "Languages & Frameworks": 21,
+    "total": 118
+  },
+  "theme_count": 4,
+  "notes": "Vol.34 introduces the 'Caution' ring (replacing Hold). Themes hosted inline on the /radar landing page rather than a dedicated /themes route. Blip counts reflect what was extracted into blips.json; if Thoughtworks publishes additional blips later, total may diverge."
+}

@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Node.js backend development, and meta (session-aware) tools for Claude Code",
-    "version": "2.3.0"
+    "version": "2.4.0"
   },
   "plugins": [
     {
@@ -45,8 +45,8 @@
     {
       "name": "karak-architecture",
       "source": "./karak-architecture",
-      "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure, architecture-principles (modernization / Team Topologies / evolutionary architecture / DORA)",
-      "version": "1.1.0",
+      "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure, architecture-principles (modernization / Team Topologies / evolutionary architecture / DORA), Thoughtworks Tech Radar structural index + themes (volume-stamped)",
+      "version": "1.2.0",
       "author": {
         "name": "karak"
       },
@@ -69,7 +69,10 @@
         "bvssh",
         "platform-engineering",
         "ddd",
-        "wardley-mapping"
+        "wardley-mapping",
+        "thoughtworks-tech-radar",
+        "tech-radar",
+        "industry-signals"
       ],
       "category": "development",
       "tags": [
@@ -86,7 +89,8 @@
         "dora",
         "platform-engineering",
         "ddd",
-        "wardley-mapping"
+        "wardley-mapping",
+        "tech-radar"
       ]
     },
     {

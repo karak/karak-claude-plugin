@@ -1,0 +1,72 @@
+[
+  {
+    "id": "evaluating-technology-in-an-agentic-world",
+    "title": "The challenge of evaluating technology in an agentic world",
+    "volume": 34,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "Codebase cognitive debt",
+      "Claude Code",
+      "Cursor",
+      "OpenAI Codex",
+      "OpenSpec",
+      "GitHub Spec Kit"
+    ],
+    "our_synthesis": "karak-curated theme→blip mapping. The theme frames how the Radar's traditional evaluation cadence is strained by AI-tool churn (semantic diffusion, weeks-not-months tool half-life). 'Spec-driven development' and 'harness engineering' appear in the theme prose as meta-patterns — they are not v34 blips themselves; they are realized by concrete blips like 'OpenSpec' / 'GitHub Spec Kit' (spec-driven) and 'Feedback sensors for coding agents' / 'Sandboxed execution for coding agents' (harness engineering). Fetch the Thoughtworks narrative from source_url at use time."
+  },
+  {
+    "id": "retaining-principles-relinquishing-patterns",
+    "title": "Retaining principles, relinquishing patterns",
+    "volume": 34,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "Zero trust architecture",
+      "Mutation testing",
+      "DORA metrics",
+      "Measuring collaboration quality with coding agents",
+      "Curated shared instructions for software teams"
+    ],
+    "our_synthesis": "karak-curated. Counterbalance theme — fundamentals (clean code, deliberate testing, zero trust) endure while collaboration patterns shift around coding agents. Useful when architecture-principles asks 'what still holds?'."
+  },
+  {
+    "id": "securing-permission-hungry-agents",
+    "title": "Securing permission-hungry agents",
+    "volume": 34,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "OpenClaw",
+      "Zero trust architecture",
+      "MCP by default",
+      "Agent Skills",
+      "Agent instruction bloat",
+      "Sandboxed execution for coding agents",
+      "Role-based contextual isolation in RAG",
+      "Toxic flow analysis for AI",
+      "MITRE ATLAS",
+      "Agent Scan",
+      "AI-accelerated shadow IT"
+    ],
+    "our_synthesis": "karak-curated. The 'lethal trifecta' framing (broad access × prompt injection × inconsistent agent behavior) is the macro signal here. Any Caution-ringed agentic blip should be read against this theme."
+  },
+  {
+    "id": "putting-coding-agents-on-a-leash",
+    "title": "Putting coding agents on a leash",
+    "volume": 34,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "Agent Skills",
+      "Superpowers",
+      "Claude Code plugin marketplace",
+      "OpenSpec",
+      "GitHub Spec Kit",
+      "Feedback sensors for coding agents",
+      "cargo-mutants",
+      "Mutation testing",
+      "WuppieFuzz",
+      "CodeScene",
+      "Architecture drift reduction with LLMs",
+      "Sandboxed execution for coding agents"
+    ],
+    "our_synthesis": "karak-curated. Harness engineering theme — feedforward (specs, skills) + feedback (compilers, tests, mutation, fuzzers) controls bracket the agent. Use this theme to justify why a Trial-ring blip belongs in a delivery pipeline today."
+  }
+]
