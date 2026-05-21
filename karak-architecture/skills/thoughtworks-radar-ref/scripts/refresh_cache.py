@@ -68,10 +68,13 @@ class FetchError(Exception):
     """Raised when fetch() refuses to return a cacheable body."""
 
 
-def fetch(url: str, timeout: float = 20.0) -> str:
-    """Fetch a URL and return the decoded body. Raises FetchError for any
-    non-200 status, non-HTML content-type, or obvious interstitial body so
-    callers do not silently cache junk."""
+MAX_FETCH_ATTEMPTS = 3
+RETRY_BACKOFF_BASE_SECONDS = 1.0
+
+
+def _fetch_once(url: str, timeout: float) -> str:
+    """Single fetch attempt. Raises HTTPError / URLError / TimeoutError to the
+    caller untouched so the retry layer can decide whether to retry."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         status = getattr(resp, "status", 200)
@@ -87,6 +90,51 @@ def fetch(url: str, timeout: float = 20.0) -> str:
         if marker in lowered:
             raise FetchError(f"interstitial marker present: {marker!r}")
     return body
+
+
+def fetch(url: str, timeout: float = 20.0) -> str:
+    """Fetch a URL with retry on transient failures (5xx, TimeoutError).
+
+    Up to ``MAX_FETCH_ATTEMPTS`` attempts with exponential backoff
+    (1s, 2s, ...). Retries only on signals that suggest transient
+    infrastructure problems:
+
+    - ``TimeoutError`` (also raised through ``URLError`` by ``urlopen``).
+    - ``HTTPError`` with status in the 5xx range.
+
+    4xx HTTPError, FetchError (non-HTML / interstitial / non-200 other than
+    5xx-as-HTTPError), and any other ``URLError`` are surfaced immediately —
+    they signal structural / content problems, not transient ones, and
+    retrying just delays the SKIP.
+
+    The final exception is re-raised so the existing
+    ``except (URLError, TimeoutError, FetchError)`` in ``refresh_blips()`` /
+    ``refresh_themes()`` continues to SKIP correctly.
+    """
+    last_exc: BaseException | None = None
+    for attempt in range(1, MAX_FETCH_ATTEMPTS + 1):
+        try:
+            return _fetch_once(url, timeout)
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            if not (500 <= exc.code < 600) or attempt == MAX_FETCH_ATTEMPTS:
+                raise
+        except TimeoutError as exc:
+            last_exc = exc
+            if attempt == MAX_FETCH_ATTEMPTS:
+                raise
+        # Non-retried: FetchError, non-HTTPError URLError, anything else —
+        # let it propagate without entering the except clauses above.
+        sleep_s = RETRY_BACKOFF_BASE_SECONDS * (2 ** (attempt - 1))
+        print(
+            f"  RETRY {url}: {last_exc!r} "
+            f"(attempt {attempt}/{MAX_FETCH_ATTEMPTS}, sleeping {sleep_s}s)",
+            file=sys.stderr,
+        )
+        time.sleep(sleep_s)
+    # Unreachable — the loop either returns or raises.
+    assert last_exc is not None
+    raise last_exc
 
 
 _TAG_RE = re.compile(r"<[^>]+>")
