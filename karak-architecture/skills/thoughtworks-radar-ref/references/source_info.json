@@ -1,0 +1,12 @@
+{
+  "main_url": "https://www.thoughtworks.com/radar",
+  "byor_url": "https://www.thoughtworks.com/radar/byor",
+  "byor_repo_url": "https://github.com/thoughtworks/build-your-own-radar",
+  "cache_dir_template": "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v<NN>/",
+  "copyright_holder": "Thoughtworks, Inc.",
+  "copyright_notice": "Radar content (blip descriptions, theme narratives) is © Thoughtworks, Inc. with no public CC license declared. The Build Your Own Radar visualization tool is AGPL-3.0 but does not extend to the dataset content.",
+  "latest_volume": 34,
+  "schema_version": "1.0",
+  "volumes_dir": "volumes",
+  "volume_dir_pattern": "v<NN>"
+}

@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema_version": "1.0",
+  "title": "Thoughtworks Technology Radar — Structural Index Schema (karak)",
+  "description": "Schema for karak's per-volume structural index of the Thoughtworks Technology Radar. Bump $schema_version when ring/quadrant enums or record shape change. Per-volume facts live in volumes/v<NN>/manifest.json.",
+  "$defs": {
+    "blip": {
+      "type": "object",
+      "description": "Factual structural record for a single Radar blip. Does NOT contain the Thoughtworks-authored summary text (those are fetched on demand into a per-user cache outside this distribution).",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The blip name exactly as it appears on the Radar."
+        },
+        "ring": {
+          "type": "string",
+          "enum": ["Adopt", "Trial", "Assess", "Caution", "Hold"],
+          "description": "Vol.34+ uses 'Caution' (replaces older 'Hold'). 'Hold' kept for back-compat when referencing older volumes."
+        },
+        "quadrant": {
+          "type": "string",
+          "enum": ["Techniques", "Platforms", "Tools", "Languages & Frameworks"]
+        },
+        "volume": {
+          "type": "integer",
+          "description": "Volume in which this blip currently appears (or last appeared)."
+        },
+        "radar_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical Thoughtworks URL for this blip's detail page. Source of truth for summary text — fetch on demand."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "karak-curated categorical tags (e.g., 'ai', 'security', 'agentic', 'observability'). NOT a Thoughtworks classification."
+        },
+        "note": {
+          "type": ["string", "null"],
+          "description": "OPTIONAL karak-authored editorial note. MUST NOT contain Thoughtworks-authored prose."
+        }
+      },
+      "required": ["name", "ring", "quadrant", "volume", "radar_url"],
+      "additionalProperties": false
+    },
+    "theme": {
+      "type": "object",
+      "description": "Factual structural record for a Radar theme. Does NOT contain the Thoughtworks-authored narrative text.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "kebab-case stable identifier (e.g., 'securing-permission-hungry-agents')."
+        },
+        "title": {
+          "type": "string",
+          "description": "Theme title as published. Short titular phrase — factual, not creative prose."
+        },
+        "volume": { "type": "integer" },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Page hosting the theme narrative. Currently themes are inline on /radar."
+        },
+        "related_blip_names": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "karak-curated list of blips this theme bundles. Must use blip names that exist in blips.json."
+        },
+        "our_synthesis": {
+          "type": ["string", "null"],
+          "description": "OPTIONAL karak-authored editorial framing note. MUST NOT quote Thoughtworks narrative prose."
+        }
+      },
+      "required": ["id", "title", "volume", "source_url", "related_blip_names"],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "type": "array",
+      "title": "blips.json",
+      "items": { "$ref": "#/$defs/blip" }
+    },
+    {
+      "type": "array",
+      "title": "themes.json",
+      "items": { "$ref": "#/$defs/theme" }
+    }
+  ]
+}
