@@ -17,8 +17,12 @@ from __future__ import annotations
 
 import json
 import os
+import sys
+import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
@@ -60,19 +64,54 @@ def load_themes(volume: int | None = None) -> list[dict]:
 
 
 def _read_json(path: Path) -> dict:
+    """Read a JSON cache file. On corruption, quarantine the bad file and
+    return ``{}`` so the caller can rebuild — never raise JSONDecodeError
+    from a cache read, since the cache is rebuildable by re-fetching.
+    """
     if not path.exists():
         return {}
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError as exc:
+        backup = path.with_suffix(path.suffix + f".corrupt-{int(time.time())}")
+        try:
+            path.rename(backup)
+        except OSError:
+            backup = None
+        print(
+            f"WARNING: cache file {path} was corrupt ({exc}); "
+            f"{'quarantined as ' + str(backup) if backup else 'could not quarantine'}; "
+            f"rebuilding from empty.",
+            file=sys.stderr,
+        )
+        return {}
 
 
 def _write_json_atomic(path: Path, data: dict) -> None:
-    """Write JSON atomically — tmp file then rename — to avoid torn writes."""
+    """Write JSON atomically — unique tmp file in the same directory then
+    rename — to avoid torn writes AND avoid concurrent-writer collision on
+    a fixed `.tmp` filename. The rename itself is filesystem-atomic; the
+    unique tmp name means two writers don't truncate each other's tmp.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    with tmp.open("w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2, sort_keys=True)
-    tmp.replace(path)
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=path.name + ".",
+        suffix=".tmp",
+        dir=str(path.parent),
+    )
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, sort_keys=True)
+        tmp.replace(path)
+    except Exception:
+        # Clean up the orphan tmp file on failure so we don't leak.
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
 
 
 def get_cached_summary(blip_name: str, volume: int | None = None) -> str | None:
@@ -114,6 +153,59 @@ def write_cached_theme_narrative(theme_id: str, narrative: str, volume: int | No
         "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     _write_json_atomic(path, cache)
+
+
+def get_or_fetch_summary(
+    blip_name: str,
+    fetcher: Callable[[str], str] | None = None,
+    volume: int | None = None,
+) -> str | None:
+    """Read a blip summary from cache, falling back to ``fetcher(radar_url)``
+    on miss and persisting the result. Returns ``None`` only if the blip is
+    not in the structural index for this volume.
+
+    ``fetcher`` is a caller-supplied function that takes the blip's
+    ``radar_url`` and returns the summary text. Pass ``None`` to disable
+    fetching (acts as a pure cache read).
+
+    This is the convenience entry point referenced from SKILL.md; tools that
+    need finer control can still call ``get_cached_summary`` /
+    ``write_cached_summary`` directly.
+    """
+    cached = get_cached_summary(blip_name, volume)
+    if cached is not None:
+        return cached
+    if fetcher is None:
+        return None
+    blip = find_blip(blip_name, volume)
+    if blip is None:
+        return None
+    summary = fetcher(blip["radar_url"])
+    if not summary:
+        return None
+    write_cached_summary(blip_name, summary, volume)
+    return summary
+
+
+def get_or_fetch_theme_narrative(
+    theme_id: str,
+    fetcher: Callable[[str], str] | None = None,
+    volume: int | None = None,
+) -> str | None:
+    """Theme-narrative twin of :func:`get_or_fetch_summary`."""
+    cached = get_cached_theme_narrative(theme_id, volume)
+    if cached is not None:
+        return cached
+    if fetcher is None:
+        return None
+    theme = find_theme(theme_id, volume)
+    if theme is None:
+        return None
+    narrative = fetcher(theme["source_url"])
+    if not narrative:
+        return None
+    write_cached_theme_narrative(theme_id, narrative, volume)
+    return narrative
 
 
 def find_blip(blip_name: str, volume: int | None = None) -> dict | None:

@@ -5,14 +5,19 @@ Usage::
     python scripts/refresh_cache.py [--volume 34] [--blips-only|--themes-only] [--limit N]
 
 Iterates over the structural index for a volume, fetches the canonical
-Thoughtworks page for each entry, extracts the summary/narrative text, and
-writes it to the per-user cache. Existing cache entries are skipped by default;
-pass ``--refetch`` to force overwrite.
+Thoughtworks page for each entry, and writes a coarse extraction (the entire
+``<article>`` or ``<main>`` text, stripped of tags) into the per-user cache.
+Existing cache entries are skipped by default; pass ``--refetch`` to force
+overwrite.
 
-Stdlib only — uses urllib for HTTP and a minimal HTML stripper. If the
-extraction is unsatisfactory (HTML structure changes), prefer running the
-Claude Code WebFetch tool interactively instead; both write to the same
-cache via cache_helpers.
+The extraction is **intentionally coarse** — the model is expected to locate
+the relevant summary paragraph at read time. The script is fail-loud: when
+the HTML structure changes and most extractions return empty, the run exits
+non-zero rather than silently reporting "Updated: 0". For per-blip
+interactive refresh, the Claude Code WebFetch tool writes to the same cache
+via :mod:`cache_helpers` and is usually preferable to bulk runs.
+
+Stdlib only — uses urllib for HTTP and a minimal regex+HTML-unescape stripper.
 
 Note on copyright: this script downloads Thoughtworks-authored text under
 the same fair-use posture as a browser cache — the bytes never enter the
@@ -43,12 +48,45 @@ from cache_helpers import (
 
 USER_AGENT = "karak-claude-plugin/thoughtworks-radar-ref (+https://github.com/karak-developer/karak-claude-plugin)"
 
+# Heuristic markers for bot-challenge / WAF interstitial pages that some CDNs
+# return with HTTP 200. If any of these tokens appears in extracted text we
+# refuse to cache the body — silently caching a CAPTCHA page as the canonical
+# Thoughtworks summary would be worse than reporting a miss.
+INTERSTITIAL_MARKERS = (
+    "verify you are human",
+    "verifying you are human",
+    "checking your browser",
+    "access denied",
+    "request unsuccessful",
+    "ddos protection",
+    "captcha",
+    "cf-chl-bypass",
+)
+
+
+class FetchError(Exception):
+    """Raised when fetch() refuses to return a cacheable body."""
+
 
 def fetch(url: str, timeout: float = 20.0) -> str:
+    """Fetch a URL and return the decoded body. Raises FetchError for any
+    non-200 status, non-HTML content-type, or obvious interstitial body so
+    callers do not silently cache junk."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
+        status = getattr(resp, "status", 200)
+        if status != 200:
+            raise FetchError(f"non-200 status: {status}")
+        ctype = resp.headers.get_content_type() or ""
+        if not ctype.startswith("text/html"):
+            raise FetchError(f"non-HTML content-type: {ctype}")
         charset = resp.headers.get_content_charset() or "utf-8"
-        return resp.read().decode(charset, errors="replace")
+        body = resp.read().decode(charset, errors="replace")
+    lowered = body.lower()
+    for marker in INTERSTITIAL_MARKERS:
+        if marker in lowered:
+            raise FetchError(f"interstitial marker present: {marker!r}")
+    return body
 
 
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -76,60 +114,78 @@ def extract_blip_summary(html: str) -> str:
     return ""
 
 
-def refresh_blips(volume: int, refetch: bool, limit: int | None) -> int:
+def refresh_blips(volume: int, refetch: bool, limit: int | None) -> tuple[int, int, int]:
+    """Returns (updated, attempted, empties). The caller decides whether
+    a high ratio of empties means the HTML structure changed and exits
+    non-zero — silent zero-update on a broken extractor would be worse
+    than a loud failure.
+    """
     blips = load_blips(volume)
-    if limit:
+    if limit is not None:
         blips = blips[:limit]
-    updated = 0
+    updated = attempted = empties = 0
     for i, blip in enumerate(blips, 1):
         name = blip["name"]
         url = blip["radar_url"]
         if not refetch and get_cached_summary(name, volume) is not None:
             continue
+        attempted += 1
+        if attempted > 1:
+            time.sleep(0.5)  # politeness applies on every fetch attempt, not only successes
         try:
             html = fetch(url)
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except (urllib.error.URLError, TimeoutError, FetchError) as exc:
             print(f"  [{i}/{len(blips)}] SKIP {name}: {exc}", file=sys.stderr)
             continue
         summary = extract_blip_summary(html)
         if not summary:
+            empties += 1
             print(f"  [{i}/{len(blips)}] EMPTY {name}: no extractable summary", file=sys.stderr)
             continue
         write_cached_summary(name, summary, volume)
         updated += 1
         print(f"  [{i}/{len(blips)}] {name}: cached ({len(summary)} chars)")
-        time.sleep(0.5)  # be polite to the origin
-    return updated
+    return updated, attempted, empties
 
 
-def refresh_themes(volume: int, refetch: bool) -> int:
+def refresh_themes(volume: int, refetch: bool) -> tuple[int, int, int]:
+    """Returns (updated, attempted, empties). A theme whose title is not
+    findable on the source page is treated as an empty extraction and
+    skipped — caching the first 3000 chars of nav chrome as the narrative
+    would mislead downstream consumers.
+    """
     themes = load_themes(volume)
-    updated = 0
+    updated = attempted = empties = 0
     for theme in themes:
         tid = theme["id"]
         if not refetch and get_cached_theme_narrative(tid, volume) is not None:
             continue
-        # Themes are inline on /radar — fetch the landing page once is enough.
-        # For best-effort extraction, store the whole landing page text per theme,
-        # caller (model) can locate the right section by title.
+        attempted += 1
+        if attempted > 1:
+            time.sleep(0.5)
+        # Themes are inline on /radar — landing-page text is sliced around the
+        # title token so the cached value is the section, not the whole page.
         try:
             html = fetch(theme["source_url"])
-        except (urllib.error.URLError, TimeoutError) as exc:
+        except (urllib.error.URLError, TimeoutError, FetchError) as exc:
             print(f"  THEME SKIP {tid}: {exc}", file=sys.stderr)
             continue
         text = strip_html(html)
-        # Try to slice around the title for a tighter narrative
         title = theme["title"]
         idx = text.lower().find(title.lower())
-        if idx >= 0:
-            narrative = text[idx : idx + 3000]
-        else:
-            narrative = text[:3000]
+        if idx < 0:
+            empties += 1
+            print(
+                f"  THEME EMPTY {tid}: title {title!r} not present on source page — "
+                "refusing to cache nav-chrome fallback",
+                file=sys.stderr,
+            )
+            continue
+        narrative = text[idx : idx + 3000]
         write_cached_theme_narrative(tid, narrative, volume)
         updated += 1
         print(f"  THEME {tid}: cached ({len(narrative)} chars)")
-        time.sleep(0.5)
-    return updated
+    return updated, attempted, empties
 
 
 def main(argv: Iterable[str] | None = None) -> int:
@@ -144,15 +200,43 @@ def main(argv: Iterable[str] | None = None) -> int:
     volume = args.volume if args.volume is not None else latest_volume()
     print(f"Refreshing cache for volume v{volume} (refetch={args.refetch})")
 
-    blips_n = themes_n = 0
+    blips_updated = blips_attempted = blips_empties = 0
+    themes_updated = themes_attempted = themes_empties = 0
     if not args.themes_only:
         print("Blips:")
-        blips_n = refresh_blips(volume, args.refetch, args.limit)
+        blips_updated, blips_attempted, blips_empties = refresh_blips(
+            volume, args.refetch, args.limit
+        )
     if not args.blips_only:
         print("Themes:")
-        themes_n = refresh_themes(volume, args.refetch)
+        themes_updated, themes_attempted, themes_empties = refresh_themes(
+            volume, args.refetch
+        )
 
-    print(f"Done. Updated: {blips_n} blip(s), {themes_n} theme(s).")
+    print(
+        f"Done. Blips: updated={blips_updated} attempted={blips_attempted} empties={blips_empties}. "
+        f"Themes: updated={themes_updated} attempted={themes_attempted} empties={themes_empties}."
+    )
+
+    # If extraction broke wholesale (most attempts returned empty), exit
+    # non-zero so the user notices the structure change instead of trusting
+    # a silent "Updated: 0" as success.
+    EMPTY_RATIO_THRESHOLD = 0.5
+    if blips_attempted >= 5 and blips_empties / blips_attempted >= EMPTY_RATIO_THRESHOLD:
+        print(
+            f"ERROR: {blips_empties}/{blips_attempted} blip extractions were empty — "
+            "Thoughtworks HTML structure likely changed. Update extract_blip_summary() "
+            "before relying on this cache.",
+            file=sys.stderr,
+        )
+        return 2
+    if themes_attempted >= 2 and themes_empties / themes_attempted >= EMPTY_RATIO_THRESHOLD:
+        print(
+            f"ERROR: {themes_empties}/{themes_attempted} theme extractions were empty — "
+            "Thoughtworks themes page structure likely changed.",
+            file=sys.stderr,
+        )
+        return 2
     return 0
 
 

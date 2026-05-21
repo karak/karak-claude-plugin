@@ -5,14 +5,14 @@
     "volume": 34,
     "source_url": "https://www.thoughtworks.com/radar",
     "related_blip_names": [
-      "Spec-driven development",
       "Codebase cognitive debt",
-      "Harness engineering",
       "Claude Code",
       "Cursor",
-      "OpenAI Codex"
+      "OpenAI Codex",
+      "OpenSpec",
+      "GitHub Spec Kit"
     ],
-    "our_synthesis": "karak-curated theme→blip mapping. The theme frames how the Radar's traditional evaluation cadence is strained by AI-tool churn; map this to blips that show semantic-diffusion symptoms. Fetch the Thoughtworks narrative from source_url at use time."
+    "our_synthesis": "karak-curated theme→blip mapping. The theme frames how the Radar's traditional evaluation cadence is strained by AI-tool churn (semantic diffusion, weeks-not-months tool half-life). 'Spec-driven development' and 'harness engineering' appear in the theme prose as meta-patterns — they are not v34 blips themselves; they are realized by concrete blips like 'OpenSpec' / 'GitHub Spec Kit' (spec-driven) and 'Feedback sensors for coding agents' / 'Sandboxed execution for coding agents' (harness engineering). Fetch the Thoughtworks narrative from source_url at use time."
   },
   {
     "id": "retaining-principles-relinquishing-patterns",

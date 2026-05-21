@@ -83,8 +83,8 @@ thoughtworks-radar-ref/
 │   └── volumes/
 │       ├── v34/
 │       │   ├── manifest.json   v34 固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
-│       │   ├── blips.json      v34 Blip インデックス (name / ring / quadrant / tags / url)
-│       │   └── themes.json     v34 Themes インデックス (id / title / related_blip_names / url)
+│       │   ├── blips.json      v34 Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
+│       │   └── themes.json     v34 Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
 │       └── v<NN>/              将来ボリューム — v34 を編集せず追加できる
 └── scripts/
     ├── cache_helpers.py        キャッシュ I/O ユーティリティ (stdlib のみ)
@@ -150,8 +150,18 @@ references/source_info.json を読み latest_volume を取得 (例: 34)
 
 ```python
 from cache_helpers import get_or_fetch_summary
-text = get_or_fetch_summary(blip_name="Codebase cognitive debt", volume=34)
+
+# fetcher は radar_url を受け取り要約テキストを返す関数。
+# Claude Code セッション内では WebFetch ツールへの薄いラッパが該当する。
+text = get_or_fetch_summary(
+    blip_name="Codebase cognitive debt",
+    fetcher=lambda url: webfetch(url, "Return the official summary paragraph."),
+    volume=34,
+)
 ```
+
+`fetcher=None` で呼ぶと純粋なキャッシュ読みになる (`get_cached_summary` と等価)。
+細かい制御が要るときは `get_cached_summary` / `write_cached_summary` を直接使う。
 
 Claude Code セッションから直接行う場合:
 
@@ -211,8 +221,11 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
 
 1. **新しいボリュームディレクトリを作る**: `references/volumes/v<X+1>/` を mkdir。**旧 `v<X>/` は触らない** — 履歴として保持。
 2. **`v<X+1>/blips.json` を生成**:
-   - `scripts/refresh_cache.py --rebuild-index --volume <X+1>` を実行
-     (or 手動で 4 quadrant ページを WebFetch → 構造抽出)
+   - 4 quadrant ページ (`/radar/techniques`, `/radar/platforms`, `/radar/tools`,
+     `/radar/languages-and-frameworks`) を WebFetch → 各 Blip の
+     `name / ring / quadrant / radar_url` を構造抽出して `blips.json` を組み立てる。
+     注: `refresh_cache.py` はあくまでユーザー端末キャッシュを埋めるツールであり、
+     配布物の `blips.json` を生成する責務は持たない (Index は人間の編集対象)。
 3. **`v<X+1>/themes.json` を手書き**: 新ボリュームの Themes を `/radar` ページから把握し、
    `id / title / source_url / related_blip_names` のみ記録 (ナラティブは入れない)
 4. **`v<X+1>/manifest.json` を作る**: `date`, `ring_vocabulary`, `quadrant_urls`,
@@ -222,7 +235,9 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
    `$schema_version` を bump。CHANGELOG 相当のメモを manifest の `notes` に残す
 7. **キャッシュ側 (端末ローカル)**: 新ディレクトリ `<cache>/v<X+1>/` が自動的に使われる。旧キャッシュは残してよい
 8. **コミット時の自己点検**:
-   - [ ] TW 原文の長文引用が配布物に混入していないか (`grep -ri "thoughtworks.com" references/volumes/` で TW URL 以外の長文を検出)
+   - [ ] TW 原文の長文引用が配布物に混入していないか — `radar_url` / `source_url` 以外の文字列フィールドが長すぎないかをスキャン:
+         `jq '[.[] | {name: (.name // .id), note_len: ((.note // .our_synthesis // "") | length)}] | map(select(.note_len > 400))' references/volumes/v*/blips.json references/volumes/v*/themes.json`
+         (400 字超は karak 解釈メモとしても疑わしい — TW 本文を貼り付けていないか確認)
    - [ ] `ring` が `manifest.json` の `ring_vocabulary` と整合しているか
    - [ ] `related_blip_names` が同ボリュームの `blips.json` の `name` と綴り一致しているか
    - [ ] `cache/` のような名前のディレクトリが配布物に混入していないか
