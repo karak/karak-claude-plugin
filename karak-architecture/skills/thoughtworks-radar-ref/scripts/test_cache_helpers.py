@@ -197,6 +197,56 @@ def test_get_or_fetch_summary_no_fetcher_acts_as_pure_read(fake_cache_home):
 
 
 # ---------------------------------------------------------------------------
+# Theme narrative cache + find_theme (twin of the blip-side tests above)
+# ---------------------------------------------------------------------------
+
+
+def test_get_or_fetch_theme_narrative_round_trip(fake_cache_home):
+    """Miss → fetcher invoked once → second call hits cache, fetcher not
+    invoked again. Mirrors the blip-summary contract.
+    """
+    called = []
+
+    def fetcher(url):
+        called.append(url)
+        return "fetched-narrative"
+
+    theme_id = "putting-coding-agents-on-a-leash"
+    result = ch.get_or_fetch_theme_narrative(theme_id, fetcher=fetcher, volume=34)
+    assert result == "fetched-narrative"
+    assert len(called) == 1
+
+    result2 = ch.get_or_fetch_theme_narrative(theme_id, fetcher=fetcher, volume=34)
+    assert result2 == "fetched-narrative"
+    assert len(called) == 1, "second call must come from cache, not fetcher"
+
+
+def test_get_or_fetch_theme_narrative_returns_none_for_unknown_id(fake_cache_home):
+    assert (
+        ch.get_or_fetch_theme_narrative(
+            "definitely-not-a-real-theme", fetcher=lambda u: "x", volume=34
+        )
+        is None
+    )
+
+
+def test_find_theme_returns_none_for_unknown_id():
+    assert ch.find_theme("definitely-not-a-real-theme", volume=34) is None
+
+
+def test_find_theme_resolves_within_volume():
+    """find_theme scopes to the requested volume and returns the matching
+    record. Multi-volume "latest wins" semantics are NOT part of the current
+    contract — the function takes a volume and looks only there.
+    """
+    theme_id = "putting-coding-agents-on-a-leash"
+    theme = ch.find_theme(theme_id, volume=34)
+    assert theme is not None
+    assert theme["id"] == theme_id
+    assert theme["volume"] == 34
+
+
+# ---------------------------------------------------------------------------
 # Corruption recovery
 # ---------------------------------------------------------------------------
 
