@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Node.js backend development, and meta (session-aware) tools for Claude Code",
-    "version": "2.4.0"
+    "version": "2.5.0"
   },
   "plugins": [
     {
       "name": "karak-design",
       "source": "./karak-design",
-      "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system",
-      "version": "1.0.0",
+      "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system, Garrett UX analysis (Strategy/Scope/Structure/Skeleton/Surface 5-layer framework)",
+      "version": "1.2.0",
       "author": {
         "name": "karak"
       },
@@ -29,7 +29,11 @@
         "hifi-design",
         "accessibility",
         "android",
-        "design-system"
+        "design-system",
+        "ux-design",
+        "ux-analysis",
+        "information-architecture",
+        "garrett-ux-analysis"
       ],
       "category": "development",
       "tags": [
@@ -39,7 +43,10 @@
         "android",
         "material-design",
         "web",
-        "hifi-design"
+        "hifi-design",
+        "ux-analysis",
+        "ux-strategy",
+        "information-architecture"
       ]
     },
     {

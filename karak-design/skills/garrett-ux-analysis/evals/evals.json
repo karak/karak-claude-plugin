@@ -1,0 +1,93 @@
+{
+  "skill_name": "garrett-ux-analysis",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-product-design-saas",
+      "prompt": "中小企業の経理担当者向けに、複数銀行口座を一画面で見られるキャッシュフロー可視化 SaaS を立ち上げたいです。MVP の UX を戦略から表層まで設計してください。ターゲットは従業員 30-300 名規模で、現状は Excel と各銀行のサイトを行き来して月次でまとめている層を想定しています。月額課金で、最初は日本国内のみ。",
+      "expected_output": "Strategy → Scope → Structure → Skeleton → Surface の5層を順に設計した Markdown レポート。各層に紐付け根拠と Non-goals が明示され、レイヤー間の一貫性チェックを含む。",
+      "files": [],
+      "expectations": [
+        "report has a Phase 0 diagnostic section that names the layers it will cover",
+        "report has dedicated sections for all 5 layers: Strategy, Scope, Structure, Skeleton, Surface",
+        "Strategy section explicitly contains both User Needs and Product Objectives (the intersection Garrett emphasizes)",
+        "Strategy section lists explicit Non-goals (やらないこと)",
+        "Scope section distinguishes functional requirements from content requirements OR uses a prioritization framework like MoSCoW",
+        "Scope items are mapped or linked back to specific Strategy elements",
+        "Structure section includes an Information Architecture diagram or hierarchical tree",
+        "Structure section includes at least one concrete user flow with steps and branches",
+        "Skeleton section describes wireframe-level layout decisions (placement, primary action, navigation)",
+        "Surface section includes accessibility requirements (WCAG contrast OR equivalent)",
+        "Surface section defines design tokens (color/typography/spacing) with concrete values",
+        "report contains an explicit cross-layer consistency check section",
+        "report has a Next Actions or Next Steps section with concrete owned items",
+        "output is written in Japanese",
+        "report length is substantial (>= 200 lines of Markdown)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "diagnostic-low-retention",
+      "prompt": "個人向けの英語学習アプリ (iOS/Android) を3年運営していますが、D30 リテンションが 8% で同業平均より低いです。機能はリスニング、単語帳、文法クイズの3本柱。UI は毎四半期改善しているのですが指標が動かない。UX に根本的な問題があるかもしれないので、ギャレットの5層で診断してください。",
+      "expected_output": "Phase 0 の診断で原因層を特定 (おそらく戦略 or 構造) し、表面の UI 改善だけでは解けないことを論理的に示す。各層で何を確認すべきか、検証アクションを提示する。",
+      "files": [],
+      "expectations": [
+        "report starts with a Phase 0 diagnostic that hypothesizes which layer is the root cause",
+        "report explicitly identifies Strategy and/or Structure as more likely root causes than Surface",
+        "report uses Garrett's 5-layer vocabulary as the organizing framework",
+        "each layer hypothesis is accompanied by concrete validation actions",
+        "report avoids generic retention tactics as primary fix unless tied to a specific layer diagnosis",
+        "report acknowledges that surface-level UI tweaks alone are insufficient when lower layers are misaligned",
+        "report concludes with prioritized next actions",
+        "Structure-layer hypotheses include mental-model fit, IA, or user-flow examination",
+        "Strategy-layer hypotheses include user-need definition, JTBD, or competitive positioning examination",
+        "output is written in Japanese",
+        "report length is substantial (>= 150 lines of Markdown)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "feature-addition-with-cross-layer",
+      "prompt": "既存の家計簿モバイルアプリ (個人向け、ユーザー数 200万) に「家族で共有する家計簿」機能を追加したいです。共有メンバーが互いの支出を入力でき、家計全体を見られる機能。ただし「個人だけの支出 (例: パートナーへのプレゼント)」も扱える必要があります。この機能追加を UX 観点で設計してください。",
+      "expected_output": "5層構造で機能設計し、プライバシーと共有の二律背反を Structure 層で解決していること。Non-goals と permission モデルを含むこと。",
+      "files": [],
+      "expectations": [
+        "report has dedicated sections for all 5 layers",
+        "report addresses how the new feature connects to OR risks the existing app's strategy",
+        "Strategy or Scope section includes explicit Non-goals",
+        "report includes a permission model or data visibility model",
+        "report includes a specific design for marking an expense as personal-only",
+        "report resolves the privacy-vs-sharing tension at the Structure layer, not only at Surface",
+        "report has at least one concrete user flow for the new feature",
+        "report contains a cross-layer consistency check verifying privacy decisions",
+        "report has Next Actions with concrete owned items",
+        "output is written in Japanese",
+        "report length is substantial (>= 180 lines of Markdown)"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "warehouse-shipping-saas-hidden-core",
+      "prompt": "中堅物流倉庫(80名)のオペレーション SaaS。20 ユースケース・4 ロール・複数の制約 (ハンディ端末、シフト、40-60代、SLA、24h稼働) を均一に列挙し、コアフロー (出荷指示→ピッキング→パッキング→引き渡し、1日200-500回) を意図的に秘匿する出題。詳細プロンプトは workspace/iteration-2/eval-4/eval_metadata.json 参照。",
+      "expected_output": "判断品質型: コア特定、優先順位付け、ノンコア降格、Just-in-time 情報配置、デバイス/ユーザー適合の判断を測る。チェックリスト型ではなく、与えた情報のうち『何を採り、何を捨てたか』を評価する。",
+      "files": [],
+      "expectations": [
+        "Strategy/Structure 層でコアフロー (ピッキング/出荷指示系) を 1 つに特定している (複数の主要扱いではない)",
+        "主たるペルソナ/User Need が倉庫オペレーター中心に設定されている",
+        "ユースケースを利用頻度 (日次/週次/月次/年次) で整理または優先順位付けしている",
+        "主たるデバイスがハンディ端末として明示されている",
+        "マスタ系 (配送業者・商品・顧客・配送料率・ユーザー権限) を Settings/Admin 配下に降格している",
+        "イレギュラー業務 (出荷遅延・破損返送・追跡問合せ) が条件付き表示 (just-in-time) として設計されている",
+        "経営層向け SLA レポート / 棚卸し / 監査ログ が別ロール/別画面に分離されている",
+        "Skeleton 層でハンディ端末特有の制約 (片手操作・タップサイズ・オフライン同期) のいずれかに対応している",
+        "Surface/Skeleton で 40-60 代・IT 慣れ薄ユーザーへの配慮に言及している",
+        "Must have が 20 ユースケース全てを律儀に並べず絞られている",
+        "Won't have / Non-goals が 5 個以上明示されている",
+        "シフト交代時のタスク引継ぎが Structure 層または状態モデルで扱われている",
+        "NSM がコアフロー直結 (当日出荷率/SLA遵守率/ピッキング完了率等) になっている",
+        "コアタスク完遂時のフィードバック (達成感・次タスク・シフト終了報告) を設計に含む",
+        "20 ユースケース全てを Must に並べる愚を避ける論理 (戦略的トレードオフ) が明示されている"
+      ]
+    }
+  ]
+}
