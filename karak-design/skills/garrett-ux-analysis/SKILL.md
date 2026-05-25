@@ -1,22 +1,12 @@
 ---
 name: garrett-ux-analysis
 description: >
-  ジェシー・ジェームズ・ギャレットの「UXの5段階モデル」(The Elements of User Experience) を基盤に、
-  プロダクトのUXを「戦略 → 要件 → 構造 → 骨格 → 表層」の5層構造で深くUX分析・設計するためのスキル。
-  上位層 (表層・骨格) だけを磨くと「技術的カモフラージュ」になり、戦略との一貫性が崩れる—
-  この破綻を防ぐために、下位層から積み上げる思考の足場を提供する。
-  以下のような場面で必ず使う:
-  (1) 新規プロダクト/新機能のUXを戦略から設計したい (「UX設計」「UXデザイン」「UX分析」「プロダクト設計」「ユーザー体験を設計」)、
-  (2) 既存プロダクトの体験が「なんとなく一貫性がない」「コンバージョンしない」「迷う」など、
-      表面の問題が下位層 (情報アーキテクチャ・要件・戦略) に起因していそうな UX 分析、
-  (3) 情報アーキテクチャ (IA)・インタラクション設計・コンテンツ要件などレイヤーを跨いだ議論、
-  (4) アジャイル開発で UI のディテールに走りがちで「戦略との接続」が抜けている疑い、
-  (5) 「ギャレットの5段階モデル」「Garrett 5 elements」「Elements of UX」「Strategy / Scope / Structure / Skeleton / Surface」が
-      明示的に話題に上がったとき。
-  Web/モバイルアプリ/B2B SaaS/コンシューマアプリ問わず、デジタルプロダクト全般を対象とする。
-  出力は5階層を章立てした構造化 Markdown レポートが基本。
-  日本語キーワード: UX分析, UX設計, UXデザイン, UXレビュー, UX監査, ユーザー体験設計, プロダクト設計,
-  情報アーキテクチャ, IA, インタラクション設計, コンテンツ要件, ユーザーフロー設計, 5段階モデル, ギャレット,
+  Use when designing or diagnosing a product's UX with Jesse James Garrett's 5-layer model
+  (Strategy / Scope / Structure / Skeleton / Surface), to prevent "technical camouflage" where
+  upper-layer polish masks lower-layer defects. Output is a structured 5-section Markdown report.
+  Triggers: UX分析, UX設計, UXデザイン, UXレビュー, UX監査, ユーザー体験設計, プロダクト設計,
+  情報アーキテクチャ, IA, インタラクション設計, コンテンツ要件, ユーザーフロー設計, 5段階モデル,
+  ギャレット, Garrett 5 elements, Elements of UX, Strategy/Scope/Structure/Skeleton/Surface,
   戦略レイヤー, ペルソナ設計, ユーザーニーズ, MVP定義, ワイヤーフレーム, ユーザビリティ分析.
 ---
 

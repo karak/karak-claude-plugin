@@ -12,7 +12,7 @@
       "name": "karak-design",
       "source": "./karak-design",
       "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system, Garrett UX analysis (Strategy/Scope/Structure/Skeleton/Surface 5-layer framework)",
-      "version": "1.2.0",
+      "version": "1.1.0",
       "author": {
         "name": "karak"
       },
