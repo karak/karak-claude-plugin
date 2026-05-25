@@ -1,13 +1,18 @@
 ---
 name: garrett-ux-analysis
 description: >
-  Use when designing or diagnosing a product's UX with Jesse James Garrett's 5-layer model
-  (Strategy / Scope / Structure / Skeleton / Surface), to prevent "technical camouflage" where
-  upper-layer polish masks lower-layer defects. Output is a structured 5-section Markdown report.
-  Triggers: UX分析, UX設計, UXデザイン, UXレビュー, UX監査, ユーザー体験設計, プロダクト設計,
-  情報アーキテクチャ, IA, インタラクション設計, コンテンツ要件, ユーザーフロー設計, 5段階モデル,
-  ギャレット, Garrett 5 elements, Elements of UX, Strategy/Scope/Structure/Skeleton/Surface,
-  戦略レイヤー, ペルソナ設計, ユーザーニーズ, MVP定義, ワイヤーフレーム, ユーザビリティ分析.
+  Use when designing or diagnosing a UX problem that spans multiple Garrett layers
+  (Strategy / Scope / Structure / Skeleton / Surface) — 典型的には「表層を磨いているのに KPI が動かない」
+  「機能を作るほど使われなくなる」「ナビ刷新でも迷子が減らない」のような技術的カモフラージュ
+  (上位層磨きで下位層欠陥を隠している) の疑い、または戦略・要件が未定義のグリーンフィールド新規プロダクトを
+  Strategy 層から組み立てたい場合。出力は 5 層を貫く構造化レポート。
+  Triggers: UX 5層分析, ギャレット 5 段階モデル, Garrett 5 elements, Elements of UX,
+  技術的カモフラージュ診断, レイヤー横断 UX 監査, レイヤー間整合チェック,
+  新規プロダクトの戦略から表層までの一貫設計, Strategy/Scope/Structure/Skeleton/Surface.
+  DO NOT trigger for: 単一層の議論 (色・タイポ・コピー文言・単発 UI 改善・A/B テスト判定 → `design-system` / `ux-psychologist` / `frontend-aesthetics`)、
+  Strategy/Scope が既に決まっており Scope 以下の実装設計だけが必要なケース (`ux-psychologist` / `hifi-design-quality` / プラットフォーム別 `apple-design` / `material-design`)、
+  既存デザインシステム準拠チェック (`hifi-design-quality`)、
+  小規模個人開発で 5 層の重厚さが過剰な場合 (素直に直接設計).
 ---
 
 # Garrett UX Five Elements
@@ -33,7 +38,7 @@ description: >
 
 1. **下位層は上位層を制約する**。チェックアウト画面のボタン配置 (骨格) は、ユーザーがそこに何を求めるか (要件) に依存し、
    要件は売上向上という戦略目標に依存する。逆方向には流れない。
-2. **上位層のみを磨くと「技術的カモフラージュ」になる**。Alan Cooper の警告のとおり、根本欠陥を装飾で覆い隠す結果になる。
+2. **上位層のみを磨くと「技術的カモフラージュ」になる**。ギャレット自身が用いる「弱い基礎の上に家を建てる」比喩のとおり、根本欠陥を装飾で覆い隠す結果になる。
 3. **完全なウォーターフォールではない**。各層は協働し、上位層で発見された問題は下位層の見直しを促す。
    ただし「下位層の未解決が上位層の破綻を生む」非対称性は常に成立する。
 4. **二面性を常に意識する**。同じ画面でも「機能性側の論理」と「情報媒体側の論理」は別物。両方を満たす必要がある。
@@ -86,7 +91,7 @@ description: >
 
 - **ユーザーニーズ** と **プロダクト目標** の交点を言語化する。片方だけでは戦略にならない。
 - ペルソナ、ジョブ理論 (JTBD)、競合ポジショニングなどを材料に使うが、これらは手段であって目的ではない。
-- 「**やらないこと**」 (Non-goals) も明記する。後の Scope での暴走を防ぐ。
+- 「**やらないこと**」 (Non-goals) も明記する (原典には無い現代的拡張)。後の Scope での暴走を防ぐ。
 - ビジネスメトリクス (北極星指標, OKR) と接続する。
 
 成果物: 1〜2 段落の戦略ステートメント、ペルソナ概要、Non-goals リスト。

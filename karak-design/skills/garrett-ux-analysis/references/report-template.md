@@ -238,7 +238,7 @@ Workspace
 
 ## 参照
 
-- ギャレット 5 段階モデル: 本スキル `garrett-ux-five-elements` の各 references
+- ギャレット 5 段階モデル: 本スキル `garrett-ux-analysis` の各 references
 - 関連スキル: `design-system`, `ux-psychologist`, `apple-design`, `material-design`, `hifi-design-quality`
 - 外部参照: <あれば WCAG, Material Motion, Apple HIG, ブランドガイド 等>
 ```
