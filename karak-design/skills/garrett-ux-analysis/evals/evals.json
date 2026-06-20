@@ -1,0 +1,300 @@
+{
+  "skill_name": "garrett-ux-analysis",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-product-design-saas",
+      "prompt": "中小企業の経理担当者向けに、複数銀行口座を一画面で見られるキャッシュフロー可視化 SaaS を立ち上げたいです。MVP の UX を戦略から表層まで設計してください。ターゲットは従業員 30-300 名規模で、現状は Excel と各銀行のサイトを行き来して月次でまとめている層を想定しています。月額課金で、最初は日本国内のみ。",
+      "expected_output": "Strategy → Scope → Structure → Skeleton → Surface の5層を順に設計した Markdown レポート。各層に紐付け根拠と Non-goals が明示され、レイヤー間の一貫性チェックを含む。",
+      "files": [],
+      "expectations": [
+        "report has a Phase 0 diagnostic section that names the layers it will cover",
+        "report has dedicated sections for all 5 layers: Strategy, Scope, Structure, Skeleton, Surface",
+        "Strategy section explicitly contains both User Needs and Product Objectives (the intersection Garrett emphasizes)",
+        "Strategy section lists explicit Non-goals (やらないこと)",
+        "Scope section distinguishes functional requirements from content requirements OR uses a prioritization framework like MoSCoW",
+        "Scope items are mapped or linked back to specific Strategy elements",
+        "Structure section includes an Information Architecture diagram or hierarchical tree",
+        "Structure section includes at least one concrete user flow with steps and branches",
+        "Skeleton section describes wireframe-level layout decisions (placement, primary action, navigation)",
+        "Surface section includes accessibility requirements (WCAG contrast OR equivalent)",
+        "Surface section defines design tokens (color/typography/spacing) with concrete values",
+        "report contains an explicit cross-layer consistency check section",
+        "report has a Next Actions or Next Steps section with concrete owned items",
+        "output is written in Japanese",
+        "report length is substantial (>= 200 lines of Markdown)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "diagnostic-low-retention",
+      "prompt": "個人向けの英語学習アプリ (iOS/Android) を3年運営していますが、D30 リテンションが 8% で同業平均より低いです。機能はリスニング、単語帳、文法クイズの3本柱。UI は毎四半期改善しているのですが指標が動かない。UX に根本的な問題があるかもしれないので、ギャレットの5層で診断してください。",
+      "expected_output": "Phase 0 の診断で原因層を特定 (おそらく戦略 or 構造) し、表面の UI 改善だけでは解けないことを論理的に示す。各層で何を確認すべきか、検証アクションを提示する。",
+      "files": [],
+      "expectations": [
+        "report starts with a Phase 0 diagnostic that hypothesizes which layer is the root cause",
+        "report explicitly identifies Strategy and/or Structure as more likely root causes than Surface",
+        "report uses Garrett's 5-layer vocabulary as the organizing framework",
+        "each layer hypothesis is accompanied by concrete validation actions",
+        "report avoids generic retention tactics as primary fix unless tied to a specific layer diagnosis",
+        "report acknowledges that surface-level UI tweaks alone are insufficient when lower layers are misaligned",
+        "report concludes with prioritized next actions",
+        "Structure-layer hypotheses include mental-model fit, IA, or user-flow examination",
+        "Strategy-layer hypotheses include user-need definition, JTBD, or competitive positioning examination",
+        "output is written in Japanese",
+        "report length is substantial (>= 150 lines of Markdown)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "feature-addition-with-cross-layer",
+      "prompt": "既存の家計簿モバイルアプリ (個人向け、ユーザー数 200万) に「家族で共有する家計簿」機能を追加したいです。共有メンバーが互いの支出を入力でき、家計全体を見られる機能。ただし「個人だけの支出 (例: パートナーへのプレゼント)」も扱える必要があります。この機能追加を UX 観点で設計してください。",
+      "expected_output": "5層構造で機能設計し、プライバシーと共有の二律背反を Structure 層で解決していること。Non-goals と permission モデルを含むこと。",
+      "files": [],
+      "expectations": [
+        "report has dedicated sections for all 5 layers",
+        "report addresses how the new feature connects to OR risks the existing app's strategy",
+        "Strategy or Scope section includes explicit Non-goals",
+        "report includes a permission model or data visibility model",
+        "report includes a specific design for marking an expense as personal-only",
+        "report resolves the privacy-vs-sharing tension at the Structure layer, not only at Surface",
+        "report has at least one concrete user flow for the new feature",
+        "report contains a cross-layer consistency check verifying privacy decisions",
+        "report has Next Actions with concrete owned items",
+        "output is written in Japanese",
+        "report length is substantial (>= 180 lines of Markdown)"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "warehouse-shipping-saas-hidden-core",
+      "prompt": "中堅物流倉庫（従業員80名）向けのオペレーション SaaS を新規に立ち上げます。MVP の UX を戦略から表層まで設計してください。\n\n以下の20のユースケースを実現したいと考えています（順不同・優先度は未整理）: (1) 出荷指示の確認 (2) 商品のピッキング (3) パッキング・梱包 (4) 配送業者への引き渡し (5) 配送業者マスタの登録・編集 (6) 商品マスタの登録・編集 (7) 顧客マスタの登録・編集 (8) 配送料率の設定 (9) ユーザーアカウント・権限の管理 (10) システム全体設定 (11) 出荷遅延への対応 (12) 破損品の返送処理 (13) 配送追跡の問合せ対応 (14) 月末棚卸し (15) 入庫登録 (16) SLA遵守レポートの閲覧 (17) 操作監査ログの確認 (18) シフト交代時の引継ぎ (19) 出荷実績の日次集計 (20) 返品在庫の戻し入れ。\n\nロールは4種類: 倉庫オペレーター（現場、約30名）/ 倉庫管理者・リーダー / 経営層・マネージャー / システム管理者。\n\n制約: 現場はハンディ端末（Android）が主で、PCはバックヤードの補助。24時間シフト稼働で交代がある。オペレーターは40〜60代でIT操作に不慣れな層が多い。出荷のSLA（当日出荷の納期遵守）が事業上重要。倉庫内はWi-Fiが不安定な場所がある。\n\nこの条件で、何を中心に据え、何を後ろに回すかの判断も含めて設計してください。",
+      "expected_output": "判断品質型: コア特定、優先順位付け、ノンコア降格、Just-in-time 情報配置、デバイス/ユーザー適合の判断を測る。チェックリスト型ではなく、与えた情報のうち『何を採り、何を捨てたか』を評価する。",
+      "files": [],
+      "expectations": [
+        "Strategy/Structure 層でコアフロー (ピッキング/出荷指示系) を 1 つに特定している (複数の主要扱いではない)",
+        "主たるペルソナ/User Need が倉庫オペレーター中心に設定されている",
+        "ユースケースを利用頻度 (日次/週次/月次/年次) で整理または優先順位付けしている",
+        "主たるデバイスがハンディ端末として明示されている",
+        "マスタ系 (配送業者・商品・顧客・配送料率・ユーザー権限) を Settings/Admin/設定画面/管理画面のいずれかに降格している (オペレーター日常画面から分離)",
+        "イレギュラー業務 (出荷遅延・破損返送・追跡問合せ) が条件付き表示 (just-in-time) として設計されている",
+        "経営層向け SLA レポート / 棚卸し / 監査ログ が別ロール/別画面に分離されている",
+        "Skeleton 層でハンディ端末特有の制約 (片手操作・タップサイズ・オフライン同期) のいずれかに対応している",
+        "Surface/Skeleton で 40-60 代・IT 慣れ薄ユーザーへの配慮に言及している",
+        "Must have が 20 ユースケース全てを律儀に並べず絞られている",
+        "Won't have / Non-goals が 5 個以上明示されている",
+        "シフト交代時のタスク引継ぎが Structure 層または状態モデルで扱われている",
+        "NSM がコアフロー直結 (当日出荷率/SLA遵守率/ピッキング完了率等) になっている",
+        "コアタスク完遂時のフィードバック (達成感・次タスク・シフト終了報告) を設計に含む",
+        "20 ユースケース全てを Must に並べる愚を避ける論理 (戦略的トレードオフ) が明示されている"
+      ],
+      "rubric_anchors": {
+        "コアフローを 1 つに特定": {
+          "pass_examples": [
+            "「本プロダクトのコアフローは 出荷指示 → ピッキング → パッキング → 引き渡し の 1 本に絞る。1日 200-500 回反復される唯一のフローであり、他は周辺業務として降格する」",
+            "「Primary core flow: ピッキングフロー (frequency: 日次 200-500回)。他の 19 ユースケースは周辺業務として Settings/Admin/条件付き表示に配置する」"
+          ],
+          "fail_examples": [
+            "「主要フローは ピッキング、出荷遅延対応、棚卸し、配送業者管理 など複数ある」 (絞り込めていない)",
+            "「すべてのユースケースが等しく重要」 (トレードオフ放棄)"
+          ]
+        },
+        "20 ユースケース全てを Must に並べる愚を避ける論理": {
+          "pass_examples": [
+            "「Must に並ぶのは コアフロー (4 ステップ) + シフト引継ぎ のみ。残り 15 ユースケースは Should/Could/Won't に振り分け、根拠は『コアフロー 200-500回/日に対し これらは 月次 or 年次 で頻度が 2 桁少ない』」",
+            "「20 を全て Must にするとハンディ端末の片手 UI に収まらず、コアフローの完了時間が悪化する。よって 棚卸し・監査ログ・配送料率管理 は管理画面 (PC) へ分離する」"
+          ],
+          "fail_examples": [
+            "「20 ユースケースは全て重要なので全て Must とする」",
+            "Must/Should/Could の振り分けはあるが、なぜその振り分けなのか根拠 (頻度・ロール・デバイス制約) が書かれていない"
+          ]
+        },
+        "マスタ系を Settings/Admin 配下に降格": {
+          "pass_examples": [
+            "「配送業者マスタ・商品マスタ・顧客マスタ・配送料率・ユーザー権限 は 設定画面 (Admin ロール限定) に降格。オペレーターのハンディ端末トップには出さない」"
+          ],
+          "fail_examples": [
+            "マスタ系がメインナビゲーションの 1 階層目に並んでいる",
+            "オペレーター画面とマスタ管理画面の分離が言及されていない"
+          ]
+        },
+        "NSM がコアフロー直結": {
+          "pass_examples": [
+            "「北極星指標 (NSM) は『当日出荷率 (SLA 遵守率)』。コアフロー (出荷指示→ピッキング→引き渡し) の完遂度を直接測る」",
+            "「NSM: 1 オペレーターあたりのピッキング完了件数/シフト。コアフローのスループットに直結」"
+          ],
+          "fail_examples": [
+            "NSM をマスタ更新回数・ログイン数・設定変更数などノンコア指標にしている",
+            "NSM が『売上』『顧客満足度』など事業 KPI のままでコアフローに紐づいていない"
+          ]
+        },
+        "コアタスク完遂時のフィードバック": {
+          "pass_examples": [
+            "「引き渡し完了時に『○件 完了 / 残 △件』を表示し、次のピッキング指示へ即遷移。シフト終了時は当日出荷実績サマリを提示」",
+            "「1 出荷の引き渡し完了でチェック音＋達成カウンタ更新、次タスクをワンタップで開始できる導線を設計」"
+          ],
+          "fail_examples": [
+            "コアタスク完了後の状態遷移やフィードバックに言及がない",
+            "完了通知が『保存しました』のみで、達成感・次タスク誘導・シフト締め報告のいずれにも触れていない"
+          ]
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "out-of-scope-color-question",
+      "prompt": "うちのプロダクトの「購入する」ボタンの色、青と緑どっちにすべき? A/B テストの結果は緑のほうがクリック率 1.3% 高かったんだけど、青のほうがブランドカラーなので迷ってます。",
+      "expected_output": "単一施策の色トーン判断は本スキルの対象外。`design-system` (ブランドトークン整合) や `ux-psychologist` (色相とコンバージョン心理) へリダイレクトする。5層レポートを生成しない。または、最大限譲歩しても「Surface 単層の判断であり、戦略・要件・構造の見直しを伴わない」と明示し、Strategy/Scope/Structure/Skeleton の章を埋めない。",
+      "files": [],
+      "expectations": [
+        "5層フルレポートを生成していない (Strategy/Scope/Structure/Skeleton/Surface の全章を埋めていない)",
+        "本スキルの対象外であることを明示している、または対象を Surface 単層 に明確に限定している",
+        "`design-system` / `frontend-aesthetics` / `ux-psychologist` のいずれかのスキルへのリダイレクト言及がある",
+        "ブランドカラーとコンバージョンのトレードオフを単独で扱うのではなく、戦略 (ブランド一貫性) と Surface (テスト結果) の二面性として整理している、または対象外として処理している",
+        "判断品質: 「とにかく緑」「とにかく青」のような根拠なき結論を出していない",
+        "output is written in Japanese"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "technical-camouflage-polished-skeleton-broken-strategy",
+      "prompt": "B2B SaaS の HR Tech プロダクトで、Figma で高忠実度のダッシュボードと 12 種類のチャートを作り、デザインシステムも整備しました。社内レビューでは『きれい』と褒められましたが、有償ユーザー 50 社中 D30 アクティブ率は 12% で、解約率は四半期 30% です。デザインシステムをさらに洗練させる予定ですが、UX 観点で進め方を相談させてください。",
+      "expected_output": "Phase 0 で「上位層 (Skeleton/Surface) が磨かれているのに下位層 (Strategy/Scope) が壊れている = 技術的カモフラージュ」と明示的に診断。デザインシステム洗練を続けることが指標を動かさない論理を提示。Strategy/Scope の再点検アクションを優先する。",
+      "files": [],
+      "expectations": [
+        "Phase 0 診断で「技術的カモフラージュ」または同義 (上位層磨きが下位層欠陥を覆い隠している) を名指ししたうえで、その作用メカニズム (Figma 完成度の高さがレビュアーの下位層点検を怠らせる / 12% D30 という指標と『きれい』という社内評価の乖離 等) を最低 1 つ具体的に説明している",
+        "Skeleton/Surface (Figma・デザインシステム) は『すでに過剰投資されている可能性がある』と指摘している",
+        "D30 12% / 解約 30% の根本原因仮説として Strategy 層 (ユーザーニーズ未定義・JTBD 不明・ターゲット曖昧) を最有力に挙げている",
+        "Strategy/Scope 層に戻る具体アクション (ユーザーインタビュー、JTBD、解約者ヒアリング等) を提示している",
+        "デザインシステムをさらに磨くことを最優先施策として推奨していない",
+        "5層レポートのうち少なくとも Strategy と Scope の章は具体的に書かれている (Skeleton/Surface は『追加投資より診断優先』と整理されていてよい)",
+        "output is written in Japanese"
+      ],
+      "rubric_anchors": {
+        "技術的カモフラージュの作用メカニズムを説明": {
+          "pass_examples": [
+            "「Figma の高忠実度ダッシュボードと整備されたデザインシステムが『見栄え』を作り出し、社内レビュアーは下位層 (Strategy/Scope) の点検をスキップしてしまう。D30 12% / 解約 30% という事業指標と『きれい』という美的評価の乖離こそがカモフラージュの証拠」",
+            "「12 種類のチャートを作り込んでも、ユーザーがそもそも何を達成したいか (JTBD) が未定義なら誰の役にも立たない。Skeleton/Surface への過剰投資が『何かを進めている感覚』を生み、Strategy 不在を覆い隠している」"
+          ],
+          "fail_examples": [
+            "「技術的カモフラージュが起きています」だけで作用メカニズムを説明していない",
+            "「デザインシステムを整備したのは良いが指標が悪い」とだけ述べ、なぜ磨きが欠陥を隠すかの因果を欠く"
+          ]
+        },
+        "Strategy 層を最有力に名指し": {
+          "pass_examples": [
+            "「最有力仮説: Strategy 層の未定義 — 50 社のうち実際に解決すべき JTBD が誰の何かが定まっていない。次点として Scope の機能多すぎ問題、Structure のフローがメンタルモデル不一致を想定」"
+          ],
+          "fail_examples": [
+            "Strategy/Scope/Structure/Skeleton/Surface の全層を並列に『どれもありえます』と列挙し優先順位を付けない"
+          ]
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "partial-entry-strategy-already-decided",
+      "prompt": "弊社の社内向けタスク管理ツールを作ります。Strategy は社長と決まっています: ターゲットはエンジニア 40 名、目的は『チケットのコンテキストスイッチ削減で集中時間を確保』、北極星指標は『1 日あたり 90 分以上の連続作業ブロック獲得率』、Non-goals は『他職種への展開』『プロジェクト管理機能』『時間トラッキング』。この戦略を前提に、Scope 以下の設計をお願いします。",
+      "expected_output": "Phase 0 で『Strategy は明文化済み』と検知し、Strategy 章は再生成せず引用・要約に留める。Scope/Structure/Skeleton/Surface の設計に集中する。",
+      "files": [],
+      "expectations": [
+        "Phase 0 診断で Strategy が既決であることを認識している",
+        "Strategy 章を新たに再定義せず、与えられた内容を引用または要約に留めている (新規ペルソナ作成や User Needs 再定義をしていない)",
+        "Scope / Structure / Skeleton / Surface の各章が与えられた Strategy と整合する形で書かれている",
+        "Scope 章の Non-goals は与えられた『他職種展開・プロジェクト管理・時間トラッキング』を最低でも踏襲している",
+        "北極星指標 (1日 90 分以上連続作業ブロック獲得率) が Scope/Structure の優先順位付け根拠として参照されている",
+        "レイヤー間の一貫性チェックで Strategy ↔ 下位層 の整合が確認されている",
+        "output is written in Japanese"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "tiny-b2c-with-frequency-split",
+      "prompt": "iOS 向けに『シンプルな割り勘計算アプリ』を個人開発で作ります。コアは『金額入力 → 人数入力 → 1 人あたり金額表示』の 3 ステップ。これに加えて、税率設定 (年に数回変える)、過去の割り勘履歴 (たまに見返す)、テーマ変更 (一度設定したら触らない) を入れたいです。MVP として 5 層で設計してください。",
+      "expected_output": "コアフロー (日次〜週次の高頻度) と周辺機能 (年次・低頻度) を頻度ベースで明確に分離。コアフローを 3 タップ以内で完了させる Skeleton 設計。税率・履歴・テーマは Settings 等に格納し、ホーム画面の認知負荷を増やさない。フレームワークを過剰適用せず小規模プロダクトに適した粒度で出力。",
+      "files": [],
+      "expectations": [
+        "コアフロー (金額 → 人数 → 計算) が日次〜週次の高頻度操作として特定されている",
+        "税率設定・履歴・テーマ変更 が年次〜不定期の低頻度として明示的に位置づけられている",
+        "頻度の差を根拠に、低頻度機能を Settings/履歴タブ等に降格する Skeleton 設計を行っている",
+        "ホーム画面にコアフロー以外の要素を詰め込まない判断 (情報密度の意思決定) が示されている",
+        "小規模アプリにふさわしい粒度 (大企業向けの過剰なペルソナ階層・OKR 連携などを盛り込んでいない) で書かれている",
+        "5層レポートを全て埋めているが各層が簡潔 (全体 350 行以内、かつ章単独で 60 行を大きく超える章が存在しない)",
+        "Non-goals に少なくとも 3 項目以上含まれる (例: 多通貨対応・グループ共有・サーバー同期 などのスコープ拡張を明示的に除外)",
+        "output is written in Japanese"
+      ],
+      "rubric_anchors": {
+        "小規模アプリにふさわしい粒度": {
+          "pass_examples": [
+            "「Strategy: 個人開発・iOS・割り勘計算という最小スコープに沿い、ペルソナは 1 つ (友人グループでの飲食割り勘想定) のみ。OKR ではなく『3 タップで割り勘完了率 95%』のような直接指標 1 本で進める」",
+            "「Scope の Must は 3 ステップのみ。Should/Could は Settings 配下に降格。Won't には多通貨・サーバー同期・グループ共有を明記」"
+          ],
+          "fail_examples": [
+            "ペルソナを 3 つ以上設定し、デモグラ・サイコグラフィを細かく書く (個人開発に過剰)",
+            "北極星指標・OKR・KPI ツリー・ロードマップ四半期計画など、企業向け方法論を全部適用する"
+          ]
+        },
+        "頻度ベースの降格判断": {
+          "pass_examples": [
+            "「日次〜週次操作 (割り勘計算) はホーム画面 1 タップ目に。税率変更は年に数回 → Settings タブ、過去履歴はたまに見返す → 履歴タブ。テーマは一度設定したら触らない → Settings の更に下層」"
+          ],
+          "fail_examples": [
+            "税率・履歴・テーマをホーム画面のタブやカードとして並列配置する (頻度差を無視)"
+          ]
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "duality-functionality-vs-information",
+      "prompt": "レシピ閲覧と調理アシストを併せ持つモバイルアプリを設計します。ユーザーはレシピを検索・カテゴリ閲覧して『作るものを選ぶ』体験と、調理中にステップ送り・タイマー・分量スケーリングを『操作する』体験の両方を使います。ギャレットの5層で UX を設計してください。",
+      "expected_output": "Garrett の二面性 (機能性側 / 情報媒体側) を明確に区別し、Structure 層で IA (レシピ探索) とインタラクション設計 (調理操作) の両方を設計。レイヤー間の一貫性チェックで二面性の整合を確認している。",
+      "files": [],
+      "expectations": [
+        "report has dedicated sections for all 5 layers: Strategy, Scope, Structure, Skeleton, Surface",
+        "report explicitly distinguishes the functionality side (機能性側: 調理アシスト操作) from the information-medium side (情報媒体側: レシピ探索・閲覧) using Garrett's duality vocabulary",
+        "Structure section designs BOTH an information architecture (recipe browsing/taxonomy/labeling) AND an interaction design (cooking step/timer/scaling flow)",
+        "cross-layer consistency check includes an explicit 二面性 (functionality vs information) integrity item verifying the two sides do not contradict on shared screens",
+        "report does not collapse the two sides into a single undifferentiated design",
+        "output is written in Japanese"
+      ],
+      "rubric_anchors": {
+        "二面性を明確に区別": {
+          "pass_examples": [
+            "「本アプリは Garrett の二面性が顕著: 情報媒体側 = レシピを探す/比較する/選ぶ (IA・検索・カテゴリ)、機能性側 = 調理を進める (ステップ送り・タイマー・分量計算)。それぞれ設計の論理が異なる」"
+          ],
+          "fail_examples": [
+            "機能性側/情報媒体側の区別に触れず、全画面を一様に『UI設計』として扱っている",
+            "レシピ閲覧と調理操作を同じインタラクションパターンで設計し、探索と操作の違いを論じていない"
+          ]
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "skip-layer-guardrail-wireframe-first",
+      "prompt": "時間がないので、とりあえずホーム画面のワイヤーフレームだけ先に作ってほしいです。プロダクトは社内の備品予約アプリ（会議室・社用車・機材を予約する）です。",
+      "expected_output": "いきなりワイヤーに飛ばず、戦略・要件の仮定を 1 段落で明文化してから Skeleton に進む (SKILL.md の『下位層を飛ばさない』ガードレール)。ただしユーザーの本来の依頼 (ワイヤー) は最終的に提供する。",
+      "files": [],
+      "expectations": [
+        "report does NOT jump straight to a wireframe without first articulating lower-layer assumptions",
+        "report explicitly writes at least a one-paragraph assumption of Strategy and Scope (戦略・要件の仮定の明文化) before or alongside the wireframe",
+        "report notes that these assumptions are provisional and can be revisited later (後から戻りやすい / 仮定である旨)",
+        "report still delivers the user's actual request — a wireframe-level (Skeleton) layout for the home screen — rather than refusing it",
+        "output is written in Japanese"
+      ],
+      "rubric_anchors": {
+        "仮定の明文化を先に行う": {
+          "pass_examples": [
+            "「ワイヤー作成前に 1 段落で仮定を明文化します。戦略: 社内の備品予約の手間削減 / 主ユーザーは全社員 / Non-goals: 在庫購買管理。要件: コア=予約する。— この仮定の上で、ホーム画面のワイヤーは以下の通り」",
+            "「とりあえずワイヤーから、の依頼ですが、戻りやすさのため戦略・要件の仮定を先に 1 段落だけ置きます。…（仮定）… 以下がホーム画面の低忠実度ワイヤーです」"
+          ],
+          "fail_examples": [
+            "戦略・要件の仮定に一切触れず、いきなりホーム画面のワイヤーだけを出力する",
+            "5層フルレポートを延々と書き、ユーザーが求めたホーム画面のワイヤーを提供しない (逆方向の失敗)"
+          ]
+        }
+      }
+    }
+  ]
+}
