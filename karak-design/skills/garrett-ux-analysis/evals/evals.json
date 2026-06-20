@@ -68,7 +68,7 @@
     {
       "id": 4,
       "name": "warehouse-shipping-saas-hidden-core",
-      "prompt": "中堅物流倉庫(80名)のオペレーション SaaS。20 ユースケース・4 ロール・複数の制約 (ハンディ端末、シフト、40-60代、SLA、24h稼働) を均一に列挙し、コアフロー (出荷指示→ピッキング→パッキング→引き渡し、1日200-500回) を意図的に秘匿する出題。詳細プロンプトは workspace/iteration-2/eval-4/eval_metadata.json 参照。",
+      "prompt": "中堅物流倉庫（従業員80名）向けのオペレーション SaaS を新規に立ち上げます。MVP の UX を戦略から表層まで設計してください。\n\n以下の20のユースケースを実現したいと考えています（順不同・優先度は未整理）: (1) 出荷指示の確認 (2) 商品のピッキング (3) パッキング・梱包 (4) 配送業者への引き渡し (5) 配送業者マスタの登録・編集 (6) 商品マスタの登録・編集 (7) 顧客マスタの登録・編集 (8) 配送料率の設定 (9) ユーザーアカウント・権限の管理 (10) システム全体設定 (11) 出荷遅延への対応 (12) 破損品の返送処理 (13) 配送追跡の問合せ対応 (14) 月末棚卸し (15) 入庫登録 (16) SLA遵守レポートの閲覧 (17) 操作監査ログの確認 (18) シフト交代時の引継ぎ (19) 出荷実績の日次集計 (20) 返品在庫の戻し入れ。\n\nロールは4種類: 倉庫オペレーター（現場、約30名）/ 倉庫管理者・リーダー / 経営層・マネージャー / システム管理者。\n\n制約: 現場はハンディ端末（Android）が主で、PCはバックヤードの補助。24時間シフト稼働で交代がある。オペレーターは40〜60代でIT操作に不慣れな層が多い。出荷のSLA（当日出荷の納期遵守）が事業上重要。倉庫内はWi-Fiが不安定な場所がある。\n\nこの条件で、何を中心に据え、何を後ろに回すかの判断も含めて設計してください。",
       "expected_output": "判断品質型: コア特定、優先順位付け、ノンコア降格、Just-in-time 情報配置、デバイス/ユーザー適合の判断を測る。チェックリスト型ではなく、与えた情報のうち『何を採り、何を捨てたか』を評価する。",
       "files": [],
       "expectations": [
@@ -116,6 +116,26 @@
           "fail_examples": [
             "マスタ系がメインナビゲーションの 1 階層目に並んでいる",
             "オペレーター画面とマスタ管理画面の分離が言及されていない"
+          ]
+        },
+        "NSM がコアフロー直結": {
+          "pass_examples": [
+            "「北極星指標 (NSM) は『当日出荷率 (SLA 遵守率)』。コアフロー (出荷指示→ピッキング→引き渡し) の完遂度を直接測る」",
+            "「NSM: 1 オペレーターあたりのピッキング完了件数/シフト。コアフローのスループットに直結」"
+          ],
+          "fail_examples": [
+            "NSM をマスタ更新回数・ログイン数・設定変更数などノンコア指標にしている",
+            "NSM が『売上』『顧客満足度』など事業 KPI のままでコアフローに紐づいていない"
+          ]
+        },
+        "コアタスク完遂時のフィードバック": {
+          "pass_examples": [
+            "「引き渡し完了時に『○件 完了 / 残 △件』を表示し、次のピッキング指示へ即遷移。シフト終了時は当日出荷実績サマリを提示」",
+            "「1 出荷の引き渡し完了でチェック音＋達成カウンタ更新、次タスクをワンタップで開始できる導線を設計」"
+          ],
+          "fail_examples": [
+            "コアタスク完了後の状態遷移やフィードバックに言及がない",
+            "完了通知が『保存しました』のみで、達成感・次タスク誘導・シフト締め報告のいずれにも触れていない"
           ]
         }
       }
@@ -220,6 +240,58 @@
           ],
           "fail_examples": [
             "税率・履歴・テーマをホーム画面のタブやカードとして並列配置する (頻度差を無視)"
+          ]
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "duality-functionality-vs-information",
+      "prompt": "レシピ閲覧と調理アシストを併せ持つモバイルアプリを設計します。ユーザーはレシピを検索・カテゴリ閲覧して『作るものを選ぶ』体験と、調理中にステップ送り・タイマー・分量スケーリングを『操作する』体験の両方を使います。ギャレットの5層で UX を設計してください。",
+      "expected_output": "Garrett の二面性 (機能性側 / 情報媒体側) を明確に区別し、Structure 層で IA (レシピ探索) とインタラクション設計 (調理操作) の両方を設計。レイヤー間の一貫性チェックで二面性の整合を確認している。",
+      "files": [],
+      "expectations": [
+        "report has dedicated sections for all 5 layers: Strategy, Scope, Structure, Skeleton, Surface",
+        "report explicitly distinguishes the functionality side (機能性側: 調理アシスト操作) from the information-medium side (情報媒体側: レシピ探索・閲覧) using Garrett's duality vocabulary",
+        "Structure section designs BOTH an information architecture (recipe browsing/taxonomy/labeling) AND an interaction design (cooking step/timer/scaling flow)",
+        "cross-layer consistency check includes an explicit 二面性 (functionality vs information) integrity item verifying the two sides do not contradict on shared screens",
+        "report does not collapse the two sides into a single undifferentiated design",
+        "output is written in Japanese"
+      ],
+      "rubric_anchors": {
+        "二面性を明確に区別": {
+          "pass_examples": [
+            "「本アプリは Garrett の二面性が顕著: 情報媒体側 = レシピを探す/比較する/選ぶ (IA・検索・カテゴリ)、機能性側 = 調理を進める (ステップ送り・タイマー・分量計算)。それぞれ設計の論理が異なる」"
+          ],
+          "fail_examples": [
+            "機能性側/情報媒体側の区別に触れず、全画面を一様に『UI設計』として扱っている",
+            "レシピ閲覧と調理操作を同じインタラクションパターンで設計し、探索と操作の違いを論じていない"
+          ]
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "skip-layer-guardrail-wireframe-first",
+      "prompt": "時間がないので、とりあえずホーム画面のワイヤーフレームだけ先に作ってほしいです。プロダクトは社内の備品予約アプリ（会議室・社用車・機材を予約する）です。",
+      "expected_output": "いきなりワイヤーに飛ばず、戦略・要件の仮定を 1 段落で明文化してから Skeleton に進む (SKILL.md の『下位層を飛ばさない』ガードレール)。ただしユーザーの本来の依頼 (ワイヤー) は最終的に提供する。",
+      "files": [],
+      "expectations": [
+        "report does NOT jump straight to a wireframe without first articulating lower-layer assumptions",
+        "report explicitly writes at least a one-paragraph assumption of Strategy and Scope (戦略・要件の仮定の明文化) before or alongside the wireframe",
+        "report notes that these assumptions are provisional and can be revisited later (後から戻りやすい / 仮定である旨)",
+        "report still delivers the user's actual request — a wireframe-level (Skeleton) layout for the home screen — rather than refusing it",
+        "output is written in Japanese"
+      ],
+      "rubric_anchors": {
+        "仮定の明文化を先に行う": {
+          "pass_examples": [
+            "「ワイヤー作成前に 1 段落で仮定を明文化します。戦略: 社内の備品予約の手間削減 / 主ユーザーは全社員 / Non-goals: 在庫購買管理。要件: コア=予約する。— この仮定の上で、ホーム画面のワイヤーは以下の通り」",
+            "「とりあえずワイヤーから、の依頼ですが、戻りやすさのため戦略・要件の仮定を先に 1 段落だけ置きます。…（仮定）… 以下がホーム画面の低忠実度ワイヤーです」"
+          ],
+          "fail_examples": [
+            "戦略・要件の仮定に一切触れず、いきなりホーム画面のワイヤーだけを出力する",
+            "5層フルレポートを延々と書き、ユーザーが求めたホーム画面のワイヤーを提供しない (逆方向の失敗)"
           ]
         }
       }
