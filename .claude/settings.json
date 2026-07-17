@@ -1,0 +1,7 @@
+{
+  "enabledPlugins": {
+    "karak-design@karak-dev": true,
+    "karak-engineering@karak-dev": true,
+    "karak-product@karak-dev": true
+  }
+}
