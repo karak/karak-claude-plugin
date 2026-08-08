@@ -1,6 +1,6 @@
 {
   "name": "karak-design",
-  "description": "UI/UX and visual design skills: Apple HIG, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system, Garrett UX analysis (Strategy/Scope/Structure/Skeleton/Surface 5-layer framework)",
+  "description": "UI/UX and visual design skills: Apple HIG for iOS 26 / Liquid Glass, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system, Garrett UX analysis (Strategy/Scope/Structure/Skeleton/Surface 5-layer framework)",
   "author": {
     "name": "karak"
   },
@@ -10,6 +10,9 @@
   "keywords": [
     "design",
     "apple-hig",
+    "ios26",
+    "liquid-glass",
+    "swiftui",
     "material-design",
     "icon-design",
     "frontend",
