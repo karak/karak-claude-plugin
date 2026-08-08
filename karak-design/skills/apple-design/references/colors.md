@@ -1,359 +1,131 @@
-# iOS Color System
+# Color (iOS 26+)
 
-Complete color palette and guidelines following Apple Human Interface Guidelines.
+## Never hard-code system colors
 
-## Semantic Colors
-
-### Label Colors
-
-Colors that automatically adapt to Light/Dark mode:
+Documented system color values are for design-time reference only. Actual values shift
+between releases and with environmental variables. Always reach them through the API.
 
 ```swift
-// Primary label - Most important text
-Color.primary       // Light: #000000, Dark: #FFFFFF
-
-// Secondary label - Subheadings, secondary info
-Color.secondary     // Light: 60% opacity, Dark: 60% opacity
-
-// Tertiary label - Disabled text, placeholders
-Color(.tertiaryLabel)  // Light: 30% opacity, Dark: 30% opacity
-
-// Quaternary label - Watermarks, separator lines
-Color(.quaternaryLabel)  // Light: 18% opacity, Dark: 18% opacity
+Color.blue          // not #007AFF
+Color(.systemGray3)
+Color.accentColor
 ```
 
-### Background Colors
+## Semantic foreground colors
+
+| Purpose | SwiftUI | UIKit |
+|---|---|---|
+| Primary text | `Color.primary` | `label` |
+| Secondary text | `Color.secondary` | `secondaryLabel` |
+| Tertiary text | `Color(.tertiaryLabel)` | `tertiaryLabel` |
+| Quaternary text | `Color(.quaternaryLabel)` | `quaternaryLabel` |
+| Placeholder | `Color(.placeholderText)` | `placeholderText` |
+| Separator (translucent) | `Color(.separator)` | `separator` |
+| Separator (opaque) | `Color(.opaqueSeparator)` | `opaqueSeparator` |
+| Link | `Color(.link)` | `link` |
+
+Don't repurpose these. Separator color is not a text color; secondary label is not a
+background.
+
+## Background colors
+
+Two sets, each with primary / secondary / tertiary variants:
 
 ```swift
-// System backgrounds (adapts to mode and elevation)
-Color(.systemBackground)            // Primary view background
-Color(.secondarySystemBackground)   // Grouped content background
-Color(.tertiarySystemBackground)    // Elevated content
+// Use the plain set for ungrouped views
+Color(.systemBackground)
+Color(.secondarySystemBackground)
+Color(.tertiarySystemBackground)
 
-// Grouped backgrounds (for grouped table views)
+// Use the grouped set with grouped table views / forms
 Color(.systemGroupedBackground)
 Color(.secondarySystemGroupedBackground)
 Color(.tertiarySystemGroupedBackground)
 ```
 
-### Fill Colors
-
-```swift
-// System fills for UI elements
-Color(.systemFill)           // Thin overlay
-Color(.secondarySystemFill)  // Medium overlay
-Color(.tertiarySystemFill)   // Thick overlay
-Color(.quaternarySystemFill) // Thickest overlay
-```
-
-### Separator Colors
-
-```swift
-Color(.separator)         // Standard separator
-Color(.opaqueSeparator)   // Opaque separator (no transparency)
-```
-
-## System Colors
-
-Tint colors that work in both Light and Dark modes:
-
-| Color | Light Mode | Dark Mode | Usage |
-|-------|------------|-----------|-------|
-| `.blue` | #007AFF | #0A84FF | Links, selection, interactive |
-| `.green` | #34C759 | #30D158 | Success, positive actions |
-| `.indigo` | #5856D6 | #5E5CE6 | Secondary accent |
-| `.orange` | #FF9500 | #FF9F0A | Warnings, attention |
-| `.pink` | #FF2D55 | #FF375F | Special, creative |
-| `.purple` | #AF52DE | #BF5AF2 | Premium, special features |
-| `.red` | #FF3B30 | #FF453A | Errors, destructive |
-| `.teal` | #5AC8FA | #64D2FF | Info, alternate accent |
-| `.yellow` | #FFCC00 | #FFD60A | Caution, highlights |
-| `.gray` | #8E8E93 | #8E8E93 | Neutral, disabled |
-
-### Accessible System Colors
-
-Higher contrast versions for accessibility:
-
-```swift
-Color(.systemBlue)       // Standard blue
-Color(.systemCyan)       // Cyan variant
-Color(.systemMint)       // Mint green
-Color(.systemBrown)      // Brown
-```
-
-## Custom Colors
-
-### Defining Custom Colors
-
-In Asset Catalog (recommended):
-1. Add Color Set to Assets.xcassets
-2. Define Light and Dark appearances
-3. Set High Contrast variants
-
-```swift
-// Access from Asset Catalog
-Color("BrandPrimary")
-Color("BrandSecondary")
-```
-
-### Programmatic Custom Colors
-
-```swift
-extension Color {
-    static let brandPrimary = Color(
-        light: Color(red: 0.2, green: 0.4, blue: 0.8),
-        dark: Color(red: 0.3, green: 0.5, blue: 0.9)
-    )
-}
-
-// Helper extension
-extension Color {
-    init(light: Color, dark: Color) {
-        self.init(UIColor { traits in
-            traits.userInterfaceStyle == .dark
-                ? UIColor(dark)
-                : UIColor(light)
-        })
-    }
-}
-```
-
-### High Contrast Support
-
-```swift
-extension Color {
-    static let accessibleBlue = Color(UIColor { traits in
-        if traits.accessibilityContrast == .high {
-            return traits.userInterfaceStyle == .dark
-                ? UIColor(red: 0.1, green: 0.6, blue: 1.0, alpha: 1)
-                : UIColor(red: 0.0, green: 0.3, blue: 0.7, alpha: 1)
-        } else {
-            return traits.userInterfaceStyle == .dark
-                ? UIColor.systemBlue
-                : UIColor.systemBlue
-        }
-    })
-}
-```
-
-## Accessibility Requirements
-
-### Contrast Ratios
-
-| Text Size | Minimum Ratio | Target Ratio |
-|-----------|---------------|--------------|
-| Normal text (<18pt) | 4.5:1 | 7:1 |
-| Large text (≥18pt) | 3:1 | 4.5:1 |
-| UI components | 3:1 | 4.5:1 |
-
-### Checking Contrast
-
-```swift
-// Use Accessibility Inspector in Xcode
-// Or online tools like WebAIM Contrast Checker
-
-// Common passing combinations:
-// - Black text on white: 21:1 ✓
-// - White text on blue (#007AFF): 4.52:1 ✓
-// - White text on red (#FF3B30): 4.01:1 ⚠️ (use darker red)
-```
-
-### Color Blindness
-
-Never convey information by color alone:
-
-```swift
-// Bad - relies only on color
-Circle()
-    .fill(isSuccess ? .green : .red)
-
-// Good - uses icon as well
-HStack {
-    Image(systemName: isSuccess ? "checkmark.circle" : "xmark.circle")
-    Circle()
-        .fill(isSuccess ? .green : .red)
-}
-```
-
-## Common Patterns
-
-### Status Indicators
-
-```swift
-struct StatusBadge: View {
-    enum Status {
-        case success, warning, error, info
-
-        var color: Color {
-            switch self {
-            case .success: return .green
-            case .warning: return .orange
-            case .error: return .red
-            case .info: return .blue
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .success: return "checkmark.circle.fill"
-            case .warning: return "exclamationmark.triangle.fill"
-            case .error: return "xmark.circle.fill"
-            case .info: return "info.circle.fill"
-            }
-        }
-    }
-
-    let status: Status
-    let message: String
-
-    var body: some View {
-        Label(message, systemImage: status.icon)
-            .foregroundStyle(status.color)
-    }
-}
-```
-
-### Card with Background
-
-```swift
-VStack {
-    content
-}
-.padding()
-.background(Color(.secondarySystemBackground))
-.clipShape(RoundedRectangle(cornerRadius: 12))
-```
-
-### Gradient Background
-
-```swift
-LinearGradient(
-    colors: [.blue, .purple],
-    startPoint: .topLeading,
-    endPoint: .bottomTrailing
-)
-
-// Accessible gradient
-LinearGradient(
-    colors: [
-        Color.blue.opacity(0.8),
-        Color.purple.opacity(0.8)
-    ],
-    startPoint: .top,
-    endPoint: .bottom
-)
-.overlay {
-    // Ensure text contrast
-    Color.black.opacity(0.3)
-}
-```
-
-### Button States
-
-```swift
-struct StyledButton: View {
-    @Environment(\.isEnabled) var isEnabled
-    let title: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .foregroundStyle(isEnabled ? .white : .secondary)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(isEnabled ? .blue : .gray)
-    }
-}
-```
-
-## Dark Mode Considerations
-
-### Material Backgrounds
-
-Use materials for translucent backgrounds:
-
-```swift
-.background(.ultraThinMaterial)
-.background(.thinMaterial)
-.background(.regularMaterial)
-.background(.thickMaterial)
-.background(.ultraThickMaterial)
-```
-
-### Elevation and Shadows
-
-Dark mode uses elevated backgrounds instead of shadows:
-
-```swift
-// Light mode: uses shadow
-// Dark mode: uses lighter background
-.background(Color(.systemBackground))
-.shadow(color: .black.opacity(0.1), radius: 8, y: 4)
-
-// Better approach - works in both modes
-.background(Color(.secondarySystemBackground))
-```
-
-### Vibrancy
-
-```swift
-.foregroundStyle(.primary)
-.background(.ultraThinMaterial)
-```
-
-## Color Usage Guidelines
-
-### Do:
-- Use semantic colors (`.primary`, `.secondary`)
-- Support both Light and Dark modes
-- Test with Increase Contrast enabled
-- Provide non-color cues for status
-- Use system colors for consistency
-- Define custom colors in Asset Catalog
-
-### Don't:
-- Hard-code hex colors without dark mode support
-- Use pure black (#000000) on pure white (too harsh)
-- Rely solely on color for meaning
-- Use too many accent colors
-- Override system colors unnecessarily
-- Use low-contrast color combinations
-
-## Testing Colors
-
-### In Xcode
-
-1. **Environment overrides**: Change appearance to test Light/Dark
-2. **Accessibility Inspector**: Check contrast ratios
-3. **Color blindness filters**: Test deuteranopia, protanopia, tritanopia
-
-### Programmatically
-
-```swift
-#Preview {
-    ContentView()
-        .preferredColorScheme(.dark)
-        .environment(\.accessibilityContrast, .high)
-}
-```
-
-## Brand Color Integration
-
-When integrating brand colors:
-
-1. **Define in Asset Catalog** with Light/Dark variants
-2. **Ensure accessibility** - test contrast ratios
-3. **Use sparingly** - accent only, not backgrounds
-4. **Complement system colors** - don't replace them
-
-```swift
-// Brand accent color
-extension Color {
-    static let brandAccent = Color("BrandAccent")
-}
-
-// Usage
-Button("Brand Action") { }
-    .tint(.brandAccent)
-```
+Hierarchy convention:
+- **Primary** — the overall view
+- **Secondary** — grouping content within the overall view
+- **Tertiary** — grouping content within secondary elements
+
+## System colors
+
+`red`, `orange`, `yellow`, `green`, `mint`, `teal`, `cyan`, `blue`, `indigo`, `purple`,
+`pink`, `brown` — each defines light, dark, and increased-contrast variants.
+
+Grays are UIKit-side: `systemGray` through `systemGray6`. In SwiftUI, `Color.gray` is the
+equivalent of `systemGray`.
+
+## Liquid Glass color
+
+By default **Liquid Glass has no inherent color** — it takes color from whatever is directly
+behind it. You can tint some glass elements to get the look of stained glass.
+
+The rules:
+
+**Apply color sparingly.** Reserve it for elements that genuinely benefit from emphasis:
+status indicators and the primary action.
+
+**Emphasize by tinting the background, not the label.** The system does exactly this for
+prominent buttons — the app accent color goes on the button's background, not on its title.
+Don't tint the background of multiple controls in the same view.
+
+**Small elements go monochromatic.** Tab bars and toolbars adapt between light and dark
+appearance based on the content beneath; their symbols and text follow a monochromatic
+scheme — darker over light content, lighter over dark. Larger elements like sidebars render
+more opaque to preserve legibility over complex backgrounds.
+
+**Colorful content ⇒ monochromatic chrome.** If your content layer is bright and colorful,
+keep toolbars and tab bars monochromatic, or pick an accent color with real visual
+separation. Conversely, if your content is largely monochromatic, your brand color makes a
+strong accent color.
+
+**Mind the overlap.** Check the *resting* state — the top of a scroll — for similar colors
+colliding between the content layer and controls above it. Transient overlap while scrolling
+is acceptable; a bad default state is not.
+
+## Accent color
+
+Set an app accent color in the asset catalog. It drives prominent buttons, selection, and
+sidebar icons. Choose a color that reads against both light and dark content and that
+doesn't collide with your content layer.
+
+## Custom colors
+
+Every custom color must define:
+1. A light variant
+2. A dark variant
+3. An increased-contrast option for **each** of those
+
+This holds even if the app ships in a single appearance mode — Liquid Glass adapts in both
+directions and needs both definitions.
+
+Define them in the asset catalog, not in code, so the system resolves them per context.
+
+## Inclusive color
+
+- **Never convey information by color alone.** Pair it with text, shape, or a symbol.
+  Red-green and blue-orange pairings are the common failures.
+- Check contrast: **4.5:1** for text up to 17 pt, **3:1** for 18 pt+ or bold at any size.
+- If the default palette can't hit those numbers, at minimum ship a higher-contrast scheme
+  that activates with Increase Contrast.
+- Check contrast in **both** light and dark.
+- Consider cultural connotations — red is danger in some cultures, fortune in others.
+
+## Color management
+
+- Apply color profiles to images. sRGB is accurate on most displays.
+- Use **Display P3 at 16 bits per channel, exported as PNG** for wide-color assets. P3
+  colors generally look fine on sRGB displays, but very similar P3 colors can become
+  indistinguishable and P3 gradients can clip — ship per-color-space variants in the asset
+  catalog when that matters.
+- Test under varied lighting: colors look darker and more muted in bright surroundings,
+  brighter and more saturated in the dark.
+- Test on devices with True Tone.
+
+## Dark Mode
+
+Use semantic colors and it mostly works. Beyond that:
+- Test every custom color and asset in both appearances.
+- Don't assume "dark mode = invert". Elevated surfaces get *lighter*, not darker.
+- Provide dark variants for app icons (see `app-icons.md`).

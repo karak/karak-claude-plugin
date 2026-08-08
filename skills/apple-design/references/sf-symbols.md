@@ -1,388 +1,203 @@
-# SF Symbols Reference
+# SF Symbols (SF Symbols 7, iOS 26+)
 
-Complete guide to using SF Symbols in iOS applications.
+Thousands of configurable symbols that integrate with San Francisco, matching text weight
+and size automatically. Use them wherever interface icons appear.
 
-## Overview
+Availability tracks OS version — symbols and features introduced in a given year aren't
+available earlier. Since this skill targets iOS 26+, SF Symbols 7 features are fair game.
 
-SF Symbols is Apple's iconography system with 5,000+ symbols that automatically align with San Francisco font. All symbols support:
-- Multiple weights (ultralight to black)
-- Multiple scales (small, medium, large)
-- Four rendering modes
-- Dynamic Type scaling
-- Accessibility features
+**Licensing:** SF Symbols may not be used — nor may confusingly similar images — in app
+icons, logos, or any trademarked use.
 
-## Basic Usage
+## Basic usage
 
 ```swift
-// Simple symbol
-Image(systemName: "star")
+Image(systemName: "star.fill")
 
-// With size
-Image(systemName: "star")
-    .font(.system(size: 24))
+Label("Favorites", systemImage: "star.fill")
 
-// With weight
-Image(systemName: "star")
+Image(systemName: "gear")
     .font(.system(size: 24, weight: .medium))
-
-// In a Label
-Label("Favorites", systemImage: "star.fill")
+    .imageScale(.large)          // .small | .medium (default) | .large
 ```
 
-## Rendering Modes
+Weights map 1:1 to San Francisco weights (ultralight → black), so symbols and adjacent text
+weight-match precisely. Scales are defined relative to SF's cap height, letting you adjust a
+symbol's emphasis without breaking weight matching.
 
-### Monochrome (Default)
-Single color, respects foreground color:
+## Rendering modes
+
+Symbols organize their paths into layers; the rendering mode decides how color maps onto
+them.
 
 ```swift
-Image(systemName: "cloud.sun")
-    .foregroundStyle(.blue)
+Image(systemName: "cloud.sun.rain.fill")
+    .symbolRenderingMode(.monochrome)    // one color, all layers
+    .symbolRenderingMode(.hierarchical)  // one color, varying opacity per layer
+    .symbolRenderingMode(.palette)       // one color per layer
+    .symbolRenderingMode(.multicolor)    // intrinsic meaningful colors
+    .symbolRenderingMode(nil)            // automatic — the symbol's preferred mode
 ```
 
-### Hierarchical
-Single color with depth through opacity:
-
 ```swift
-Image(systemName: "cloud.sun")
-    .symbolRenderingMode(.hierarchical)
-    .foregroundStyle(.blue)
-```
-
-### Palette
-Two or three distinct colors:
-
-```swift
-Image(systemName: "cloud.sun")
+// Palette needs one color per hierarchy level
+Image(systemName: "cloud.sun.rain.fill")
     .symbolRenderingMode(.palette)
-    .foregroundStyle(.blue, .yellow)
+    .foregroundStyle(.white, .yellow, .blue)
 ```
 
-### Multicolor
-SF Symbols' inherent colors (fixed):
+- **Hierarchical** is the go-to for conveying depth and hierarchy inside a symbol.
+- **Multicolor** carries semantics — `leaf` is green, `trash.slash` is red.
+- Use **system-provided colors** whatever the mode, so symbols adapt to vibrancy, Dark Mode,
+  and accessibility settings automatically.
+- Verify the chosen mode at the sizes and contrasts you actually ship — legibility varies.
+
+## Gradients (SF Symbols 7)
+
+Generates a smooth linear gradient from a single source color. Works across all rendering
+modes, for system and custom colors, and for custom symbols. Renders at any size but looks
+best large.
 
 ```swift
-Image(systemName: "cloud.sun")
-    .symbolRenderingMode(.multicolor)
+Image(systemName: "heart.fill")
+    .foregroundStyle(.pink)
+    .symbolColorRenderingMode(.gradient)   // or .flat
 ```
 
-## Symbol Variants
+## Variable color
 
-Many symbols have variants:
-
-| Variant | Example | Usage |
-|---------|---------|-------|
-| Outline | `heart` | Default, unselected |
-| Fill | `heart.fill` | Selected state |
-| Circle | `heart.circle` | Enclosed style |
-| Square | `heart.square` | Boxed style |
-| Slash | `heart.slash` | Disabled/unavailable |
+Represents a quantity that changes over time — capacity, signal strength, volume — by
+coloring layers as a value crosses thresholds between 0 and 1.
 
 ```swift
-// Toggle between states
-Image(systemName: isFavorite ? "heart.fill" : "heart")
-    .foregroundStyle(isFavorite ? .red : .gray)
+Image(systemName: "speaker.wave.3", variableValue: volume)
 ```
 
-## Symbol Effects (iOS 17+)
+Use variable color for **change**, never for depth — that's hierarchical rendering's job.
+Layers that don't change (the speaker body) opt out.
 
-### Bounce
+**SF Symbols 7** adds a draw-based variable value mode:
 
 ```swift
-Image(systemName: "star.fill")
-    .symbolEffect(.bounce, value: count)
+Image(systemName: "chart.line.uptrend.xyaxis", variableValue: progress)
+    .symbolVariableValueMode(.draw)   // or .color
 ```
 
-### Pulse
+## Design variants
+
+- **Outline** — the most common; matches text. Best in toolbars, lists, and beside text.
+- **Fill** — solid interiors. Use for selection and for tab bars.
+- **Slash** — unavailable or disabled state.
+- **Enclosed** (circle, square, rectangle) — improves legibility at small sizes; combines
+  with outline/fill.
 
 ```swift
-Image(systemName: "antenna.radiowaves.left.and.right")
-    .symbolEffect(.pulse)
+Image(systemName: "heart")
+    .symbolVariant(isFavorite ? .fill : .none)
 ```
 
-### Variable Color
+Language- and script-specific variants (Latin, Arabic, Hebrew, Hindi, Thai, Chinese,
+Japanese, Korean, Cyrillic, Devanagari, and several Indic numeral systems) swap
+automatically with the device language.
+
+## Animation
 
 ```swift
-Image(systemName: "wifi")
-    .symbolEffect(.variableColor.iterative)
-```
+// State-change effects
+Image(systemName: "bell").symbolEffect(.bounce, value: notificationCount)
+Image(systemName: "wifi").symbolEffect(.variableColor.iterative)
+Image(systemName: "arrow.clockwise").symbolEffect(.rotate, isActive: isRefreshing)
 
-### Scale
-
-```swift
-Image(systemName: "star.fill")
-    .symbolEffect(.scale.up, isActive: isActive)
-```
-
-### Appear/Disappear
-
-```swift
-Image(systemName: "checkmark")
-    .symbolEffect(.appear, isActive: showCheck)
-```
-
-### Replace
-
-```swift
-Image(systemName: currentSymbol)
+// Content transitions between symbols
+Image(systemName: isPlaying ? "pause.fill" : "play.fill")
     .contentTransition(.symbolEffect(.replace))
+
+// SF Symbols 7: Draw animations — the symbol draws itself on/off along its paths
+Image(systemName: "checkmark.circle")
+    .symbolEffect(.drawOn, isActive: isComplete)
 ```
 
-## Common Symbol Categories
+`DrawOnSymbolEffect` / `DrawOffSymbolEffect` are iOS 26+.
 
-### Navigation
+Use symbol animations to communicate state changes — especially for Control Center controls,
+where the symbol may be the only visible element. For a toggle, animate both directions. For
+an action with duration, animate indefinitely while it runs and stop on completion.
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| ← | `chevron.left` | Back navigation |
-| → | `chevron.right` | Forward, disclosure |
-| ↓ | `chevron.down` | Expand, dropdown |
-| ↑ | `chevron.up` | Collapse |
-| ✕ | `xmark` | Close, dismiss |
-| ≡ | `line.3.horizontal` | Menu |
+## Custom symbols
 
-### Actions
+When SF Symbols doesn't have what you need, create a **custom symbol** rather than shipping
+a bitmap. Export a template from the SF Symbols app, edit the paths, and keep the layer
+structure so rendering modes work.
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| + | `plus` | Add, create |
-| − | `minus` | Remove, decrease |
-| ✓ | `checkmark` | Complete, done |
-| ✎ | `pencil` | Edit |
-| ⌫ | `trash` | Delete |
-| ↗ | `square.and.arrow.up` | Share |
-| ↻ | `arrow.clockwise` | Refresh |
+## Standard action symbols
 
-### Media
+Use these for common actions so people recognize them instantly.
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| ▶ | `play.fill` | Play |
-| ⏸ | `pause.fill` | Pause |
-| ⏹ | `stop.fill` | Stop |
-| ⏮ | `backward.fill` | Previous |
-| ⏭ | `forward.fill` | Next |
-| 🔊 | `speaker.wave.3.fill` | Volume |
-| 🔇 | `speaker.slash.fill` | Mute |
+### Editing
+| Action | Symbol |
+|---|---|
+| Cut | `scissors` |
+| Copy | `document.on.document` |
+| Paste | `document.on.clipboard` |
+| Done | `checkmark` |
+| Cancel / Close | `xmark` |
+| Delete | `trash` |
+| Undo | `arrow.uturn.backward` |
+| Redo | `arrow.uturn.forward` |
+| Compose | `square.and.pencil` |
+| Duplicate | `plus.square.on.square` |
+| Rename | `pencil` |
+| Move to / Folder | `folder` |
+| Attach | `paperclip` |
+| Add | `plus` |
+| More | `ellipsis` |
 
-### Communication
+### Selection
+| Action | Symbol |
+|---|---|
+| Select | `checkmark.circle` |
+| Deselect | `xmark` |
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| ✉ | `envelope` | Email |
-| 📱 | `phone` | Call |
-| 💬 | `message` | Message |
-| 🔔 | `bell` | Notifications |
-| 👤 | `person` | Profile |
-| 👥 | `person.2` | Contacts |
+### Text formatting
+| Action | Symbol |
+|---|---|
+| Bold | `bold` |
+| Italic | `italic` |
+| Underline | `underline` |
+| Superscript | `textformat.superscript` |
+| Subscript | `textformat.subscript` |
+| Align left | `text.alignleft` |
+| Center | `text.aligncenter` |
+| Justified | `text.justify` |
+| Align right | `text.alignright` |
 
-### Status
+### Search
+| Action | Symbol |
+|---|---|
+| Search | `magnifyingglass` |
+| Find | `text.page.badge.magnifyingglass` |
+| Filter | `line.3.horizontal.decrease` |
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| ✓○ | `checkmark.circle` | Success |
-| !△ | `exclamationmark.triangle` | Warning |
-| ✕○ | `xmark.circle` | Error |
-| ⓘ | `info.circle` | Information |
-| ? | `questionmark.circle` | Help |
+### Sharing
+| Action | Symbol |
+|---|---|
+| Share | `square.and.arrow.up` |
+| Print | `printer` |
 
-### Objects
+### Accounts
+| Action | Symbol |
+|---|---|
+| Account | `person.crop.circle` |
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| ⚙ | `gear` | Settings |
-| 🏠 | `house` | Home |
-| 🔍 | `magnifyingglass` | Search |
-| ⭐ | `star` | Favorite |
-| ❤ | `heart` | Like |
-| 📁 | `folder` | Files |
-| 📄 | `doc` | Document |
+For menu items performing standard actions (Cut, Copy, Paste), use the **standard selector**
+— the system picks the icon from it, so you get the right symbol with no extra code.
 
-### Device
+## Rules
 
-| Symbol | Name | Usage |
-|--------|------|-------|
-| 📱 | `iphone` | iPhone |
-| 💻 | `laptopcomputer` | Mac |
-| ⌚ | `applewatch` | Watch |
-| 🎧 | `airpodspro` | AirPods |
-| 📷 | `camera` | Camera |
-
-## Sizing and Alignment
-
-### Match Text Size
-
-```swift
-HStack {
-    Image(systemName: "star.fill")
-        .font(.body)  // Matches body text size
-
-    Text("Favorite")
-        .font(.body)
-}
-```
-
-### Image Scale
-
-```swift
-Image(systemName: "star.fill")
-    .imageScale(.small)   // Smaller
-    .imageScale(.medium)  // Default
-    .imageScale(.large)   // Larger
-```
-
-### Baseline Alignment
-
-SF Symbols automatically align to text baseline:
-
-```swift
-HStack(alignment: .firstTextBaseline) {
-    Image(systemName: "star.fill")
-    Text("Rating")
-}
-```
-
-## Accessibility
-
-### Labels
-
-Always provide accessibility labels for meaning:
-
-```swift
-Image(systemName: "star.fill")
-    .accessibilityLabel("Favorite")
-
-// Hide decorative symbols
-Image(systemName: "chevron.right")
-    .accessibilityHidden(true)
-```
-
-### Bold Text Support
-
-SF Symbols automatically bold when Bold Text is enabled.
-
-### VoiceOver
-
-Symbols in Labels are automatically described:
-
-```swift
-// VoiceOver: "Favorites"
-Label("Favorites", systemImage: "star.fill")
-
-// For custom behavior:
-Button {
-    action()
-} label: {
-    Image(systemName: "plus")
-}
-.accessibilityLabel("Add item")
-```
-
-## Custom Symbols
-
-Create custom symbols compatible with SF Symbols:
-
-1. Design in SF Symbols app or Sketch
-2. Export as SVG
-3. Import to Asset Catalog as Symbol Image Set
-4. Use like system symbols
-
-```swift
-Image("custom.symbol.name")
-    .font(.system(size: 24))
-```
-
-## Best Practices
-
-### Do:
-- Use filled variants for selected states
-- Match symbol weight to text weight
-- Use rendering modes consistently
-- Provide accessibility labels
-- Test with Bold Text enabled
-- Use symbol effects for feedback
-
-### Don't:
-- Mix too many rendering modes
-- Use symbols without context
-- Forget accessibility labels
-- Use symbols that don't scale well
-- Override symbol colors unnecessarily
-
-## Common Patterns
-
-### Tab Bar Icons
-
-```swift
-TabView {
-    HomeView()
-        .tabItem {
-            Label("Home", systemImage: "house.fill")
-        }
-
-    SearchView()
-        .tabItem {
-            Label("Search", systemImage: "magnifyingglass")
-        }
-}
-```
-
-### Toolbar Buttons
-
-```swift
-.toolbar {
-    ToolbarItem(placement: .navigationBarTrailing) {
-        Button {
-            add()
-        } label: {
-            Image(systemName: "plus")
-        }
-    }
-}
-```
-
-### Toggle with Symbol
-
-```swift
-Button {
-    isFavorite.toggle()
-} label: {
-    Image(systemName: isFavorite ? "heart.fill" : "heart")
-        .foregroundStyle(isFavorite ? .red : .secondary)
-        .symbolEffect(.bounce, value: isFavorite)
-}
-```
-
-### Loading Indicator
-
-```swift
-Image(systemName: "arrow.triangle.2.circlepath")
-    .symbolEffect(.rotate, isActive: isLoading)
-```
-
-### Badge with Symbol
-
-```swift
-Image(systemName: "bell.fill")
-    .overlay(alignment: .topTrailing) {
-        if badgeCount > 0 {
-            Circle()
-                .fill(.red)
-                .frame(width: 8, height: 8)
-        }
-    }
-```
-
-## Finding Symbols
-
-### SF Symbols App
-Download from Apple Developer for browsing all symbols.
-
-### Xcode Library
-Use the Library panel (⌘⇧L) to browse and insert symbols.
-
-### Search Patterns
-- Object: `house`, `car`, `building`
-- Action: `plus`, `minus`, `xmark`
-- State: `checkmark`, `exclamationmark`
-- Arrow: `arrow.up`, `chevron.down`
-- Shape: `circle`, `square`, `rectangle`
+- **Always supply an accessibility label**, even when a text label is visible — people using
+  VoiceOver or Voice Control need it.
+- **Prefer filled variants in tab bars** for platform consistency.
+- **No borders in toolbars.** Outlined-circle-style symbols are redundant; the section
+  already provides a container.
+- **Don't mix text and symbols** across toolbar items that share a background.
+- Symbols scale with Dynamic Type automatically — let them.

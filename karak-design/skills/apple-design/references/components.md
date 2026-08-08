@@ -1,593 +1,311 @@
-# iOS UI Components Reference
+# SwiftUI Component Recipes (iOS 26+)
 
-Standard SwiftUI component patterns following Apple Human Interface Guidelines.
+Concrete patterns for standard components. Prefer these over custom builds — standard
+components inherit Liquid Glass, scroll edge effects, concentric corners, adaptive
+appearance, and accessibility for free.
 
 ## Buttons
 
-### Button Styles
+### Styles
 
 ```swift
-// Primary action - Filled, prominent
-Button("Continue") { action() }
-    .buttonStyle(.borderedProminent)
+// Liquid Glass styles — the iOS 26 defaults for floating/chrome buttons
+Button("Continue") { }.buttonStyle(.glass)
+Button("Done") { }.buttonStyle(.glassProminent)
 
-// Secondary action - Bordered
-Button("Skip") { skip() }
-    .buttonStyle(.bordered)
+// In-content styles
+Button("Save") { }.buttonStyle(.borderedProminent)
+Button("Skip") { }.buttonStyle(.bordered)
+Button("Learn more") { }.buttonStyle(.plain)
 
-// Tertiary - Plain text
-Button("Learn More") { info() }
-    .buttonStyle(.plain)
-
-// Destructive
-Button("Delete", role: .destructive) { delete() }
-    .buttonStyle(.bordered)
-
-// Cancel
-Button("Cancel", role: .cancel) { cancel() }
+// Roles carry semantics and change appearance
+Button("Delete", role: .destructive) { }    // system red
+Button("Cancel", role: .cancel) { }
 ```
 
-### Button Sizing
+Assign the primary role to the button people are most likely to choose — it responds to
+Return and lets a sheet/alert dismiss itself. **Never** give the primary role to a
+destructive action.
+
+### Sizing
 
 ```swift
-// Control size
-Button("Small") { }
-    .controlSize(.small)
-    .buttonStyle(.bordered)
-
-Button("Regular") { }
-    .controlSize(.regular)
-    .buttonStyle(.bordered)
-
-Button("Large") { }
-    .controlSize(.large)
-    .buttonStyle(.bordered)
-
-// Full width button
-Button("Full Width") { }
-    .buttonStyle(.borderedProminent)
-    .frame(maxWidth: .infinity)
+Button("Get started") { }
+    .buttonStyle(.glassProminent)
+    .controlSize(.extraLarge)      // extra-large sizing for headline actions
+    .buttonSizing(.flexible)       // iOS 26: control how the button sizes to its container
 ```
 
-### Icon Buttons
+Rules:
+- Hit region **≥ 44×44 pt** (absolute floor 28×28 pt).
+- One or two prominent buttons per view, no more.
+- Distinguish the preferred option by *style*, not size — sibling options should be the
+  same size.
+- Always give custom buttons a press state.
+- Avoid full-width buttons; inset from screen edges.
+
+### With an activity indicator
+
+Configure the button to show progress in place rather than blocking the screen, optionally
+swapping the label ("Checkout" → "Checking out…").
+
+## Navigation
 
 ```swift
-// Icon only
-Button {
-    action()
-} label: {
-    Image(systemName: "plus")
+NavigationStack(path: $path) {
+    List(items) { item in
+        NavigationLink(value: item) { ItemRow(item: item) }
+    }
+    .navigationTitle("Items")
+    .navigationDestination(for: Item.self) { ItemDetail(item: $0) }
 }
-.buttonStyle(.bordered)
-.buttonBorderShape(.circle)
-
-// Icon with label
-Button {
-    action()
-} label: {
-    Label("Add Item", systemImage: "plus")
-}
-.buttonStyle(.borderedProminent)
 ```
 
-### Custom Button Styling
+Never build a custom back button — it breaks the system swipe gesture. If you must, keep
+the standard appearance and behavior.
+
+## Tab view
 
 ```swift
-struct PrimaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.headline)
-            .foregroundStyle(.white)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(Color.accentColor)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
+TabView {
+    Tab("Home", systemImage: "house.fill") { HomeView() }
+    Tab("Library", systemImage: "books.vertical.fill") { LibraryView() }
+    Tab(role: .search) { SearchView() }
+}
+.tabBarMinimizeBehavior(.onScrollDown)
+.tabViewBottomAccessory { NowPlayingBar() }
+```
+
+On iPad add `.tabViewStyle(.sidebarAdaptable)`.
+
+## Toolbar
+
+```swift
+.toolbar {
+    ToolbarItem(placement: .topBarLeading) {
+        Button("Close", systemImage: "xmark") { dismiss() }
+    }
+    ToolbarItemGroup(placement: .topBarTrailing) {
+        Button("Filter", systemImage: "line.3.horizontal.decrease") { }
+        Button("Sort", systemImage: "arrow.up.arrow.down") { }
+    }
+    ToolbarSpacer(.fixed, placement: .topBarTrailing)
+    ToolbarItem(placement: .topBarTrailing) {
+        Button("Done") { save() }
     }
 }
-
-// Usage
-Button("Custom") { }
-    .buttonStyle(PrimaryButtonStyle())
 ```
 
-## Text Fields
+Hide the **item**, not its content, when an action is unavailable — otherwise you get an
+empty glass pill.
 
-### Basic Text Fields
-
-```swift
-// Simple text field
-TextField("Name", text: $name)
-
-// With prompt
-TextField("Email", text: $email, prompt: Text("you@example.com"))
-
-// Secure field
-SecureField("Password", text: $password)
-```
-
-### Text Field Styles
+## Search
 
 ```swift
-// Rounded border (default)
-TextField("Search", text: $search)
-    .textFieldStyle(.roundedBorder)
-
-// Plain
-TextField("Plain", text: $text)
-    .textFieldStyle(.plain)
-```
-
-### Keyboard Types
-
-```swift
-TextField("Email", text: $email)
-    .keyboardType(.emailAddress)
-    .textContentType(.emailAddress)
-    .autocapitalization(.none)
-
-TextField("Phone", text: $phone)
-    .keyboardType(.phonePad)
-    .textContentType(.telephoneNumber)
-
-TextField("URL", text: $url)
-    .keyboardType(.URL)
-    .textContentType(.URL)
-    .autocapitalization(.none)
-```
-
-### Validation States
-
-```swift
-TextField("Email", text: $email)
-    .textFieldStyle(.roundedBorder)
-    .overlay(
-        RoundedRectangle(cornerRadius: 8)
-            .stroke(isValid ? Color.clear : Color.red, lineWidth: 1)
-    )
-
-if !isValid {
-    Text("Invalid email address")
-        .font(.caption)
-        .foregroundStyle(.red)
+NavigationStack {
+    List(results) { ResultRow(item: $0) }
+        .searchable(text: $query, prompt: "Search items")
+        .searchToolbarBehavior(.minimize)
+        .searchScopes($scope) {
+            Text("All").tag(Scope.all)
+            Text("Mailbox").tag(Scope.mailbox)
+        }
 }
 ```
 
-## Pickers
-
-### Standard Picker
-
-```swift
-Picker("Category", selection: $category) {
-    ForEach(categories, id: \.self) { category in
-        Text(category).tag(category)
-    }
-}
-
-// Picker styles
-.pickerStyle(.menu)          // Dropdown menu
-.pickerStyle(.segmented)     // Segmented control
-.pickerStyle(.wheel)         // Wheel picker
-.pickerStyle(.inline)        // Inline list
-```
-
-### Date Picker
-
-```swift
-DatePicker("Date", selection: $date)
-
-// Specific components
-DatePicker("Time", selection: $time, displayedComponents: .hourAndMinute)
-DatePicker("Date", selection: $date, displayedComponents: .date)
-
-// Date picker styles
-.datePickerStyle(.compact)   // Compact button
-.datePickerStyle(.graphical) // Calendar view
-.datePickerStyle(.wheel)     // Wheel picker
-```
-
-### Color Picker
-
-```swift
-ColorPicker("Color", selection: $color)
-ColorPicker("Color", selection: $color, supportsOpacity: false)
-```
-
-## Toggles and Sliders
-
-### Toggle
-
-```swift
-Toggle("Notifications", isOn: $isEnabled)
-
-// Toggle styles
-Toggle("Option", isOn: $isOn)
-    .toggleStyle(.switch)  // Default switch
-
-Toggle("Option", isOn: $isOn)
-    .toggleStyle(.button)  // Button style
-```
-
-### Slider
-
-```swift
-Slider(value: $volume, in: 0...100)
-
-// With labels
-Slider(value: $volume, in: 0...100) {
-    Text("Volume")
-} minimumValueLabel: {
-    Image(systemName: "speaker")
-} maximumValueLabel: {
-    Image(systemName: "speaker.wave.3")
-}
-
-// With step
-Slider(value: $value, in: 0...10, step: 1)
-```
-
-### Stepper
-
-```swift
-Stepper("Quantity: \(quantity)", value: $quantity, in: 1...10)
-
-// Custom increment
-Stepper("Value", value: $value, in: 0...100, step: 5)
-```
-
-## Progress Indicators
-
-### Indeterminate
-
-```swift
-ProgressView()
-ProgressView("Loading...")
-```
-
-### Determinate
-
-```swift
-ProgressView(value: progress)
-ProgressView(value: progress, total: 100)
-
-// With label
-ProgressView(value: progress) {
-    Text("Downloading...")
-} currentValueLabel: {
-    Text("\(Int(progress * 100))%")
-}
-```
-
-### Progress View Styles
-
-```swift
-ProgressView()
-    .progressViewStyle(.circular)
-
-ProgressView(value: 0.5)
-    .progressViewStyle(.linear)
-```
-
-## Lists
-
-### Basic List
+## Lists and forms
 
 ```swift
 List {
-    Text("Item 1")
-    Text("Item 2")
-    Text("Item 3")
-}
-```
-
-### List with Sections
-
-```swift
-List {
-    Section("Section 1") {
-        Text("Item 1")
-        Text("Item 2")
+    Section("Account") {                  // title case — the system no longer uppercases
+        NavigationLink("Profile") { ProfileView() }
+        NavigationLink("Settings") { SettingsView() }
     }
+}
+.listStyle(.insetGrouped)
+.listSectionMargins(.horizontal, 20)      // iOS 26
 
+Form {
+    Section("Personal info") {
+        TextField("Name", text: $name)
+        DatePicker("Birthday", selection: $birthday, displayedComponents: .date)
+    }
     Section {
-        Text("Item 3")
-    } header: {
-        Text("Section 2")
-    } footer: {
-        Text("Footer text")
+        Toggle("Notifications", isOn: $notifications)
     }
 }
+.formStyle(.grouped)
 ```
 
-### List Styles
+Rows and sections have larger padding and corner radii than in iOS 18 — don't fight it with
+hard-coded insets.
+
+## Sheets
 
 ```swift
-List { }
-    .listStyle(.automatic)       // Platform default
-    .listStyle(.insetGrouped)    // Grouped with inset
-    .listStyle(.grouped)         // Grouped
-    .listStyle(.plain)           // Plain list
-    .listStyle(.sidebar)         // Sidebar style
-```
-
-### List Row Configuration
-
-```swift
-List {
-    ForEach(items) { item in
-        Text(item.name)
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-    }
-}
-```
-
-### Swipe Actions
-
-```swift
-List {
-    ForEach(items) { item in
-        Text(item.name)
-            .swipeActions(edge: .trailing) {
-                Button(role: .destructive) {
-                    delete(item)
-                } label: {
-                    Label("Delete", systemImage: "trash")
+.sheet(isPresented: $showSheet) {
+    NavigationStack {
+        SheetContent()
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showSheet = false }
                 }
-
-                Button {
-                    archive(item)
-                } label: {
-                    Label("Archive", systemImage: "archivebox")
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { save() }
                 }
-                .tint(.orange)
             }
     }
+    .presentationDetents([.medium, .large])
+    .presentationDragIndicator(.visible)
 }
 ```
 
-## Forms
-
-### Basic Form
+## Alerts and confirmation dialogs
 
 ```swift
-Form {
-    Section("Personal Info") {
-        TextField("Name", text: $name)
-        TextField("Email", text: $email)
-    }
-
-    Section("Preferences") {
-        Toggle("Notifications", isOn: $notifications)
-        Picker("Theme", selection: $theme) {
-            Text("Light").tag("light")
-            Text("Dark").tag("dark")
-            Text("System").tag("system")
-        }
-    }
-
-    Section {
-        Button("Save") {
-            save()
-        }
-    }
-}
-```
-
-### Form Labels
-
-```swift
-Form {
-    LabeledContent("Username") {
-        Text("@johndoe")
-    }
-
-    LabeledContent("Status") {
-        Text("Active")
-            .foregroundStyle(.green)
-    }
-}
-```
-
-## Sheets and Modals
-
-### Sheet
-
-```swift
-.sheet(isPresented: $showSheet) {
-    SheetContent()
-}
-
-// With detents (iOS 16+)
-.sheet(isPresented: $showSheet) {
-    SheetContent()
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
-}
-```
-
-### Full Screen Cover
-
-```swift
-.fullScreenCover(isPresented: $showCover) {
-    FullScreenContent()
-}
-```
-
-### Alert
-
-```swift
-.alert("Title", isPresented: $showAlert) {
-    Button("OK") { }
+.alert("Delete item?", isPresented: $showAlert) {
     Button("Cancel", role: .cancel) { }
+    Button("Delete", role: .destructive) { delete() }
 } message: {
-    Text("Alert message")
+    Text("This action cannot be undone.")
+}
+
+.confirmationDialog("Delete this item?", isPresented: $confirming, titleVisibility: .visible) {
+    Button("Delete", role: .destructive) { delete() }
+    Button("Cancel", role: .cancel) { }
 }
 ```
 
-### Confirmation Dialog
+Confirmation dialogs now originate from the element that triggered them, so anchor them
+correctly (UIKit: `sourceView` / `sourceItem`).
+
+**iOS 27:** `alert(_:item:actions:)` and `alert(error:actions:)` let you drive an alert
+from an optional data item or an error.
+
+## Empty and loading states
 
 ```swift
-.confirmationDialog("Options", isPresented: $showOptions) {
-    Button("Option 1") { }
-    Button("Option 2") { }
-    Button("Delete", role: .destructive) { }
-    Button("Cancel", role: .cancel) { }
+ContentUnavailableView {
+    Label("No results", systemImage: "magnifyingglass")
+} description: {
+    Text("Try a different search term.")
+} actions: {
+    Button("Clear filters") { clearFilters() }
+        .buttonStyle(.glass)
 }
+
+ContentUnavailableView.search(text: query)   // built-in search variant
+
+ProgressView()                                // indeterminate
+ProgressView(value: fraction)                 // determinate
+```
+
+Never leave a tab empty without explaining why.
+
+## Pull to refresh
+
+```swift
+List(items) { ItemRow(item: $0) }
+    .refreshable { await loadData() }
 ```
 
 ## Menus
 
-### Context Menu
-
-```swift
-Text("Long press me")
-    .contextMenu {
-        Button {
-            copy()
-        } label: {
-            Label("Copy", systemImage: "doc.on.doc")
-        }
-
-        Button {
-            share()
-        } label: {
-            Label("Share", systemImage: "square.and.arrow.up")
-        }
-
-        Divider()
-
-        Button(role: .destructive) {
-            delete()
-        } label: {
-            Label("Delete", systemImage: "trash")
-        }
-    }
-```
-
-### Menu Button
-
 ```swift
 Menu {
-    Button("Option 1") { }
-    Button("Option 2") { }
-
-    Menu("Submenu") {
-        Button("Sub 1") { }
-        Button("Sub 2") { }
-    }
+    Button("Duplicate", systemImage: "plus.square.on.square") { }
+    Button("Rename", systemImage: "pencil") { }
+    Divider()
+    Button("Delete", systemImage: "trash", role: .destructive) { }
 } label: {
-    Label("Menu", systemImage: "ellipsis.circle")
+    Label("More", systemImage: "ellipsis")
 }
 ```
 
-## Toolbars
+Menus adopt Liquid Glass and now show icons for common actions. Use standard selectors for
+standard actions so the system supplies the right icon automatically. **Match the actions at
+the top of a context menu to the swipe actions you offer for the same item.**
 
-### Navigation Toolbar
+## Custom glass control
 
-```swift
-.toolbar {
-    ToolbarItem(placement: .navigationBarLeading) {
-        Button("Cancel") { cancel() }
-    }
-
-    ToolbarItem(placement: .navigationBarTrailing) {
-        Button("Save") { save() }
-    }
-}
-```
-
-### Bottom Toolbar
+Only when a standard component genuinely can't do the job.
 
 ```swift
-.toolbar {
-    ToolbarItemGroup(placement: .bottomBar) {
-        Button { } label: {
-            Image(systemName: "square.and.arrow.up")
+@Namespace private var glassNamespace
+
+GlassEffectContainer(spacing: 24) {
+    HStack(spacing: 24) {
+        Button { record() } label: {
+            Image(systemName: "record.circle")
+                .font(.system(size: 28))
+                .frame(width: 64, height: 64)
         }
+        .glassEffect(.regular.interactive())
+        .glassEffectID("record", in: glassNamespace)
 
-        Spacer()
-
-        Button { } label: {
-            Image(systemName: "trash")
-        }
-    }
-}
-```
-
-### Keyboard Toolbar
-
-```swift
-TextField("Input", text: $text)
-    .toolbar {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            Button("Done") {
-                hideKeyboard()
+        if isRecording {
+            Button { stop() } label: {
+                Image(systemName: "stop.fill")
+                    .font(.system(size: 28))
+                    .frame(width: 64, height: 64)
             }
+            .glassEffect(.regular.tint(.red).interactive())
+            .glassEffectID("stop", in: glassNamespace)
         }
     }
+}
 ```
 
-## Empty States
+## Concentric corners
 
 ```swift
-ContentUnavailableView {
-    Label("No Results", systemImage: "magnifyingglass")
-} description: {
-    Text("Try searching for something else.")
-} actions: {
-    Button("Clear Filters") {
-        clearFilters()
+CardContent()
+    .background {
+        ConcentricRectangle()
+            .fill(.background.secondary)
     }
-}
+    .padding(12)
+
+// Guarantee a rounded corner even where the computed radius would be 0
+ConcentricRectangle(corners: .concentric(minimum: 12))
 ```
 
-## Cards
+Declare `containerShape(_:)` on a custom container so the shape has something to be
+concentric with.
+
+## Scroll edge effect on a custom bar
 
 ```swift
-struct CardView<Content: View>: View {
-    let content: Content
-
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
+ScrollView { content }
+    .safeAreaBar(edge: .bottom) {
+        CustomBar()
     }
-
-    var body: some View {
-        content
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-// Usage
-CardView {
-    VStack(alignment: .leading) {
-        Text("Card Title")
-            .font(.headline)
-        Text("Card content")
-            .font(.body)
-    }
-}
+    .scrollEdgeEffectStyle(.automatic, for: .bottom)
 ```
 
-## Badges
+## Reorder and swipe (iOS 27)
 
 ```swift
-// Tab badge
-TabView {
-    InboxView()
-        .tabItem {
-            Label("Inbox", systemImage: "tray")
-        }
-        .badge(5)
-}
+// Drag-to-reorder in lists, stacks, grids, custom layouts
+.reorderable()
+.reorderContainer(for: Item.self) { from, to in move(from, to) }
 
-// List badge
-List {
-    Text("Messages")
-        .badge(10)
+// Swipe actions beyond List
+.swipeActions(edge: .trailing) {
+    Button("Delete", role: .destructive) { delete() }
 }
 ```
+
+## Anti-patterns
+
+- Custom back buttons
+- Hard-coded font sizes or system color values
+- Custom backgrounds on bars, sheets, popovers
+- Glass on content-layer cards and rows
+- Fixed corner radii near screen or container edges
+- Hiding a toolbar item's content instead of the item
+- ALL CAPS section headers
+- Full-width, edge-to-edge buttons
+- Touch targets under 44 pt
+- Gestures with no visual affordance
+- Ignoring safe areas
