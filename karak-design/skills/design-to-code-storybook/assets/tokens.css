@@ -1,0 +1,63 @@
+/*
+ * tokens.css — three-tier token layers for the design-to-code catalog.
+ *
+ * Structure (see references/catalog-norms.md#tokens):
+ *   primitive  -> raw values, referenced only by the semantic tier
+ *   semantic   -> the vocabulary components read; theming overrides HERE
+ *   component  -> per-component, created lazily when no semantic token fits
+ *
+ * The consuming layer (components + theme overrides) references only
+ * semantic/primitive TOKENS, never a raw value — including the theme overrides.
+ *
+ * This example shows ONE axis: theme (light default + dark). Layer order is
+ * still fixed by @layer ORIGIN, not selector specificity. If you later need a
+ * second independent axis (e.g. a brand palette), add it as another layer per
+ * references/catalog-norms.md#tokens (rules R1/R2) rather than by specificity.
+ * Any global rule (e.g. a bare :root) MUST live inside a layer, or it overrides
+ * everything in the layers (failure-catalog.md#css).
+ */
+
+@layer base, theme, overrides;
+
+@layer base {
+  /* ---- Primitive tier: raw values, never read by a component ---- */
+  :root {
+    --blue-500: #0a6fd8; /* AA-safe accent (see RI-001 lesson) */
+    --gray-050: #f9fafb;
+    --gray-900: #111827;
+    --white: #ffffff;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --radius-md: 8px;
+    --size-11: 44px; /* min touch target */
+    --size-9: 36px;
+    --font-md: 1rem;
+    --font-sm: 0.875rem;
+  }
+
+  /* ---- Semantic tier: the vocabulary components read ---- */
+  :root {
+    --color-accent: var(--blue-500);
+    --color-bg: var(--white);
+    --label-primary: var(--gray-900);
+    --label-on-accent: var(--white);
+    --control-radius: var(--radius-md);
+    --control-pad-x: var(--space-md);
+    --control-pad-y: var(--space-sm);
+    --control-height-md: var(--size-11);
+    --control-height-sm: var(--size-9);
+    --font-control-md: var(--font-md);
+    --font-control-sm: var(--font-sm);
+  }
+}
+
+@layer theme {
+  /* Theme = semantic-layer override only, still referencing primitives (no raw
+   * hex here). Zero component edits required to add or switch a theme. */
+  :root[data-theme="dark"] {
+    --color-bg: var(--gray-900);
+    --label-primary: var(--gray-050);
+  }
+}

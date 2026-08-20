@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Node.js backend development, and meta (session-aware) tools for Claude Code",
-    "version": "2.6.0"
+    "version": "2.7.0"
   },
   "plugins": [
     {
       "name": "karak-design",
       "source": "./karak-design",
-      "description": "UI/UX and visual design skills: Apple HIG for iOS 26 / Liquid Glass, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system, Garrett UX analysis (Strategy/Scope/Structure/Skeleton/Surface 5-layer framework)",
-      "version": "1.3.0",
+      "description": "UI/UX and visual design skills: Apple HIG for iOS 26 / Liquid Glass, Material Design 3, icon design, frontend aesthetics, UX psychology, Hi-Fi design quality, mobile auth screen design, design system, Garrett UX analysis (Strategy/Scope/Structure/Skeleton/Surface 5-layer framework), design-to-code Storybook catalog (code-first component catalog with round-trip design/code governance)",
+      "version": "1.4.0",
       "author": {
         "name": "karak"
       },
@@ -36,7 +36,11 @@
         "ux-design",
         "ux-analysis",
         "information-architecture",
-        "garrett-ux-analysis"
+        "garrett-ux-analysis",
+        "storybook",
+        "design-to-code",
+        "component-catalog",
+        "design-tokens"
       ],
       "category": "development",
       "tags": [
@@ -51,7 +55,10 @@
         "ux-strategy",
         "information-architecture",
         "liquid-glass",
-        "swiftui"
+        "swiftui",
+        "storybook",
+        "design-to-code",
+        "component-catalog"
       ]
     },
     {
