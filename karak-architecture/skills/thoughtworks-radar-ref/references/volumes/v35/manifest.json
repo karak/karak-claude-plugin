@@ -109,5 +109,5 @@
     "Caution": 10
   },
   "theme_count": 4,
-  "notes": "Vol.35: Caution ring holds blips only in Techniques (verified: Platforms / Tools / Languages & Frameworks Caution sections are empty). radar_url uses /radar/<quadrant>/<slug> (same as v34); each URL was checked to serve a page titled with the blip name. The /summary/ variant is not used. Most v34 blips are absent from the v35 quadrant pages."
+  "notes": "Vol.35: Caution ring holds blips only in Techniques (verified: Platforms / Tools / Languages & Frameworks Caution sections are empty). radar_url uses /radar/<quadrant>/<slug> (same as v34); each URL was checked to serve a page titled with the blip name. The /summary/ variant is not used. Most v34 blips are absent from the v35 quadrant pages. tags are karak-assigned from blip names (v34 tag vocabulary only); 17 blips whose subject could not be inferred from the name are left untagged."
 }

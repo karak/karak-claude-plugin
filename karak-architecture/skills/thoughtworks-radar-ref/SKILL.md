@@ -12,7 +12,9 @@ description: |
   Adopt/Trial/Assess/Hold/Caution の判定、Vol.34、Vol.35、Codebase cognitive debt、
   Agent instruction bloat、MCP by default、Lethal Trifecta、
   Securing permission-hungry agents、Putting coding agents on a leash、
-  Agentic security patterns、技術トレンドの一次情報照合、業界シグナル参照。
+  Agentic security patterns、
+  Harness engineering at scale、Beyond frontier models、Putting more agents to work、
+  Constructing the AI factory、技術トレンドの一次情報照合、業界シグナル参照。
 
   Also triggers on:
   「Tech Radar で何と言っている?」「ThoughtWorks では Adopt?」「最新の Radar の AI 系」
