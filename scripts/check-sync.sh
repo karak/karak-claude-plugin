@@ -68,6 +68,23 @@ check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-engineering/agents"
 # karak-product
 check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-product/agents"
 
+# marketplace.json: a plugin version bump must come with a bump of the top-level version.
+# Compares against BASE_REF (default: main); skipped when the base is unavailable or equals HEAD.
+BASE_REF="${BASE_REF:-main}"
+MARKETPLACE=".claude-plugin/marketplace.json"
+if command -v jq >/dev/null 2>&1    && git -C "$REPO_ROOT" rev-parse --verify -q "$BASE_REF" >/dev/null    && [ "$(git -C "$REPO_ROOT" rev-parse "$BASE_REF")" != "$(git -C "$REPO_ROOT" rev-parse HEAD)" ]; then
+    base_json="$(git -C "$REPO_ROOT" show "$BASE_REF:$MARKETPLACE" | tr -d '')"
+    plugin_versions() { jq -c '[.plugins[] | {(.name): .version}] | add' | tr -d ''; }
+    base_plugins="$(printf '%s' "$base_json" | plugin_versions)"
+    head_plugins="$(plugin_versions < "$REPO_ROOT/$MARKETPLACE")"
+    base_top="$(printf '%s' "$base_json" | jq -r '.metadata.version // .version' | tr -d '')"
+    head_top="$(jq -r '.metadata.version // .version' < "$REPO_ROOT/$MARKETPLACE" | tr -d '')"
+    if [ "$base_plugins" != "$head_plugins" ] && [ "$base_top" = "$head_top" ]; then
+        echo "VERSION: plugin versions changed vs $BASE_REF but marketplace top-level version is still $head_top"
+        FAILED=1
+    fi
+fi
+
 if [ "$FAILED" -eq 1 ]; then
     echo "Sync check FAILED. Re-copy from canonical sources."
     exit 1

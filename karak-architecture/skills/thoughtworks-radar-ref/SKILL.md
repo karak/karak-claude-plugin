@@ -83,15 +83,14 @@ thoughtworks-radar-ref/
 │   ├── source_info.json        クロスボリューム不変項 + latest_volume ポインタ
 │   ├── radar-schema.json       record shape / enum の JSON Schema ($schema_version あり)
 │   └── volumes/
-│       ├── v34/
-│       │   ├── manifest.json   v34 固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
-│       │   ├── blips.json      v34 Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
-│       │   └── themes.json     v34 Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
-│       ├── v35/                最新 (Vol.35, 2026-11) — manifest / blips / themes の 3 点セット
-│       └── v<NN>/              将来ボリューム — 既存ボリュームを編集せず追加できる
+│       └── v<NN>/              ボリュームごとに 1 ディレクトリ (最新は source_info.json の latest_volume)。既存ボリュームは編集せず追加する
+│           ├── manifest.json   そのボリューム固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
+│           ├── blips.json      Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
+│           └── themes.json     Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
 └── scripts/
     ├── cache_helpers.py        キャッシュ I/O ユーティリティ (stdlib のみ)
-    └── refresh_cache.py        全 Blip/Theme の WebFetch 結果を一括キャッシュするヘルパー
+    ├── refresh_cache.py        全 Blip/Theme の WebFetch 結果を一括キャッシュするヘルパー
+    └── verify_urls.py          各 radar_url のページ <title> が Blip 名と一致するか検証 (更新フロー step 2)
 ```
 
 **設計上の関心分離**:
@@ -227,6 +226,10 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
    - 4 quadrant ページ (`/radar/techniques`, `/radar/platforms`, `/radar/tools`,
      `/radar/languages-and-frameworks`) を WebFetch → 各 Blip の
      `name / ring / quadrant / radar_url` を構造抽出して `blips.json` を組み立てる。
+     抽出後に `python -X utf8 scripts/verify_urls.py` で全 `radar_url` を検証する。
+     サイトは未知の slug にも HTTP 200 を返す (quadrant ページを返す) ため、ステータスコードでは判別できない。
+     判定基準はページ `<title>` が Blip 名と一致すること。WebFetch の要約抽出は名前が正規化されうるので、
+     quadrant ページとの name / ring の全件突き合わせも行う。
      注: `refresh_cache.py` はあくまでユーザー端末キャッシュを埋めるツールであり、
      配布物の `blips.json` を生成する責務は持たない (Index は人間の編集対象)。
 3. **`v<X+1>/themes.json` を手書き**: 新ボリュームの Themes を `/radar` ページから把握し、
@@ -245,6 +248,8 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
    - [ ] `related_blip_names` が同ボリュームの `blips.json` の `name` と綴り一致しているか
    - [ ] `cache/` のような名前のディレクトリが配布物に混入していないか
    - [ ] 旧 v<X>/ を誤って編集していないか (履歴破壊防止)
+   - [ ] `pytest scripts` が通るか (manifest の件数・radar_url 形式・テーマ参照を検査)
+   - [ ] marketplace.json の対象プラグイン version とトップレベル `version` の両方を上げたか (`scripts/check-sync.sh` が検査)
 
 ### 個別 Blip の説明文を読みたいとき (利用時)
 

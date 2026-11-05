@@ -65,8 +65,8 @@ def test_every_theme_related_blip_resolves_to_a_real_blip():
     volume_numbers = _discover_volume_numbers()
     assert volume_numbers, "no volume directories found under references/volumes/"
     for vol in volume_numbers:
-        blips = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "blips.json").read_text())
-        themes = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "themes.json").read_text())
+        blips = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "blips.json").read_text(encoding="utf-8"))
+        themes = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "themes.json").read_text(encoding="utf-8"))
         blip_names = {b["name"] for b in blips}
         missing = []
         for theme in themes:
@@ -82,12 +82,12 @@ def test_blip_rings_match_volume_ring_vocabulary():
     """Each blip's ring must be one of the values declared in its volume's
     manifest.ring_vocabulary.
     """
-    vol = json.loads((REFERENCES_DIR / "source_info.json").read_text())["latest_volume"]
+    vol = json.loads((REFERENCES_DIR / "source_info.json").read_text(encoding="utf-8"))["latest_volume"]
     manifest = json.loads(
-        (REFERENCES_DIR / "volumes" / f"v{vol}" / "manifest.json").read_text()
+        (REFERENCES_DIR / "volumes" / f"v{vol}" / "manifest.json").read_text(encoding="utf-8")
     )
     allowed = set(manifest["ring_vocabulary"])
-    blips = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "blips.json").read_text())
+    blips = json.loads((REFERENCES_DIR / "volumes" / f"v{vol}" / "blips.json").read_text(encoding="utf-8"))
     offenders = [b["name"] for b in blips if b["ring"] not in allowed]
     assert offenders == [], (
         f"blips with rings outside manifest.ring_vocabulary {allowed}: {offenders}"
@@ -159,7 +159,7 @@ def test_write_summary_overwrites_same_key(fake_cache_home):
 def test_cached_record_has_iso_timestamp_with_offset(fake_cache_home):
     ch.write_cached_summary("OpenClaw", "x", volume=34)
     cache_file = fake_cache_home / "karak-claude-plugin" / "thoughtworks-radar-ref" / "v34" / "blip_summaries.json"
-    data = json.loads(cache_file.read_text())
+    data = json.loads(cache_file.read_text(encoding="utf-8"))
     fetched_at = data["OpenClaw"]["fetched_at"]
     # ISO-8601 with timezone — either '+00:00' or 'Z'
     assert "T" in fetched_at
@@ -340,3 +340,48 @@ def test_atomic_write_uses_unique_tmp_names(fake_cache_home, monkeypatch):
     ch._write_json_atomic(target, {"a": 2})
     assert len(captured) == 2
     assert captured[0] != captured[1], "tmp names must differ across writes"
+
+
+def _volume_files(vol: int) -> tuple[dict, list]:
+    vdir = REFERENCES_DIR / "volumes" / f"v{vol}"
+    manifest = json.loads((vdir / "manifest.json").read_text(encoding="utf-8"))
+    blips = json.loads((vdir / "blips.json").read_text(encoding="utf-8"))
+    return manifest, blips
+
+
+def test_manifest_counts_match_blips():
+    """manifest blip_counts / ring_counts (when present) equal the tallies of blips.json."""
+    for vol in _discover_volume_numbers():
+        manifest, blips = _volume_files(vol)
+        if "blip_counts" in manifest:
+            by_quadrant = {}
+            for b in blips:
+                by_quadrant[b["quadrant"]] = by_quadrant.get(b["quadrant"], 0) + 1
+            expected = {**by_quadrant, "total": len(blips)}
+            assert manifest["blip_counts"] == expected, f"v{vol} blip_counts drifted"
+        if "ring_counts" in manifest:
+            by_ring = {}
+            for b in blips:
+                by_ring[b["ring"]] = by_ring.get(b["ring"], 0) + 1
+            assert manifest["ring_counts"] == by_ring, f"v{vol} ring_counts drifted"
+
+
+def test_radar_urls_use_quadrant_slug_form():
+    """radar_url is https://www.thoughtworks.com/radar/<quadrant-slug>/<slug>,
+    with the quadrant slug matching the blip's quadrant and no /summary/ segment."""
+    slugs = {
+        "Techniques": "techniques",
+        "Platforms": "platforms",
+        "Tools": "tools",
+        "Languages & Frameworks": "languages-and-frameworks",
+    }
+    base = "https://www.thoughtworks.com/radar/"
+    for vol in _discover_volume_numbers():
+        _, blips = _volume_files(vol)
+        bad = []
+        for b in blips:
+            rest = b["radar_url"].removeprefix(base)
+            parts = rest.split("/")
+            if len(parts) != 2 or parts[0] != slugs[b["quadrant"]] or not parts[1]:
+                bad.append(b["name"])
+        assert bad == [], f"v{vol} radar_url outside the expected form: {bad}"
