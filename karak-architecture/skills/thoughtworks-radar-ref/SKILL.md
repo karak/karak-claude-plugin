@@ -1,7 +1,7 @@
 ---
 name: thoughtworks-radar-ref
 description: |
-  Thoughtworks Technology Radar (Vol.34, 2026-04 時点) の **構造インデックス + テーマ層** を
+  Thoughtworks Technology Radar (Vol.35, 2026-11 時点) の **構造インデックス + テーマ層** を
   参照するためのスキル。Blip (個別技術) の `name / ring / quadrant / radar_url / tags`
   と、ボリュームごとの **Themes (評価軸ナラティブ)** を分離保持する。
   本文 (説明文・テーマナラティブ) は Thoughtworks の著作権下にあるため配布物には含めず、
@@ -9,7 +9,7 @@ description: |
   (キャッシュ場所は配布物の外: `~/.cache/karak-claude-plugin/thoughtworks-radar-ref/`)。
 
   MUST trigger when: Thoughtworks Technology Radar、Tech Radar、ThoughtWorks Radar、
-  Adopt/Trial/Assess/Hold/Caution の判定、Vol.34、Codebase cognitive debt、
+  Adopt/Trial/Assess/Hold/Caution の判定、Vol.34、Vol.35、Codebase cognitive debt、
   Agent instruction bloat、MCP by default、Lethal Trifecta、
   Securing permission-hungry agents、Putting coding agents on a leash、
   Agentic security patterns、技術トレンドの一次情報照合、業界シグナル参照。
@@ -40,7 +40,7 @@ description: |
 
   これは「ユーザー自身が Thoughtworks のサイトを読みに行く」のと同じ法的位置づけ
   (ブラウザキャッシュと同様) で、再配布にはあたらない。
-- 出典: <https://www.thoughtworks.com/radar> (Vol.34, 2026-04)
+- 出典: <https://www.thoughtworks.com/radar> (最新: Vol.35, 2026-11 / 旧: Vol.34, 2026-04)
 - ユーザに提示する際は **要約と出典 URL** を返す。長文の逐語引用は避ける。
 
 このルールは設計上の不可侵制約。スナップショットを「リッチに見せる」ために
@@ -60,7 +60,7 @@ TW の説明文を `blips.json` / `themes.json` 本体にコピーしてはな�
    - キャッシュにヒットしなければ `radar_url` を `WebFetch` し、結果をキャッシュに書き込む。
    - キャッシュは **ボリュームごとに分離** (`v34/`, `v35/` ...)。新ボリュームが出たら自然に再フェッチされる。
 
-3. **ring の語彙は Vol.34 準拠 (`Caution` を採用)**
+3. **ring の語彙は Vol.34 以降準拠 (`Caution` を採用、Vol.35 も同語彙)**
    - Vol.34 で **Hold → Caution** に改名。意味も "Do not use" (passive) から
      "Proceed with care" (evaluative) へシフト。
    - 古い `Hold` 表記が混在する文献を扱う際は `Caution` と意味的に同義として扱う。
@@ -85,7 +85,8 @@ thoughtworks-radar-ref/
 │       │   ├── manifest.json   v34 固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
 │       │   ├── blips.json      v34 Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
 │       │   └── themes.json     v34 Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
-│       └── v<NN>/              将来ボリューム — v34 を編集せず追加できる
+│       ├── v35/                最新 (Vol.35, 2026-11) — manifest / blips / themes の 3 点セット
+│       └── v<NN>/              将来ボリューム — 既存ボリュームを編集せず追加できる
 └── scripts/
     ├── cache_helpers.py        キャッシュ I/O ユーティリティ (stdlib のみ)
     └── refresh_cache.py        全 Blip/Theme の WebFetch 結果を一括キャッシュするヘルパー
@@ -103,7 +104,7 @@ thoughtworks-radar-ref/
 ${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v34/
 ├── blip_summaries.json         { "<blip_name>": { "summary": "...", "fetched_at": "..." } }
 ├── theme_narratives.json       { "<theme_id>":  { "narrative": "...", "fetched_at": "..." } }
-└── .meta.json                  { volume: 34, last_full_refresh: "..." }
+└── .meta.json                  { volume: <NN>, last_full_refresh: "..." }
 ```
 
 ---
@@ -113,7 +114,7 @@ ${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v34/
 ### 段階 0 — ボリューム解決
 
 ```
-references/source_info.json を読み latest_volume を取得 (例: 34)
+references/source_info.json を読み latest_volume を取得 (現在: 35)
 → 以降の参照は references/volumes/v34/{blips,themes,manifest}.json
 ```
 
@@ -156,7 +157,7 @@ from cache_helpers import get_or_fetch_summary
 text = get_or_fetch_summary(
     blip_name="Codebase cognitive debt",
     fetcher=lambda url: webfetch(url, "Return the official summary paragraph."),
-    volume=34,
+    volume=35,
 )
 ```
 
@@ -166,14 +167,14 @@ text = get_or_fetch_summary(
 Claude Code セッションから直接行う場合:
 
 ```
-1. ~/.cache/karak-claude-plugin/thoughtworks-radar-ref/v34/blip_summaries.json を Read
+1. ~/.cache/karak-claude-plugin/thoughtworks-radar-ref/v35/blip_summaries.json を Read
 2. キーがあれば値を使う
 3. 無ければ WebFetch(radar_url, "Extract the official summary text") → JSON を Edit/Write
 ```
 
 ### 段階 3 — 一次情報直接参照 (スナップショット範囲外)
 
-- 「Vol.34 以降の新 Blip は?」 → `source_info.json` の `main_url` を WebFetch
+- 「Vol.35 以降の新 Blip は?」 → `source_info.json` の `main_url` を WebFetch
 - 「最新の Themes は?」 → 同じく WebFetch (Themes は `/radar` トップに inline)
 
 ---

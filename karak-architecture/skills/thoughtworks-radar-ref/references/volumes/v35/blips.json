@@ -1,0 +1,938 @@
+[
+  {
+    "name": "Agent sandboxing",
+    "ring": "Adopt",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-sandboxing",
+    "tags": [
+      "ai",
+      "security",
+      "agentic"
+    ]
+  },
+  {
+    "name": "Mutation testing",
+    "ring": "Adopt",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/mutation-testing",
+    "tags": [
+      "testing"
+    ]
+  },
+  {
+    "name": "Path-to-production mapping",
+    "ring": "Adopt",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/path-to-production-mapping"
+  },
+  {
+    "name": "Post-quantum cryptography",
+    "ring": "Adopt",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/post-quantum-cryptography",
+    "tags": [
+      "security"
+    ]
+  },
+  {
+    "name": "Progressive context disclosure",
+    "ring": "Adopt",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/progressive-context-disclosure"
+  },
+  {
+    "name": "Threat modeling",
+    "ring": "Adopt",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/threat-modeling",
+    "tags": [
+      "security"
+    ]
+  },
+  {
+    "name": "Agent plugin marketplace",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-plugin-marketplace"
+  },
+  {
+    "name": "Agent-maintained knowledge bases",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-maintained-knowledge-bases"
+  },
+  {
+    "name": "Anchoring coding agents to a reference application",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/anchoring-coding-agents-to-a-reference-application"
+  },
+  {
+    "name": "Coding harness for general-purpose agents",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/coding-harness-for-general-purpose-agents"
+  },
+  {
+    "name": "Feedback flywheel",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/feedback-flywheel"
+  },
+  {
+    "name": "Graph-grounded codebase reasoning",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/graph-grounded-codebase-reasoning"
+  },
+  {
+    "name": "Grilling",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/grilling"
+  },
+  {
+    "name": "Interactive visual plans with agents",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/interactive-visual-plans-with-agents"
+  },
+  {
+    "name": "Managed agents runtime",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/managed-agents-runtime"
+  },
+  {
+    "name": "Open-weight models",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/open-weight-models",
+    "tags": [
+      "ai"
+    ]
+  },
+  {
+    "name": "Risk-tiered human oversight",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/risk-tiered-human-oversight"
+  },
+  {
+    "name": "Self-improving harness",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/self-improving-harness"
+  },
+  {
+    "name": "Small language models",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/small-language-models",
+    "tags": [
+      "ai"
+    ]
+  },
+  {
+    "name": "Stateful guardrails",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/stateful-guardrails"
+  },
+  {
+    "name": "Subagents for better context management",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/subagents-for-better-context-management"
+  },
+  {
+    "name": "Toxic flow analysis for AI",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/toxic-flow-analysis-for-ai",
+    "tags": [
+      "ai",
+      "security"
+    ]
+  },
+  {
+    "name": "Unattended overnight agentic builds",
+    "ring": "Trial",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/unattended-overnight-agentic-builds"
+  },
+  {
+    "name": "Agent pipeline responsibility",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-pipeline-responsibility"
+  },
+  {
+    "name": "Agent suggestion box",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-suggestion-box"
+  },
+  {
+    "name": "Context profiling",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/context-profiling"
+  },
+  {
+    "name": "Enterprise harness",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/enterprise-harness"
+  },
+  {
+    "name": "Foundation models for structured data",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/foundation-models-for-structured-data"
+  },
+  {
+    "name": "Harness quality evaluation",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/harness-quality-evaluation"
+  },
+  {
+    "name": "Local coding models",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/local-coding-models"
+  },
+  {
+    "name": "MITRE ATLAS",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/mitre-atlas",
+    "tags": [
+      "ai",
+      "security"
+    ]
+  },
+  {
+    "name": "Production-aware coding agents",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/production-aware-coding-agents"
+  },
+  {
+    "name": "Programmatic tool calling",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/programmatic-tool-calling"
+  },
+  {
+    "name": "Semantic review of AI-edited prose",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/semantic-review-of-ai-edited-prose"
+  },
+  {
+    "name": "Tests as data over tests as code",
+    "ring": "Assess",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/tests-as-data-over-tests-as-code"
+  },
+  {
+    "name": "Agent instruction bloat",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-instruction-bloat",
+    "tags": [
+      "ai",
+      "agentic"
+    ]
+  },
+  {
+    "name": "Agent skill cognitive surrender",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/agent-skill-cognitive-surrender"
+  },
+  {
+    "name": "AI-accelerated shadow IT",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/ai-accelerated-shadow-it",
+    "tags": [
+      "ai",
+      "security"
+    ]
+  },
+  {
+    "name": "AI-driven documentation sprawl",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/ai-driven-documentation-sprawl"
+  },
+  {
+    "name": "Blanket frontier model usage",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/blanket-frontier-model-usage"
+  },
+  {
+    "name": "Coding throughput as a measure of productivity",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/coding-throughput-as-a-measure-of-productivity"
+  },
+  {
+    "name": "Human-in-the-loop theater",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/human-in-the-loop-theater"
+  },
+  {
+    "name": "Meat proxy",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/meat-proxy"
+  },
+  {
+    "name": "Naive context compression",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/naive-context-compression"
+  },
+  {
+    "name": "Stacked pull requests",
+    "ring": "Caution",
+    "quadrant": "Techniques",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/stacked-pull-requests"
+  },
+  {
+    "name": "VictoriaMetrics",
+    "ring": "Adopt",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/victoriametrics",
+    "tags": [
+      "observability"
+    ]
+  },
+  {
+    "name": "Kafka share groups",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/kafka-share-groups"
+  },
+  {
+    "name": "KServe",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/kserve"
+  },
+  {
+    "name": "LibreChat",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/librechat",
+    "tags": [
+      "ai"
+    ]
+  },
+  {
+    "name": "LiteLLM",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/litellm",
+    "tags": [
+      "ai",
+      "llm-ops"
+    ]
+  },
+  {
+    "name": "Microsoft Copilot Retrieval API",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/microsoft-copilot-retrieval-api"
+  },
+  {
+    "name": "Restate",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/restate",
+    "tags": [
+      "infra"
+    ]
+  },
+  {
+    "name": "Talos Linux",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/talos-linux"
+  },
+  {
+    "name": "Temporal",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/temporal",
+    "tags": [
+      "infra"
+    ]
+  },
+  {
+    "name": "vCluster",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/vcluster"
+  },
+  {
+    "name": "VictoriaLogs",
+    "ring": "Trial",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/victorialogs",
+    "tags": [
+      "observability"
+    ]
+  },
+  {
+    "name": "Agent Client Protocol (ACP)",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/agent-client-protocol-acp"
+  },
+  {
+    "name": "Agent Plugins",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/agent-plugins"
+  },
+  {
+    "name": "agentgateway",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/agentgateway"
+  },
+  {
+    "name": "AWS DevOps Agent",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/aws-devops-agent"
+  },
+  {
+    "name": "Claude Managed Agents",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/claude-managed-agents",
+    "tags": [
+      "ai",
+      "agentic"
+    ]
+  },
+  {
+    "name": "Decision models",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/decision-models"
+  },
+  {
+    "name": "KAITO",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/kaito"
+  },
+  {
+    "name": "llm-d",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/llm-d"
+  },
+  {
+    "name": "Netris",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/netris"
+  },
+  {
+    "name": "Omnigent",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/omnigent"
+  },
+  {
+    "name": "VAST DataStore",
+    "ring": "Assess",
+    "quadrant": "Platforms",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/vast-datastore"
+  },
+  {
+    "name": "mise",
+    "ring": "Adopt",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/mise"
+  },
+  {
+    "name": "OpenAI Codex",
+    "ring": "Adopt",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/openai-codex",
+    "tags": [
+      "ai",
+      "coding-agent"
+    ]
+  },
+  {
+    "name": "OpenCode",
+    "ring": "Adopt",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/opencode",
+    "tags": [
+      "ai",
+      "coding-agent"
+    ]
+  },
+  {
+    "name": "Act",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/act"
+  },
+  {
+    "name": "Agent Package Manager",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/agent-package-manager"
+  },
+  {
+    "name": "ast-grep",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/ast-grep"
+  },
+  {
+    "name": "Beads",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/beads"
+  },
+  {
+    "name": "Chaos Mesh",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/chaos-mesh",
+    "tags": [
+      "testing"
+    ]
+  },
+  {
+    "name": "Cube Core",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/cube-core"
+  },
+  {
+    "name": "Figma Code Connect",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/figma-code-connect"
+  },
+  {
+    "name": "FluxMarkdown",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/fluxmarkdown"
+  },
+  {
+    "name": "Git AI",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/git-ai"
+  },
+  {
+    "name": "Linear",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/linear"
+  },
+  {
+    "name": "mattpocock/skills",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/mattpocock-skills",
+    "tags": [
+      "ai",
+      "coding-agent"
+    ]
+  },
+  {
+    "name": "OpenSpec",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/openspec",
+    "tags": [
+      "ai",
+      "coding-agent"
+    ]
+  },
+  {
+    "name": "OpenWiki",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/openwiki"
+  },
+  {
+    "name": "Pi",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/pi",
+    "tags": [
+      "ai",
+      "coding-agent"
+    ]
+  },
+  {
+    "name": "Sourcebot",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/sourcebot"
+  },
+  {
+    "name": "Timefold Solver",
+    "ring": "Trial",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/timefold-solver"
+  },
+  {
+    "name": "AgentsView",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/agentsview"
+  },
+  {
+    "name": "Apple container",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/apple-container"
+  },
+  {
+    "name": "Deepsec",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/deepsec"
+  },
+  {
+    "name": "DeepSeek Harness (DSH)",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/deepseek-harness-dsh"
+  },
+  {
+    "name": "Entire CLI",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/entire-cli"
+  },
+  {
+    "name": "FreeToken",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/freetoken"
+  },
+  {
+    "name": "GLM",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/glm"
+  },
+  {
+    "name": "Habit Hooks",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/habit-hooks"
+  },
+  {
+    "name": "Herdr",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/herdr",
+    "tags": [
+      "ai",
+      "coding-agent"
+    ]
+  },
+  {
+    "name": "Hunk",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/hunk"
+  },
+  {
+    "name": "nono.sh",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/nono-sh"
+  },
+  {
+    "name": "OpenResearch CLI (orx)",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/openresearch-cli-orx"
+  },
+  {
+    "name": "Safe Chain",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/safe-chain",
+    "tags": [
+      "security"
+    ]
+  },
+  {
+    "name": "Swamp",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/swamp"
+  },
+  {
+    "name": "Vale",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/vale"
+  },
+  {
+    "name": "Varlock",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/varlock"
+  },
+  {
+    "name": "zizmor",
+    "ring": "Assess",
+    "quadrant": "Tools",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/tools/zizmor",
+    "tags": [
+      "security"
+    ]
+  },
+  {
+    "name": "Open Data Contract Standard (ODCS)",
+    "ring": "Adopt",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/open-data-contract-standard-odcs"
+  },
+  {
+    "name": "BoTorch",
+    "ring": "Trial",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/botorch"
+  },
+  {
+    "name": "Deep Agents",
+    "ring": "Trial",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/deep-agents",
+    "tags": [
+      "ai",
+      "agentic"
+    ]
+  },
+  {
+    "name": "Kagent",
+    "ring": "Trial",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/kagent",
+    "tags": [
+      "ai",
+      "agentic"
+    ]
+  },
+  {
+    "name": "OpenFGA",
+    "ring": "Trial",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/openfga",
+    "tags": [
+      "security"
+    ]
+  },
+  {
+    "name": "Presidio",
+    "ring": "Trial",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/presidio",
+    "tags": [
+      "security",
+      "data"
+    ]
+  },
+  {
+    "name": "Promptfoo",
+    "ring": "Trial",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/promptfoo",
+    "tags": [
+      "ai",
+      "testing"
+    ]
+  },
+  {
+    "name": "Apple Core AI",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/apple-core-ai"
+  },
+  {
+    "name": "CALM",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/calm"
+  },
+  {
+    "name": "Hindsight",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/hindsight"
+  },
+  {
+    "name": "Quint",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/quint"
+  },
+  {
+    "name": "SolidJS",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/solidjs",
+    "tags": [
+      "frontend"
+    ]
+  },
+  {
+    "name": "spartan/ui",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/spartan-ui",
+    "tags": [
+      "frontend"
+    ]
+  },
+  {
+    "name": "TLA+",
+    "ring": "Assess",
+    "quadrant": "Languages & Frameworks",
+    "volume": 35,
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/tla"
+  }
+]

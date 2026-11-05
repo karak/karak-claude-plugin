@@ -65,7 +65,7 @@
       "name": "karak-architecture",
       "source": "./karak-architecture",
       "description": "System architecture skills: C4 model diagrams, ADR, architecture decision records, system design, GCP infrastructure, architecture-principles (modernization / Team Topologies / evolutionary architecture / DORA), Thoughtworks Tech Radar structural index + themes (volume-stamped)",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "author": {
         "name": "karak"
       },

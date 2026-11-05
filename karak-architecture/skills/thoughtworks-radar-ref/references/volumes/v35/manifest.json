@@ -1,0 +1,113 @@
+{
+  "volume": 35,
+  "date": "2026-11",
+  "ring_vocabulary": [
+    "Adopt",
+    "Trial",
+    "Assess",
+    "Caution"
+  ],
+  "ring_changes_from_prev": {
+    "vocabulary_changed": false,
+    "moved_blips": [
+      {
+        "name": "Mutation testing",
+        "quadrant": "Techniques",
+        "from": "Trial",
+        "to": "Adopt"
+      },
+      {
+        "name": "Progressive context disclosure",
+        "quadrant": "Techniques",
+        "from": "Trial",
+        "to": "Adopt"
+      },
+      {
+        "name": "Feedback flywheel",
+        "quadrant": "Techniques",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "Small language models",
+        "quadrant": "Techniques",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "Toxic flow analysis for AI",
+        "quadrant": "Techniques",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "OpenAI Codex",
+        "quadrant": "Tools",
+        "from": "Trial",
+        "to": "Adopt"
+      },
+      {
+        "name": "OpenCode",
+        "quadrant": "Tools",
+        "from": "Assess",
+        "to": "Adopt"
+      },
+      {
+        "name": "Beads",
+        "quadrant": "Tools",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "Git AI",
+        "quadrant": "Tools",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "OpenSpec",
+        "quadrant": "Tools",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "Pi",
+        "quadrant": "Tools",
+        "from": "Assess",
+        "to": "Trial"
+      },
+      {
+        "name": "LiteLLM",
+        "from_quadrant": "Languages & Frameworks",
+        "to_quadrant": "Platforms",
+        "from": "Trial",
+        "to": "Trial"
+      }
+    ],
+    "carried_over_count": 18,
+    "note": "moved_blips lists blips present in both v34 and v35 whose ring or quadrant changed (verified by exact-name diff of v34/blips.json vs v35/blips.json). carried_over_count counts all exact-name matches across volumes, including unchanged ones."
+  },
+  "quadrant_urls": {
+    "Techniques": "https://www.thoughtworks.com/radar/techniques",
+    "Platforms": "https://www.thoughtworks.com/radar/platforms",
+    "Tools": "https://www.thoughtworks.com/radar/tools",
+    "Languages & Frameworks": "https://www.thoughtworks.com/radar/languages-and-frameworks"
+  },
+  "themes_hosted_at": "https://www.thoughtworks.com/radar",
+  "snapshot_fetched_at": "2026-11-05",
+  "blip_counts": {
+    "Techniques": 45,
+    "Platforms": 22,
+    "Tools": 36,
+    "Languages & Frameworks": 14,
+    "total": 117
+  },
+  "ring_counts": {
+    "Adopt": 11,
+    "Trial": 49,
+    "Assess": 47,
+    "Caution": 10
+  },
+  "theme_count": 4,
+  "notes": "Vol.35: Caution ring holds blips only in Techniques (verified: Platforms / Tools / Languages & Frameworks Caution sections are empty). radar_url uses /radar/<quadrant>/<slug> (same as v34); each URL was checked to serve a page titled with the blip name. The /summary/ variant is not used. Most v34 blips are absent from the v35 quadrant pages."
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "harness-engineering-at-scale",
+    "title": "Harness engineering at scale",
+    "volume": 35,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "Agent Plugins",
+      "Agent plugin marketplace",
+      "Agent Package Manager",
+      "Harness quality evaluation",
+      "Self-improving harness",
+      "Feedback flywheel",
+      "Enterprise harness"
+    ],
+    "our_synthesis": "karak-curated theme→blip mapping: blips the theme page names or links, filtered to blips present in this volume's blips.json. Names only; fetch the Thoughtworks narrative from source_url at use time."
+  },
+  {
+    "id": "beyond-frontier-models",
+    "title": "Beyond frontier models",
+    "volume": 35,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "Open-weight models",
+      "GLM",
+      "Local coding models",
+      "Foundation models for structured data",
+      "Decision models",
+      "Blanket frontier model usage"
+    ],
+    "our_synthesis": "karak-curated theme→blip mapping: blips the theme page names or links, filtered to blips present in this volume's blips.json. Names only; fetch the Thoughtworks narrative from source_url at use time."
+  },
+  {
+    "id": "putting-more-agents-to-work",
+    "title": "Putting more agents to work",
+    "volume": 35,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "Unattended overnight agentic builds",
+      "Herdr",
+      "Omnigent",
+      "Subagents for better context management",
+      "AgentsView",
+      "Hunk",
+      "Human-in-the-loop theater",
+      "Path-to-production mapping",
+      "Entire CLI"
+    ],
+    "our_synthesis": "karak-curated theme→blip mapping: blips the theme page names or links, filtered to blips present in this volume's blips.json. Names only; fetch the Thoughtworks narrative from source_url at use time."
+  },
+  {
+    "id": "constructing-the-ai-factory",
+    "title": "Constructing the AI factory",
+    "volume": 35,
+    "source_url": "https://www.thoughtworks.com/radar",
+    "related_blip_names": [
+      "KServe",
+      "KAITO",
+      "llm-d",
+      "LiteLLM",
+      "VAST DataStore",
+      "Netris"
+    ],
+    "our_synthesis": "karak-curated theme→blip mapping: blips the theme page names or links, filtered to blips present in this volume's blips.json. Names only; fetch the Thoughtworks narrative from source_url at use time."
+  }
+]
