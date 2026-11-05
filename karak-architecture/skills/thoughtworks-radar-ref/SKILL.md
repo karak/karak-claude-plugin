@@ -101,7 +101,7 @@ thoughtworks-radar-ref/
 **キャッシュ側 (配布物に含まれない)**:
 
 ```
-${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v34/
+${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v<NN>/
 ├── blip_summaries.json         { "<blip_name>": { "summary": "...", "fetched_at": "..." } }
 ├── theme_narratives.json       { "<theme_id>":  { "narrative": "...", "fetched_at": "..." } }
 └── .meta.json                  { volume: <NN>, last_full_refresh: "..." }
@@ -115,7 +115,7 @@ ${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v34/
 
 ```
 references/source_info.json を読み latest_volume を取得 (現在: 35)
-→ 以降の参照は references/volumes/v34/{blips,themes,manifest}.json
+→ 以降の参照は references/volumes/v<NN>/{blips,themes,manifest}.json
 ```
 
 ユーザーが特定ボリュームを指定したら (例: 「Vol.33 では」) `v33/` を見る。
