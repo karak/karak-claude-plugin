@@ -385,3 +385,68 @@ def test_radar_urls_use_quadrant_slug_form():
             if len(parts) != 2 or parts[0] != slugs[b["quadrant"]] or not parts[1]:
                 bad.append(b["name"])
         assert bad == [], f"v{vol} radar_url outside the expected form: {bad}"
+
+
+def test_ring_changes_use_blip_moves_form_from_v35():
+    """From v35 on, manifest.ring_changes_from_prev uses the blipMoves form
+    (radar-schema.json $defs/blipMoves). v34 keeps the legacy ringRename form."""
+    for vol in _discover_volume_numbers():
+        if vol < 35:
+            continue
+        manifest, _ = _volume_files(vol)
+        changes = manifest["ring_changes_from_prev"]
+        assert {"vocabulary_changed", "moved_blips", "carried_over_count"} <= changes.keys(), (
+            f"v{vol} ring_changes_from_prev is not in the blipMoves form"
+        )
+
+
+def test_blip_moves_match_previous_volume():
+    """moved_blips / carried_over_count / vocabulary_changed equal a recomputation
+    from this volume's and the previous volume's blips.json (exact-name match)."""
+    volumes = _discover_volume_numbers()
+    for prev, vol in zip(volumes, volumes[1:]):
+        manifest, blips = _volume_files(vol)
+        changes = manifest["ring_changes_from_prev"]
+        if "moved_blips" not in changes:
+            continue
+        prev_manifest, prev_blips = _volume_files(prev)
+        before = {b["name"]: b for b in prev_blips}
+        carried = [b for b in blips if b["name"] in before]
+        expected = {
+            b["name"]: (before[b["name"]]["quadrant"], b["quadrant"], before[b["name"]]["ring"], b["ring"])
+            for b in carried
+            if (b["quadrant"], b["ring"]) != (before[b["name"]]["quadrant"], before[b["name"]]["ring"])
+        }
+        actual = {
+            m["name"]: (
+                m.get("from_quadrant", m.get("quadrant")),
+                m.get("to_quadrant", m.get("quadrant")),
+                m["from"],
+                m["to"],
+            )
+            for m in changes["moved_blips"]
+        }
+        assert actual == expected, f"v{vol} moved_blips drifted from v{prev}"
+        assert changes["carried_over_count"] == len(carried), f"v{vol} carried_over_count drifted"
+        assert changes["vocabulary_changed"] == (
+            prev_manifest["ring_vocabulary"] != manifest["ring_vocabulary"]
+        ), f"v{vol} vocabulary_changed is wrong"
+
+
+def test_volume_files_match_radar_schema():
+    """blips / themes / manifest of every volume validate against radar-schema.json."""
+    jsonschema = pytest.importorskip("jsonschema")
+    schema = json.loads((REFERENCES_DIR / "radar-schema.json").read_text(encoding="utf-8"))
+    jsonschema.Draft7Validator.check_schema(schema)
+
+    def validator(name):
+        return jsonschema.Draft7Validator({**schema["$defs"][name], "$defs": schema["$defs"]})
+
+    for vol in _discover_volume_numbers():
+        vdir = REFERENCES_DIR / "volumes" / f"v{vol}"
+        manifest = json.loads((vdir / "manifest.json").read_text(encoding="utf-8"))
+        errors = [e.message for e in validator("manifest").iter_errors(manifest)]
+        for kind in ("blip", "theme"):
+            records = json.loads((vdir / f"{kind}s.json").read_text(encoding="utf-8"))
+            errors += [f"{r.get('name', r.get('id'))}: {e.message}" for r in records for e in validator(kind).iter_errors(r)]
+        assert errors == [], f"v{vol} schema violations: {errors[:5]}"

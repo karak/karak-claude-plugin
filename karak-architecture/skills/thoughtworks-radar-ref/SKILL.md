@@ -235,7 +235,12 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
 3. **`v<X+1>/themes.json` を手書き**: 新ボリュームの Themes を `/radar` ページから把握し、
    `id / title / source_url / related_blip_names` のみ記録 (ナラティブは入れない)
 4. **`v<X+1>/manifest.json` を作る**: `date`, `ring_vocabulary`, `quadrant_urls`,
-   `ring_changes_from_prev` (前ボリュームから何が変わったか), `snapshot_fetched_at` を記入
+   `ring_changes_from_prev` (前ボリュームから何が変わったか), `snapshot_fetched_at` を記入。
+   形は `radar-schema.json` の `$defs/manifest` に従う。`ring_changes_from_prev` は v35 以降
+   `blipMoves` 形式 (`vocabulary_changed` / `moved_blips` / `carried_over_count` / `note`) で書く。
+   `moved_blips` は前ボリュームと名前が完全一致し ring か quadrant が変わった Blip で、
+   pytest が両ボリュームの `blips.json` から再計算して照合する。v34 の `from` / `to` / `semantic_shift`
+   は旧形式 (`ringRename`) で、公開済みボリュームは編集しない方針のため残している
 5. **`source_info.json` の `latest_volume` を `X+1` に bump**。他は触らない (URL や規約が変わっていなければ)
 6. **schema 変更が必要なら** (新 ring が追加された等): `radar-schema.json` の enum を拡張し
    `$schema_version` を bump。CHANGELOG 相当のメモを manifest の `notes` に残す
