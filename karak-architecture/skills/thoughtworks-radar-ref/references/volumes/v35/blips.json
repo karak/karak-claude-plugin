@@ -481,7 +481,11 @@
     "ring": "Caution",
     "quadrant": "Techniques",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/techniques/meat-proxy"
+    "radar_url": "https://www.thoughtworks.com/radar/techniques/meat-proxy",
+    "tags": [
+      "governance",
+      "team"
+    ]
   },
   {
     "name": "Naive context compression",
@@ -687,7 +691,10 @@
     "ring": "Assess",
     "quadrant": "Platforms",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/platforms/decision-models"
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/decision-models",
+    "tags": [
+      "llm-ops"
+    ]
   },
   {
     "name": "KAITO",
@@ -718,21 +725,33 @@
     "ring": "Assess",
     "quadrant": "Platforms",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/platforms/netris"
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/netris",
+    "tags": [
+      "infra",
+      "platform-engineering"
+    ]
   },
   {
     "name": "Omnigent",
     "ring": "Assess",
     "quadrant": "Platforms",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/platforms/omnigent"
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/omnigent",
+    "tags": [
+      "ai",
+      "agentic",
+      "governance"
+    ]
   },
   {
     "name": "VAST DataStore",
     "ring": "Assess",
     "quadrant": "Platforms",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/platforms/vast-datastore"
+    "radar_url": "https://www.thoughtworks.com/radar/platforms/vast-datastore",
+    "tags": [
+      "infra"
+    ]
   },
   {
     "name": "mise",
@@ -772,7 +791,11 @@
     "ring": "Trial",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/act"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/act",
+    "tags": [
+      "devex",
+      "platform-engineering"
+    ]
   },
   {
     "name": "Agent Package Manager",
@@ -824,7 +847,11 @@
     "ring": "Trial",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/cube-core"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/cube-core",
+    "tags": [
+      "metrics",
+      "governance"
+    ]
   },
   {
     "name": "Figma Code Connect",
@@ -842,7 +869,11 @@
     "ring": "Trial",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/fluxmarkdown"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/fluxmarkdown",
+    "tags": [
+      "devex",
+      "typesetting"
+    ]
   },
   {
     "name": "Git AI",
@@ -861,7 +892,12 @@
     "ring": "Trial",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/linear"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/linear",
+    "tags": [
+      "ai",
+      "agentic",
+      "mcp"
+    ]
   },
   {
     "name": "mattpocock/skills",
@@ -924,7 +960,10 @@
     "ring": "Trial",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/timefold-solver"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/timefold-solver",
+    "tags": [
+      "devex"
+    ]
   },
   {
     "name": "AgentsView",
@@ -954,7 +993,12 @@
     "ring": "Assess",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/deepsec"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/deepsec",
+    "tags": [
+      "security",
+      "ai",
+      "agentic"
+    ]
   },
   {
     "name": "DeepSeek Harness (DSH)",
@@ -985,7 +1029,11 @@
     "ring": "Assess",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/freetoken"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/freetoken",
+    "tags": [
+      "llm-ops",
+      "infra"
+    ]
   },
   {
     "name": "GLM",
@@ -1003,7 +1051,12 @@
     "ring": "Assess",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/habit-hooks"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/habit-hooks",
+    "tags": [
+      "ai",
+      "agentic",
+      "maintainability"
+    ]
   },
   {
     "name": "Herdr",
@@ -1044,7 +1097,12 @@
     "ring": "Assess",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/openresearch-cli-orx"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/openresearch-cli-orx",
+    "tags": [
+      "ai",
+      "agentic",
+      "cli"
+    ]
   },
   {
     "name": "Safe Chain",
@@ -1061,7 +1119,12 @@
     "ring": "Assess",
     "quadrant": "Tools",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/tools/swamp"
+    "radar_url": "https://www.thoughtworks.com/radar/tools/swamp",
+    "tags": [
+      "ai",
+      "agentic",
+      "platform-engineering"
+    ]
   },
   {
     "name": "Vale",
@@ -1110,7 +1173,10 @@
     "ring": "Trial",
     "quadrant": "Languages & Frameworks",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/botorch"
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/botorch",
+    "tags": [
+      "python"
+    ]
   },
   {
     "name": "Deep Agents",
@@ -1193,7 +1259,12 @@
     "ring": "Assess",
     "quadrant": "Languages & Frameworks",
     "volume": 35,
-    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/hindsight"
+    "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/hindsight",
+    "tags": [
+      "ai",
+      "agentic",
+      "knowledge"
+    ]
   },
   {
     "name": "Quint",
