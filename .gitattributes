@@ -1,0 +1,4 @@
+# Keep text files LF in the repository and in every checkout, including Windows
+# with core.autocrlf=true. A CRLF shell script fails under bash (see #28).
+* text=auto eol=lf
+*.sh text eol=lf
