@@ -1,7 +1,7 @@
 ---
 name: thoughtworks-radar-ref
 description: |
-  Thoughtworks Technology Radar (Vol.34, 2026-04 時点) の **構造インデックス + テーマ層** を
+  Thoughtworks Technology Radar (Vol.35, 2026-11 時点) の **構造インデックス + テーマ層** を
   参照するためのスキル。Blip (個別技術) の `name / ring / quadrant / radar_url / tags`
   と、ボリュームごとの **Themes (評価軸ナラティブ)** を分離保持する。
   本文 (説明文・テーマナラティブ) は Thoughtworks の著作権下にあるため配布物には含めず、
@@ -9,10 +9,12 @@ description: |
   (キャッシュ場所は配布物の外: `~/.cache/karak-claude-plugin/thoughtworks-radar-ref/`)。
 
   MUST trigger when: Thoughtworks Technology Radar、Tech Radar、ThoughtWorks Radar、
-  Adopt/Trial/Assess/Hold/Caution の判定、Vol.34、Codebase cognitive debt、
+  Adopt/Trial/Assess/Hold/Caution の判定、Vol.34、Vol.35、Codebase cognitive debt、
   Agent instruction bloat、MCP by default、Lethal Trifecta、
   Securing permission-hungry agents、Putting coding agents on a leash、
-  Agentic security patterns、技術トレンドの一次情報照合、業界シグナル参照。
+  Agentic security patterns、
+  Harness engineering at scale、Beyond frontier models、Putting more agents to work、
+  Constructing the AI factory、技術トレンドの一次情報照合、業界シグナル参照。
 
   Also triggers on:
   「Tech Radar で何と言っている?」「ThoughtWorks では Adopt?」「最新の Radar の AI 系」
@@ -26,7 +28,8 @@ description: |
 ## 著作権と配布方針 (最重要)
 
 - Thoughtworks Technology Radar の **コンテンツ (Blip 説明文、Themes ナラティブ)** は
-  「© Thoughtworks, Inc.」 で保護される。公開 CC ライセンス等は宣言されていない (2026-05 確認時点)。
+  「© Thoughtworks, Inc.」 で保護される。公開 CC ライセンス等は宣言されていない (2026-11 再確認: `/radar` と Blip ページ
+  (例: `/radar/techniques/mutation-testing`) の表記は「© 2026 Thoughtworks, Inc」のみで、ライセンス表記なし)。
 - 本スキルの **配布物 (この git リポジトリ)** には **構造インデックスのみ** を含める:
   `name / ring / quadrant / volume / radar_url / tags` といった事実情報および
   Theme の `id / title / source_url / related_blip_names`。これらは創作的表現ではなく
@@ -40,7 +43,7 @@ description: |
 
   これは「ユーザー自身が Thoughtworks のサイトを読みに行く」のと同じ法的位置づけ
   (ブラウザキャッシュと同様) で、再配布にはあたらない。
-- 出典: <https://www.thoughtworks.com/radar> (Vol.34, 2026-04)
+- 出典: <https://www.thoughtworks.com/radar> (最新: Vol.35, 2026-11 / 旧: Vol.34, 2026-04)
 - ユーザに提示する際は **要約と出典 URL** を返す。長文の逐語引用は避ける。
 
 このルールは設計上の不可侵制約。スナップショットを「リッチに見せる」ために
@@ -60,7 +63,7 @@ TW の説明文を `blips.json` / `themes.json` 本体にコピーしてはな�
    - キャッシュにヒットしなければ `radar_url` を `WebFetch` し、結果をキャッシュに書き込む。
    - キャッシュは **ボリュームごとに分離** (`v34/`, `v35/` ...)。新ボリュームが出たら自然に再フェッチされる。
 
-3. **ring の語彙は Vol.34 準拠 (`Caution` を採用)**
+3. **ring の語彙は Vol.34 以降準拠 (`Caution` を採用、Vol.35 も同語彙)**
    - Vol.34 で **Hold → Caution** に改名。意味も "Do not use" (passive) から
      "Proceed with care" (evaluative) へシフト。
    - 古い `Hold` 表記が混在する文献を扱う際は `Caution` と意味的に同義として扱う。
@@ -81,14 +84,14 @@ thoughtworks-radar-ref/
 │   ├── source_info.json        クロスボリューム不変項 + latest_volume ポインタ
 │   ├── radar-schema.json       record shape / enum の JSON Schema ($schema_version あり)
 │   └── volumes/
-│       ├── v34/
-│       │   ├── manifest.json   v34 固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
-│       │   ├── blips.json      v34 Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
-│       │   └── themes.json     v34 Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
-│       └── v<NN>/              将来ボリューム — v34 を編集せず追加できる
+│       └── v<NN>/              ボリュームごとに 1 ディレクトリ (最新は source_info.json の latest_volume)。既存ボリュームは編集せず追加する
+│           ├── manifest.json   そのボリューム固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
+│           ├── blips.json      Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
+│           └── themes.json     Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
 └── scripts/
     ├── cache_helpers.py        キャッシュ I/O ユーティリティ (stdlib のみ)
-    └── refresh_cache.py        全 Blip/Theme の WebFetch 結果を一括キャッシュするヘルパー
+    ├── refresh_cache.py        全 Blip/Theme の WebFetch 結果を一括キャッシュするヘルパー
+    └── verify_urls.py          各 radar_url のページ <title> が Blip 名と一致するか検証 (更新フロー step 2)
 ```
 
 **設計上の関心分離**:
@@ -100,10 +103,10 @@ thoughtworks-radar-ref/
 **キャッシュ側 (配布物に含まれない)**:
 
 ```
-${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v34/
+${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v<NN>/
 ├── blip_summaries.json         { "<blip_name>": { "summary": "...", "fetched_at": "..." } }
 ├── theme_narratives.json       { "<theme_id>":  { "narrative": "...", "fetched_at": "..." } }
-└── .meta.json                  { volume: 34, last_full_refresh: "..." }
+└── .meta.json                  { volume: <NN>, last_full_refresh: "..." }
 ```
 
 ---
@@ -113,8 +116,8 @@ ${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v34/
 ### 段階 0 — ボリューム解決
 
 ```
-references/source_info.json を読み latest_volume を取得 (例: 34)
-→ 以降の参照は references/volumes/v34/{blips,themes,manifest}.json
+references/source_info.json を読み latest_volume を取得 (現在: 35)
+→ 以降の参照は references/volumes/v<NN>/{blips,themes,manifest}.json
 ```
 
 ユーザーが特定ボリュームを指定したら (例: 「Vol.33 では」) `v33/` を見る。
@@ -156,7 +159,7 @@ from cache_helpers import get_or_fetch_summary
 text = get_or_fetch_summary(
     blip_name="Codebase cognitive debt",
     fetcher=lambda url: webfetch(url, "Return the official summary paragraph."),
-    volume=34,
+    volume=35,
 )
 ```
 
@@ -166,14 +169,14 @@ text = get_or_fetch_summary(
 Claude Code セッションから直接行う場合:
 
 ```
-1. ~/.cache/karak-claude-plugin/thoughtworks-radar-ref/v34/blip_summaries.json を Read
+1. ~/.cache/karak-claude-plugin/thoughtworks-radar-ref/v35/blip_summaries.json を Read
 2. キーがあれば値を使う
 3. 無ければ WebFetch(radar_url, "Extract the official summary text") → JSON を Edit/Write
 ```
 
 ### 段階 3 — 一次情報直接参照 (スナップショット範囲外)
 
-- 「Vol.34 以降の新 Blip は?」 → `source_info.json` の `main_url` を WebFetch
+- 「Vol.35 以降の新 Blip は?」 → `source_info.json` の `main_url` を WebFetch
 - 「最新の Themes は?」 → 同じく WebFetch (Themes は `/radar` トップに inline)
 
 ---
@@ -224,12 +227,21 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
    - 4 quadrant ページ (`/radar/techniques`, `/radar/platforms`, `/radar/tools`,
      `/radar/languages-and-frameworks`) を WebFetch → 各 Blip の
      `name / ring / quadrant / radar_url` を構造抽出して `blips.json` を組み立てる。
+     抽出後に `python -X utf8 scripts/verify_urls.py` で全 `radar_url` を検証する。
+     サイトは未知の slug にも HTTP 200 を返す (quadrant ページを返す) ため、ステータスコードでは判別できない。
+     判定基準はページ `<title>` が Blip 名と一致すること。WebFetch の要約抽出は名前が正規化されうるので、
+     quadrant ページとの name / ring の全件突き合わせも行う。
      注: `refresh_cache.py` はあくまでユーザー端末キャッシュを埋めるツールであり、
      配布物の `blips.json` を生成する責務は持たない (Index は人間の編集対象)。
 3. **`v<X+1>/themes.json` を手書き**: 新ボリュームの Themes を `/radar` ページから把握し、
    `id / title / source_url / related_blip_names` のみ記録 (ナラティブは入れない)
 4. **`v<X+1>/manifest.json` を作る**: `date`, `ring_vocabulary`, `quadrant_urls`,
-   `ring_changes_from_prev` (前ボリュームから何が変わったか), `snapshot_fetched_at` を記入
+   `ring_changes_from_prev` (前ボリュームから何が変わったか), `snapshot_fetched_at` を記入。
+   形は `radar-schema.json` の `$defs/manifest` に従う。`ring_changes_from_prev` は v35 以降
+   `blipMoves` 形式 (`vocabulary_changed` / `moved_blips` / `carried_over_count` / `note`) で書く。
+   `moved_blips` は前ボリュームと名前が完全一致し ring か quadrant が変わった Blip で、
+   pytest が両ボリュームの `blips.json` から再計算して照合する。v34 の `from` / `to` / `semantic_shift`
+   は旧形式 (`ringRename`) で、公開済みボリュームは編集しない方針のため残している
 5. **`source_info.json` の `latest_volume` を `X+1` に bump**。他は触らない (URL や規約が変わっていなければ)
 6. **schema 変更が必要なら** (新 ring が追加された等): `radar-schema.json` の enum を拡張し
    `$schema_version` を bump。CHANGELOG 相当のメモを manifest の `notes` に残す
@@ -242,6 +254,8 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
    - [ ] `related_blip_names` が同ボリュームの `blips.json` の `name` と綴り一致しているか
    - [ ] `cache/` のような名前のディレクトリが配布物に混入していないか
    - [ ] 旧 v<X>/ を誤って編集していないか (履歴破壊防止)
+   - [ ] `pytest scripts` が通るか (manifest の件数・radar_url 形式・テーマ参照を検査)
+   - [ ] marketplace.json の対象プラグイン version とトップレベル `version` の両方を上げたか (`scripts/check-sync.sh` が検査)
 
 ### 個別 Blip の説明文を読みたいとき (利用時)
 

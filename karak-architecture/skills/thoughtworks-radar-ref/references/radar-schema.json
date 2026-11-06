@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$schema_version": "1.0",
+  "$schema_version": "1.1",
   "title": "Thoughtworks Technology Radar — Structural Index Schema (karak)",
   "description": "Schema for karak's per-volume structural index of the Thoughtworks Technology Radar. Bump $schema_version when ring/quadrant enums or record shape change. Per-volume facts live in volumes/v<NN>/manifest.json.",
   "$defs": {
@@ -73,6 +73,103 @@
       },
       "required": ["id", "title", "volume", "source_url", "related_blip_names"],
       "additionalProperties": false
+    },
+    "manifest": {
+      "type": "object",
+      "description": "Per-volume metadata (volumes/v<NN>/manifest.json). Counts here must equal the tallies of the same volume's blips.json.",
+      "properties": {
+        "volume": { "type": "integer" },
+        "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}$", "description": "Publication month, YYYY-MM." },
+        "ring_vocabulary": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/blip/properties/ring" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "ring_changes_from_prev": {
+          "description": "What changed since the previous volume. Two forms: ringRename (legacy, v34 only; kept because published volumes are not edited) and blipMoves (standard from v35 on).",
+          "oneOf": [
+            { "$ref": "#/$defs/ringRename" },
+            { "$ref": "#/$defs/blipMoves" }
+          ]
+        },
+        "quadrant_urls": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/blip/properties/quadrant" },
+          "additionalProperties": { "type": "string", "format": "uri" }
+        },
+        "themes_hosted_at": { "type": "string", "format": "uri" },
+        "snapshot_fetched_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "blip_counts": {
+          "type": "object",
+          "description": "Blips per quadrant plus 'total'.",
+          "additionalProperties": { "type": "integer", "minimum": 0 },
+          "required": ["total"]
+        },
+        "ring_counts": {
+          "type": "object",
+          "description": "OPTIONAL. Blips per ring.",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "theme_count": { "type": "integer", "minimum": 0 },
+        "notes": { "type": "string" }
+      },
+      "required": ["volume", "date", "ring_vocabulary", "ring_changes_from_prev", "quadrant_urls", "themes_hosted_at", "snapshot_fetched_at", "blip_counts", "theme_count"],
+      "additionalProperties": false
+    },
+    "ringRename": {
+      "type": "object",
+      "description": "Legacy form (v34): the ring vocabulary itself was renamed.",
+      "properties": {
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "semantic_shift": { "type": "string" }
+      },
+      "required": ["from", "to"],
+      "additionalProperties": false
+    },
+    "blipMoves": {
+      "type": "object",
+      "description": "Standard form (v35+): blips present in both volumes (exact name match) whose ring or quadrant changed.",
+      "properties": {
+        "vocabulary_changed": { "type": "boolean", "description": "True when ring_vocabulary differs from the previous volume." },
+        "moved_blips": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "description": "Ring change within one quadrant.",
+                "properties": {
+                  "name": { "type": "string" },
+                  "quadrant": { "$ref": "#/$defs/blip/properties/quadrant" },
+                  "from": { "$ref": "#/$defs/blip/properties/ring" },
+                  "to": { "$ref": "#/$defs/blip/properties/ring" }
+                },
+                "required": ["name", "quadrant", "from", "to"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "description": "Quadrant change (the ring may stay the same).",
+                "properties": {
+                  "name": { "type": "string" },
+                  "from_quadrant": { "$ref": "#/$defs/blip/properties/quadrant" },
+                  "to_quadrant": { "$ref": "#/$defs/blip/properties/quadrant" },
+                  "from": { "$ref": "#/$defs/blip/properties/ring" },
+                  "to": { "$ref": "#/$defs/blip/properties/ring" }
+                },
+                "required": ["name", "from_quadrant", "to_quadrant", "from", "to"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "carried_over_count": { "type": "integer", "minimum": 0, "description": "Exact-name matches with the previous volume, moved or not." },
+        "note": { "type": "string" }
+      },
+      "required": ["vocabulary_changed", "moved_blips", "carried_over_count"],
+      "additionalProperties": false
     }
   },
   "oneOf": [
@@ -85,6 +182,11 @@
       "type": "array",
       "title": "themes.json",
       "items": { "$ref": "#/$defs/theme" }
+    },
+    {
+      "type": "object",
+      "title": "manifest.json",
+      "$ref": "#/$defs/manifest"
     }
   ]
 }
