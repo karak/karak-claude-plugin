@@ -1,0 +1,40 @@
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The version check compares against the merge base with main, so main's history is needed.
+          fetch-depth: 0
+      - name: Require jq
+        # check-sync.sh skips the version check without jq, so fail loudly instead.
+        run: jq --version
+      - name: Sub-plugin sync and marketplace version check
+        # Actions has no local "main" branch; without BASE_REF the version check would be skipped.
+        # On a push to main, HEAD is origin/main itself, so compare with the commit before the push.
+        env:
+          BASE_REF: ${{ github.event_name == 'push' && github.event.before || 'origin/main' }}
+        run: bash scripts/check-sync.sh
+
+  radar-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Install test dependencies
+        # jsonschema enables the schema validation test, which is skipped without it.
+        run: python -m pip install pytest jsonschema
+      - name: thoughtworks-radar-ref tests
+        run: python -m pytest -q -rs karak-architecture/skills/thoughtworks-radar-ref/scripts
