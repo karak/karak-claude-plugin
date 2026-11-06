@@ -28,7 +28,8 @@ description: |
 ## 著作権と配布方針 (最重要)
 
 - Thoughtworks Technology Radar の **コンテンツ (Blip 説明文、Themes ナラティブ)** は
-  「© Thoughtworks, Inc.」 で保護される。公開 CC ライセンス等は宣言されていない (2026-05 確認時点)。
+  「© Thoughtworks, Inc.」 で保護される。公開 CC ライセンス等は宣言されていない (2026-11 再確認: `/radar` と Blip ページ
+  (例: `/radar/techniques/mutation-testing`) の表記は「© 2026 Thoughtworks, Inc」のみで、ライセンス表記なし)。
 - 本スキルの **配布物 (この git リポジトリ)** には **構造インデックスのみ** を含める:
   `name / ring / quadrant / volume / radar_url / tags` といった事実情報および
   Theme の `id / title / source_url / related_blip_names`。これらは創作的表現ではなく
