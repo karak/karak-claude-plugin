@@ -16,10 +16,14 @@ jobs:
         with:
           # The version check compares against the merge base with main, so main's history is needed.
           fetch-depth: 0
+      - name: Require jq
+        # check-sync.sh skips the version check without jq, so fail loudly instead.
+        run: jq --version
       - name: Sub-plugin sync and marketplace version check
         # Actions has no local "main" branch; without BASE_REF the version check would be skipped.
+        # On a push to main, HEAD is origin/main itself, so compare with the commit before the push.
         env:
-          BASE_REF: origin/main
+          BASE_REF: ${{ github.event_name == 'push' && github.event.before || 'origin/main' }}
         run: bash scripts/check-sync.sh
 
   radar-tests:
