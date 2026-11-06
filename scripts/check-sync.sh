@@ -82,13 +82,15 @@ check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-engineering/agents" nodejs
 check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-product/agents"
 
 # marketplace.json: a plugin version bump must come with a bump of the top-level version.
-# Compares against BASE_REF (default: main); skipped when the base is unavailable or equals HEAD.
+# Compares against the merge base with BASE_REF (default: main), so commits that land on
+# BASE_REF after the branch point do not affect the result. Skipped when BASE_REF is
+# unavailable or the merge base equals HEAD (e.g. running on BASE_REF itself).
 BASE_REF="${BASE_REF:-main}"
 MARKETPLACE=".claude-plugin/marketplace.json"
 if command -v jq >/dev/null 2>&1 \
-    && git -C "$REPO_ROOT" rev-parse --verify -q "$BASE_REF" >/dev/null \
-    && [ "$(git -C "$REPO_ROOT" rev-parse "$BASE_REF")" != "$(git -C "$REPO_ROOT" rev-parse HEAD)" ]; then
-    base_json="$(git -C "$REPO_ROOT" show "$BASE_REF:$MARKETPLACE" | tr -d '\r')"
+    && base_commit="$(git -C "$REPO_ROOT" merge-base "$BASE_REF" HEAD 2>/dev/null)" \
+    && [ "$base_commit" != "$(git -C "$REPO_ROOT" rev-parse HEAD)" ]; then
+    base_json="$(git -C "$REPO_ROOT" show "$base_commit:$MARKETPLACE" | tr -d '\r')"
     plugin_versions() { jq -c '[.plugins[] | {(.name): .version}] | add' | tr -d '\r'; }
     base_plugins="$(printf '%s' "$base_json" | plugin_versions)"
     head_plugins="$(plugin_versions < "$REPO_ROOT/$MARKETPLACE")"

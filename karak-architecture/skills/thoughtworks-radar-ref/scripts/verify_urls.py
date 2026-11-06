@@ -9,6 +9,7 @@ Prints one line per mismatch; exit 1 if any.
 
 from __future__ import annotations
 
+import html
 import re
 import sys
 import urllib.request
@@ -25,7 +26,7 @@ def page_title(url: str) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": "karak-radar-verify"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         m = TITLE.search(resp.read().decode("utf-8", "replace"))
-    return m.group(1) if m else ""
+    return html.unescape(m.group(1)) if m else ""
 
 
 def check(blip: dict) -> str | None:
