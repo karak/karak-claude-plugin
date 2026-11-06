@@ -27,14 +27,26 @@ check_copy() {
     fi
 }
 
+# check_agent_dir CANONICAL_DIR COPY_DIR [PLUGIN_ONLY...]
+# PLUGIN_ONLY lists agent files that exist only in COPY_DIR by design (no root copy);
+# they are skipped. Any other file without a root counterpart is reported as ORPHAN.
 check_agent_dir() {
     local canonical_dir="$1"
     local copy_dir="$2"
+    shift 2
+    local plugin_only=" $* "
     for f in "$copy_dir"/*.md; do
         [ -e "$f" ] || continue
         local filename
         filename="$(basename "$f")"
         local canonical_file="$canonical_dir/$filename"
+        if [[ "$plugin_only" == *" $filename "* ]]; then
+            if [ -e "$canonical_file" ]; then
+                echo "STALE: $filename is listed as plugin-only but also exists in $canonical_dir"
+                FAILED=1
+            fi
+            continue
+        fi
         if [ ! -e "$canonical_file" ]; then
             echo "ORPHAN: $f has no canonical source in $canonical_dir"
             FAILED=1
@@ -63,7 +75,8 @@ check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-architecture/agents"
 for skill in codex-review google-design-docs; do
     check_copy "$REPO_ROOT/skills/$skill" "$REPO_ROOT/karak-engineering/skills/$skill"
 done
-check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-engineering/agents"
+# nodejs-backend-engineer.md lives only in karak-engineering (docs/superpowers/specs/2026-04-29-nodejs-backend-skill-design.md)
+check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-engineering/agents" nodejs-backend-engineer.md
 
 # karak-product
 check_agent_dir "$REPO_ROOT/agents" "$REPO_ROOT/karak-product/agents"
