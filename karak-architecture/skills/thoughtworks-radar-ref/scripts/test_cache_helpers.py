@@ -197,6 +197,89 @@ def test_get_or_fetch_summary_no_fetcher_acts_as_pure_read(fake_cache_home):
 
 
 # ---------------------------------------------------------------------------
+# Cache entries are bound to the URL they were fetched from (#31 review):
+# correcting radar_url / source_url in the index must invalidate old entries.
+# ---------------------------------------------------------------------------
+
+
+def _cache_file(home: Path, volume: int, name: str) -> Path:
+    return home / "karak-claude-plugin" / "thoughtworks-radar-ref" / f"v{volume}" / name
+
+
+def test_write_summary_records_source_url(fake_cache_home):
+    ch.write_cached_summary("TOON", "x", volume=34)
+    data = json.loads(_cache_file(fake_cache_home, 34, "blip_summaries.json").read_text(encoding="utf-8"))
+    assert data["TOON"]["source_url"] == ch.find_blip("TOON", 34)["radar_url"]
+
+
+def test_summary_from_old_radar_url_is_a_miss(fake_cache_home):
+    """The v34 TOON entry fetched from the old /toon URL (the quadrant page)
+    must not be served after radar_url was corrected."""
+    path = _cache_file(fake_cache_home, 34, "blip_summaries.json")
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"TOON": {
+        "summary": "Languages & Frameworks quadrant page",
+        "fetched_at": "2026-10-01T00:00:00+00:00",
+        "source_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/toon",
+    }}), encoding="utf-8")
+    assert ch.get_cached_summary("TOON", volume=34) is None
+
+    called = []
+    result = ch.get_or_fetch_summary("TOON", fetcher=lambda u: called.append(u) or "blip page", volume=34)
+    assert result == "blip page"
+    assert called == [ch.find_blip("TOON", 34)["radar_url"]]
+    assert ch.get_cached_summary("TOON", volume=34) == "blip page"
+
+
+def test_summary_without_source_url_is_a_miss(fake_cache_home):
+    """Entries written before source_url was recorded cannot be trusted
+    (the v34 TOON entry is one of them), so they are refetched once."""
+    path = _cache_file(fake_cache_home, 34, "blip_summaries.json")
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"TOON": {"summary": "old", "fetched_at": "2026-10-01T00:00:00+00:00"}}), encoding="utf-8")
+    assert ch.get_cached_summary("TOON", volume=34) is None
+
+
+def test_explicit_source_url_overrides_index_lookup(fake_cache_home):
+    ch.write_cached_summary("not-in-index", "x", volume=34, source_url="https://example.com/a")
+    assert ch.get_cached_summary("not-in-index", volume=34, source_url="https://example.com/a") == "x"
+    assert ch.get_cached_summary("not-in-index", volume=34, source_url="https://example.com/b") is None
+    assert ch.get_cached_summary("not-in-index", volume=34) is None
+
+
+def test_theme_narrative_from_old_source_url_is_a_miss(fake_cache_home):
+    theme_id = "putting-coding-agents-on-a-leash"
+    path = _cache_file(fake_cache_home, 34, "theme_narratives.json")
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({theme_id: {
+        "narrative": "stale", "fetched_at": "2026-10-01T00:00:00+00:00",
+        "source_url": "https://example.com/old",
+    }}), encoding="utf-8")
+    assert ch.get_cached_theme_narrative(theme_id, volume=34) is None
+    ch.write_cached_theme_narrative(theme_id, "fresh", volume=34)
+    assert ch.get_cached_theme_narrative(theme_id, volume=34) == "fresh"
+
+
+# ---------------------------------------------------------------------------
+# page_title is a lookup alias for name (#31 review)
+# ---------------------------------------------------------------------------
+
+
+def test_find_blip_matches_page_title():
+    blip = ch.find_blip("Amazon Bedrock AgentCore", 34)
+    assert blip is not None
+    assert blip["name"] == "AWS Bedrock AgentCore"
+
+
+def test_get_or_fetch_summary_by_page_title_uses_name_as_cache_key(fake_cache_home):
+    result = ch.get_or_fetch_summary("Amazon Bedrock AgentCore", fetcher=lambda u: "agentcore", volume=34)
+    assert result == "agentcore"
+    data = json.loads(_cache_file(fake_cache_home, 34, "blip_summaries.json").read_text(encoding="utf-8"))
+    assert list(data) == ["AWS Bedrock AgentCore"]
+    assert ch.get_cached_summary("AWS Bedrock AgentCore", volume=34) == "agentcore"
+
+
+# ---------------------------------------------------------------------------
 # Theme narrative cache + find_theme (twin of the blip-side tests above)
 # ---------------------------------------------------------------------------
 
@@ -471,7 +554,9 @@ def test_verify_urls_reports_quadrant_page_as_mismatch(monkeypatch):
     """An unknown slug returns the quadrant page, titled with the quadrant name."""
     vu = _verify_urls_module()
     monkeypatch.setattr(vu, "page_title", lambda url: "Languages & Frameworks")
-    assert vu.check({"name": "TOON", "radar_url": "u"}) is not None
+    assert vu.check({"name": "TOON", "radar_url": "u"}) == (
+        "TOON: page title is 'Languages & Frameworks', expected 'TOON'"
+    )
 
 
 def test_page_title_only_where_it_differs_from_name():
