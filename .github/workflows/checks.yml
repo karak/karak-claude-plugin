@@ -26,6 +26,19 @@ jobs:
           BASE_REF: ${{ github.event_name == 'push' && github.event.before || 'origin/main' }}
         run: bash scripts/check-sync.sh
 
+  line-endings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: No CR in committed text files
+        # .gitattributes converts CRLF to LF, but a lone CR survives and breaks shell scripts (#25).
+        # --cached checks what is committed; -I skips binary files.
+        run: |
+          if git grep --cached -I -n $'\r'; then
+            echo "::error::CR characters found in the files above. Convert them to LF."
+            exit 1
+          fi
+
   radar-tests:
     runs-on: ubuntu-latest
     steps:
