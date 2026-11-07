@@ -8,9 +8,13 @@ of the git repo.
 Cache layout::
 
     ${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v<NN>/
-        blip_summaries.json     { "<blip_name>": { "summary": "...", "fetched_at": "..." } }
-        theme_narratives.json   { "<theme_id>":  { "narrative": "...", "fetched_at": "..." } }
+        blip_summaries.json     { "<blip_name>": { "summary": "...", "fetched_at": "...", "source_url": "..." } }
+        theme_narratives.json   { "<theme_id>":  { "narrative": "...", "fetched_at": "...", "source_url": "..." } }
         .meta.json              { "volume": NN, "last_full_refresh": "..." }
+
+An entry is served only while its ``source_url`` equals the blip's current
+``radar_url`` (or the theme's ``source_url``) in the index, so correcting a
+URL in a published volume invalidates the old entry.
 """
 
 from __future__ import annotations
@@ -114,43 +118,90 @@ def _write_json_atomic(path: Path, data: dict) -> None:
         raise
 
 
-def get_cached_summary(blip_name: str, volume: int | None = None) -> str | None:
+def _entry_if_current(entry: dict | None, source_url: str | None) -> dict | None:
+    """Return ``entry`` only if it was fetched from ``source_url``.
+
+    Entries are bound to the URL they were fetched from, so correcting a
+    blip's ``radar_url`` (or a theme's ``source_url``) in the index turns the
+    old entry into a miss. Entries without ``source_url`` predate this rule
+    and are treated as misses too.
+    """
+    if not entry or source_url is None or entry.get("source_url") != source_url:
+        return None
+    return entry
+
+
+def _blip_key_and_url(blip_name: str, volume: int, source_url: str | None) -> tuple[str, str | None]:
+    """Resolve the cache key (the index ``name``, even when looked up by
+    ``page_title``) and the expected source URL (the index ``radar_url``
+    unless given explicitly)."""
+    blip = find_blip(blip_name, volume)
+    key = blip["name"] if blip else blip_name
+    if source_url is None and blip:
+        source_url = blip["radar_url"]
+    return key, source_url
+
+
+def get_cached_summary(
+    blip_name: str, volume: int | None = None, source_url: str | None = None
+) -> str | None:
     """Return cached summary text for blip, or None if not cached.
 
-    The caller is responsible for invoking WebFetch on the blip's radar_url
-    if this returns None, then calling write_cached_summary().
+    An entry counts only if it was fetched from ``source_url`` (default: the
+    blip's current ``radar_url`` in the index). The caller is responsible for
+    invoking WebFetch on the blip's radar_url if this returns None, then
+    calling write_cached_summary().
     """
     v = volume if volume is not None else latest_volume()
+    key, url = _blip_key_and_url(blip_name, v, source_url)
     cache = _read_json(volume_cache_dir(v) / "blip_summaries.json")
-    entry = cache.get(blip_name)
+    entry = _entry_if_current(cache.get(key), url)
     return entry.get("summary") if entry else None
 
 
-def write_cached_summary(blip_name: str, summary: str, volume: int | None = None) -> None:
+def write_cached_summary(
+    blip_name: str, summary: str, volume: int | None = None, source_url: str | None = None
+) -> None:
+    """Cache ``summary`` together with the URL it was fetched from
+    (default: the blip's current ``radar_url`` in the index)."""
     v = volume if volume is not None else latest_volume()
+    key, url = _blip_key_and_url(blip_name, v, source_url)
     path = volume_cache_dir(v) / "blip_summaries.json"
     cache = _read_json(path)
-    cache[blip_name] = {
+    cache[key] = {
         "summary": summary,
         "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "source_url": url,
     }
     _write_json_atomic(path, cache)
 
 
-def get_cached_theme_narrative(theme_id: str, volume: int | None = None) -> str | None:
+def _theme_url(theme_id: str, volume: int, source_url: str | None) -> str | None:
+    if source_url is not None:
+        return source_url
+    theme = find_theme(theme_id, volume)
+    return theme["source_url"] if theme else None
+
+
+def get_cached_theme_narrative(
+    theme_id: str, volume: int | None = None, source_url: str | None = None
+) -> str | None:
     v = volume if volume is not None else latest_volume()
     cache = _read_json(volume_cache_dir(v) / "theme_narratives.json")
-    entry = cache.get(theme_id)
+    entry = _entry_if_current(cache.get(theme_id), _theme_url(theme_id, v, source_url))
     return entry.get("narrative") if entry else None
 
 
-def write_cached_theme_narrative(theme_id: str, narrative: str, volume: int | None = None) -> None:
+def write_cached_theme_narrative(
+    theme_id: str, narrative: str, volume: int | None = None, source_url: str | None = None
+) -> None:
     v = volume if volume is not None else latest_volume()
     path = volume_cache_dir(v) / "theme_narratives.json"
     cache = _read_json(path)
     cache[theme_id] = {
         "narrative": narrative,
         "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "source_url": _theme_url(theme_id, v, source_url),
     }
     _write_json_atomic(path, cache)
 
@@ -183,7 +234,7 @@ def get_or_fetch_summary(
     summary = fetcher(blip["radar_url"])
     if not summary:
         return None
-    write_cached_summary(blip_name, summary, volume)
+    write_cached_summary(blip["name"], summary, volume)
     return summary
 
 
@@ -209,9 +260,14 @@ def get_or_fetch_theme_narrative(
 
 
 def find_blip(blip_name: str, volume: int | None = None) -> dict | None:
-    """Look up a blip by exact name."""
-    for blip in load_blips(volume):
+    """Look up a blip by exact ``name``, falling back to exact ``page_title``
+    (the name the site shows now, when it was renamed after publication)."""
+    blips = load_blips(volume)
+    for blip in blips:
         if blip["name"] == blip_name:
+            return blip
+    for blip in blips:
+        if blip.get("page_title") == blip_name:
             return blip
     return None
 

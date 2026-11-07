@@ -369,6 +369,31 @@ def test_refresh_blips_refetch_overwrites_existing_entry(fake_cache_home, monkey
     assert fresh != "old value"
 
 
+def test_refresh_blips_refetches_entry_cached_from_another_url(fake_cache_home, monkeypatch):
+    """Without --refetch, an entry fetched from a URL other than the current
+    radar_url (radar_url was corrected) is refetched, not skipped."""
+    blip = ch.load_blips(34)[0]
+    ch.write_cached_summary(blip["name"], "old value", volume=34, source_url="https://example.com/old")
+    fetched = []
+
+    def fake_fetch(url, timeout=20.0):
+        fetched.append(url)
+        return "<article>fresh content</article>"
+
+    monkeypatch.setattr(rc, "fetch", fake_fetch)
+    assert rc.main(["--volume", "34", "--blips-only", "--limit", "1"]) == 0
+    assert fetched == [blip["radar_url"]]
+    assert ch.get_cached_summary(blip["name"], volume=34) == "fresh content"
+
+
+def test_refresh_blips_skips_entry_cached_from_current_url(fake_cache_home, monkeypatch):
+    blip = ch.load_blips(34)[0]
+    ch.write_cached_summary(blip["name"], "kept", volume=34)
+    monkeypatch.setattr(rc, "fetch", lambda url, timeout=20.0: pytest.fail("must not fetch"))
+    assert rc.main(["--volume", "34", "--blips-only", "--limit", "1"]) == 0
+    assert ch.get_cached_summary(blip["name"], volume=34) == "kept"
+
+
 # ---------------------------------------------------------------------------
 # --limit boundary values
 # ---------------------------------------------------------------------------
