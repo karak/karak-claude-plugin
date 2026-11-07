@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$schema_version": "1.1",
+  "$schema_version": "1.2",
   "title": "Thoughtworks Technology Radar — Structural Index Schema (karak)",
   "description": "Schema for karak's per-volume structural index of the Thoughtworks Technology Radar. Bump $schema_version when ring/quadrant enums or record shape change. Per-volume facts live in volumes/v<NN>/manifest.json.",
   "$defs": {
@@ -29,6 +29,10 @@
           "type": "string",
           "format": "uri",
           "description": "Canonical Thoughtworks URL for this blip's detail page. Source of truth for summary text — fetch on demand."
+        },
+        "page_title": {
+          "type": "string",
+          "description": "OPTIONAL. Title of the radar_url page when it differs from name (e.g. the site renamed the blip later). verify_urls.py compares the page title against this instead of name."
         },
         "tags": {
           "type": "array",

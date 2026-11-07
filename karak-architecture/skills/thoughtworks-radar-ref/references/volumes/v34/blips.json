@@ -43,7 +43,7 @@
 
   { "name": "AG-UI Protocol", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/ag-ui-protocol", "tags": ["ai", "agentic", "frontend"] },
   { "name": "Apache APISIX", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/apache-apisix", "tags": ["infra", "api-gateway"] },
-  { "name": "AWS Bedrock AgentCore", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/aws-bedrock-agentcore", "tags": ["ai", "agentic", "llm-ops", "infra"] },
+  { "name": "AWS Bedrock AgentCore", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/aws-bedrock-agentcore", "page_title": "Amazon Bedrock AgentCore", "tags": ["ai", "agentic", "llm-ops", "infra"], "note": "2026-11 correction (#26): the page title is now Amazon Bedrock AgentCore; name kept as listed in Vol.34." },
   { "name": "Graphiti", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/graphiti", "tags": ["ai", "knowledge", "data"] },
   { "name": "Langfuse", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/langfuse", "tags": ["ai", "llm-ops", "observability"] },
   { "name": "Port", "ring": "Trial", "quadrant": "Platforms", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/platforms/port", "tags": ["platform-engineering", "devex"] },
@@ -118,6 +118,6 @@
   { "name": "GitHub Spec Kit", "ring": "Assess", "quadrant": "Languages & Frameworks", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/github-spec-kit", "tags": ["ai", "coding-agent", "spec"] },
   { "name": "LangExtract", "ring": "Assess", "quadrant": "Languages & Frameworks", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/langextract", "tags": ["ai"] },
   { "name": "Mastra", "ring": "Assess", "quadrant": "Languages & Frameworks", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/mastra", "tags": ["ai", "agentic", "mcp"] },
-  { "name": "TOON", "ring": "Assess", "quadrant": "Languages & Frameworks", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/toon", "tags": ["ai", "llm-ops"] },
+  { "name": "TOON", "ring": "Assess", "quadrant": "Languages & Frameworks", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/toon-token-oriented-object-notation", "page_title": "TOON (Token-Oriented Object Notation)", "tags": ["ai", "llm-ops"], "note": "2026-11 correction (#26): radar_url was /toon, which serves the quadrant page; the blip page is /toon-token-oriented-object-notation." },
   { "name": "Unsloth", "ring": "Assess", "quadrant": "Languages & Frameworks", "volume": 34, "radar_url": "https://www.thoughtworks.com/radar/languages-and-frameworks/unsloth", "tags": ["ai", "llm-ops"] }
 ]

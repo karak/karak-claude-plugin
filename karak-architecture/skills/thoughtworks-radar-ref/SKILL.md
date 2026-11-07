@@ -84,9 +84,9 @@ thoughtworks-radar-ref/
 │   ├── source_info.json        クロスボリューム不変項 + latest_volume ポインタ
 │   ├── radar-schema.json       record shape / enum の JSON Schema ($schema_version あり)
 │   └── volumes/
-│       └── v<NN>/              ボリュームごとに 1 ディレクトリ (最新は source_info.json の latest_volume)。既存ボリュームは編集せず追加する
+│       └── v<NN>/              ボリュームごとに 1 ディレクトリ (最新は source_info.json の latest_volume)。既存ボリュームは編集せず追加する (事実誤りの訂正は例外、後述)
 │           ├── manifest.json   そのボリューム固有のメタ (date, ring_vocabulary, ring_changes_from_prev, ...)
-│           ├── blips.json      Blip インデックス (name / ring / quadrant / volume / radar_url / tags / note?)
+│           ├── blips.json      Blip インデックス (name / ring / quadrant / volume / radar_url / page_title? / tags / note?)
 │           └── themes.json     Themes インデックス (id / title / volume / source_url / related_blip_names / our_synthesis?)
 └── scripts/
     ├── cache_helpers.py        キャッシュ I/O ユーティリティ (stdlib のみ)
@@ -253,9 +253,21 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
    - [ ] `ring` が `manifest.json` の `ring_vocabulary` と整合しているか
    - [ ] `related_blip_names` が同ボリュームの `blips.json` の `name` と綴り一致しているか
    - [ ] `cache/` のような名前のディレクトリが配布物に混入していないか
-   - [ ] 旧 v<X>/ を誤って編集していないか (履歴破壊防止)
+   - [ ] 旧 v<X>/ を誤って編集していないか (履歴破壊防止)。例外は下記の「公開済みボリュームの訂正」だけ
    - [ ] `pytest scripts` が通るか (manifest の件数・radar_url 形式・テーマ参照を検査)
    - [ ] marketplace.json の対象プラグイン version とトップレベル `version` の両方を上げたか (`scripts/check-sync.sh` が検査)
+
+### 公開済みボリュームの訂正 (例外)
+
+既存の `v<X>/` は原則として編集しない。ただし、記録した事実が誤っていた場合
+(`verify_urls.py` が不一致を出した場合など) に限り、訂正してよい:
+
+- **`radar_url` が別のページを指している** (未知の slug に quadrant ページが返る等): 正しい URL に直す
+- **サイト側で Blip の表示名が変わった**: `name` はそのボリュームに掲載された名前のまま残し
+  (`related_blip_names` やキャッシュのキーが `name` を参照するため)、現在のページ題名を `page_title` に入れる
+- いずれの場合も `note` に訂正日・理由・issue 番号を短く残す (TW の本文は書かない)
+- ring / quadrant など、そのボリュームで公表された分類は変えない
+- 訂正後に `verify_urls.py <X>` と `pytest scripts` が通ることを確認する
 
 ### 個別 Blip の説明文を読みたいとき (利用時)
 

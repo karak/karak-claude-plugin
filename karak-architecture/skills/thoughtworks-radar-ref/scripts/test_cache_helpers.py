@@ -450,3 +450,33 @@ def test_volume_files_match_radar_schema():
             records = json.loads((vdir / f"{kind}s.json").read_text(encoding="utf-8"))
             errors += [f"{r.get('name', r.get('id'))}: {e.message}" for r in records for e in validator(kind).iter_errors(r)]
         assert errors == [], f"v{vol} schema violations: {errors[:5]}"
+
+
+def _verify_urls_module():
+    import importlib
+
+    return importlib.import_module("verify_urls")
+
+
+def test_verify_urls_uses_page_title_when_set(monkeypatch):
+    vu = _verify_urls_module()
+    monkeypatch.setattr(vu, "page_title", lambda url: "Amazon Bedrock AgentCore")
+    blip = {"name": "AWS Bedrock AgentCore", "radar_url": "u", "page_title": "Amazon Bedrock AgentCore"}
+    assert vu.check(blip) is None
+    del blip["page_title"]
+    assert "expected 'AWS Bedrock AgentCore'" in vu.check(blip)
+
+
+def test_verify_urls_reports_quadrant_page_as_mismatch(monkeypatch):
+    """An unknown slug returns the quadrant page, titled with the quadrant name."""
+    vu = _verify_urls_module()
+    monkeypatch.setattr(vu, "page_title", lambda url: "Languages & Frameworks")
+    assert vu.check({"name": "TOON", "radar_url": "u"}) is not None
+
+
+def test_page_title_only_where_it_differs_from_name():
+    """page_title is set only to record a difference from name, never as a copy of it."""
+    for vol in _discover_volume_numbers():
+        _, blips = _volume_files(vol)
+        same = [b["name"] for b in blips if "page_title" in b and b["page_title"].lower() == b["name"].lower()]
+        assert same == [], f"v{vol} page_title equals name: {same}"

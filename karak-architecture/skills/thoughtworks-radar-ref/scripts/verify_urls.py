@@ -2,6 +2,7 @@
 
 HTTP status cannot tell: the site answers 200 for unknown slugs by serving the
 quadrant page. A real blip page has ``<title>NAME | Technology Radar ...``.
+NAME is the blip's ``page_title`` when set (the site renamed it), else ``name``.
 
 Usage: python -X utf8 verify_urls.py [volume]   (default: latest_volume)
 Prints one line per mismatch; exit 1 if any.
@@ -34,8 +35,9 @@ def check(blip: dict) -> str | None:
         title = page_title(blip["radar_url"])
     except Exception as exc:  # report any fetch failure as a mismatch
         return f"{blip['name']}: fetch failed ({exc})"
-    if title.lower() != blip["name"].lower():
-        return f"{blip['name']}: page title is {title!r}"
+    expected = blip.get("page_title", blip["name"])
+    if title.lower() != expected.lower():
+        return f"{blip['name']}: page title is {title!r}, expected {expected!r}"
     return None
 
 
