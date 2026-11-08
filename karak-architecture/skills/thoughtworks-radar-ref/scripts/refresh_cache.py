@@ -7,8 +7,9 @@ Usage::
 Iterates over the structural index for a volume, fetches the canonical
 Thoughtworks page for each entry, and writes a coarse extraction (the entire
 ``<article>`` or ``<main>`` text, stripped of tags) into the per-user cache.
-Existing cache entries are skipped by default; pass ``--refetch`` to force
-overwrite.
+Existing cache entries fetched from the entry's current URL are skipped by
+default; entries fetched from another URL (the index URL was corrected) are
+refetched. Pass ``--refetch`` to force overwrite.
 
 The extraction is **intentionally coarse** — the model is expected to locate
 the relevant summary paragraph at read time. The script is fail-loud: when
@@ -210,7 +211,7 @@ def refresh_blips(volume: int, refetch: bool, limit: int | None) -> tuple[int, i
     for i, blip in enumerate(blips, 1):
         name = blip["name"]
         url = blip["radar_url"]
-        if not refetch and get_cached_summary(name, volume) is not None:
+        if not refetch and get_cached_summary(name, volume, source_url=url) is not None:
             continue
         attempted += 1
         if attempted > 1:
@@ -225,7 +226,7 @@ def refresh_blips(volume: int, refetch: bool, limit: int | None) -> tuple[int, i
             empties += 1
             print(f"  [{i}/{len(blips)}] EMPTY {name}: no extractable summary", file=sys.stderr)
             continue
-        write_cached_summary(name, summary, volume)
+        write_cached_summary(name, summary, volume, source_url=url)
         updated += 1
         print(f"  [{i}/{len(blips)}] {name}: cached ({len(summary)} chars)")
     return updated, attempted, empties
@@ -241,7 +242,7 @@ def refresh_themes(volume: int, refetch: bool) -> tuple[int, int, int]:
     updated = attempted = empties = 0
     for theme in themes:
         tid = theme["id"]
-        if not refetch and get_cached_theme_narrative(tid, volume) is not None:
+        if not refetch and get_cached_theme_narrative(tid, volume, source_url=theme["source_url"]) is not None:
             continue
         attempted += 1
         if attempted > 1:
@@ -265,7 +266,7 @@ def refresh_themes(volume: int, refetch: bool) -> tuple[int, int, int]:
             )
             continue
         narrative = text[idx : idx + 3000]
-        write_cached_theme_narrative(tid, narrative, volume)
+        write_cached_theme_narrative(tid, narrative, volume, source_url=theme["source_url"])
         updated += 1
         print(f"  THEME {tid}: cached ({len(narrative)} chars)")
     return updated, attempted, empties

@@ -104,10 +104,14 @@ thoughtworks-radar-ref/
 
 ```
 ${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-radar-ref/v<NN>/
-├── blip_summaries.json         { "<blip_name>": { "summary": "...", "fetched_at": "..." } }
-├── theme_narratives.json       { "<theme_id>":  { "narrative": "...", "fetched_at": "..." } }
+├── blip_summaries.json         { "<blip_name>": { "summary": "...", "fetched_at": "...", "source_url": "..." } }
+├── theme_narratives.json       { "<theme_id>":  { "narrative": "...", "fetched_at": "...", "source_url": "..." } }
 └── .meta.json                  { volume: <NN>, last_full_refresh: "..." }
 ```
+
+`source_url` は取得元の URL。インデックスの `radar_url` (Theme は `source_url`) と一致するエントリだけを
+有効とし、一致しない・`source_url` が無いエントリはキャッシュミスとして再取得する
+(公開済みボリュームで URL を訂正したとき、古い本文を返さないため)。
 
 ---
 
@@ -131,7 +135,7 @@ references/source_info.json を読み latest_volume を取得 (現在: 35)
 
 | 問いの形 | 開くファイル | 操作 |
 |---|---|---|
-| 「X は Radar で何環?」 | `volumes/v<NN>/blips.json` | name 一致 → `ring` を返す |
+| 「X は Radar で何環?」 | `volumes/v<NN>/blips.json` | name 一致 (無ければ `page_title` 一致) → `ring` を返す |
 | 「Caution に入っているものは?」 | `volumes/v<NN>/blips.json` | `select(.ring == "Caution")` |
 | 「`tag: security` の Caution は?」 | `volumes/v<NN>/blips.json` | `select(.ring == "Caution" and (.tags // []) | index("security"))` |
 | 「Theme X に関連する Blip は?」 | `volumes/v<NN>/themes.json` | `select(.id == "X") | .related_blip_names` |
@@ -145,8 +149,8 @@ references/source_info.json を読み latest_volume を取得 (現在: 35)
 ```
 キャッシュパス = ~/.cache/karak-claude-plugin/thoughtworks-radar-ref/v<volume>/
 1. blip_summaries.json を読む
-2. キーに blip name があればそれを返す
-3. 無ければ radar_url を WebFetch → 結果を blip_summaries.json に追記 → 返す
+2. キーに blip name があり、その source_url が blip の radar_url と一致すればそれを返す
+3. 無ければ radar_url を WebFetch → 結果を source_url 付きで blip_summaries.json に書く → 返す
 ```
 
 擬似コード (`scripts/cache_helpers.py` を呼び出すパターン):
@@ -170,8 +174,8 @@ Claude Code セッションから直接行う場合:
 
 ```
 1. ~/.cache/karak-claude-plugin/thoughtworks-radar-ref/v35/blip_summaries.json を Read
-2. キーがあれば値を使う
-3. 無ければ WebFetch(radar_url, "Extract the official summary text") → JSON を Edit/Write
+2. キーがあり、`source_url` が blip の `radar_url` と一致すれば値を使う
+3. 無ければ WebFetch(radar_url, "Extract the official summary text") → `source_url` に radar_url を入れて JSON を Edit/Write
 ```
 
 ### 段階 3 — 一次情報直接参照 (スナップショット範囲外)
@@ -268,6 +272,10 @@ jq 'keys' "${XDG_CACHE_HOME:-$HOME/.cache}/karak-claude-plugin/thoughtworks-rada
 - いずれの場合も `note` に訂正日・理由・issue 番号を短く残す (TW の本文は書かない)
 - ring / quadrant など、そのボリュームで公表された分類は変えない
 - 訂正後に `verify_urls.py <X>` と `pytest scripts` が通ることを確認する
+- 利用者のキャッシュは手当て不要: エントリは取得元 URL (`source_url`) に紐付いているので、
+  `radar_url` を直せば古いエントリは次回の参照時にミスになり再取得される
+- 配布データの訂正なので、marketplace.json の対象プラグイン version とトップレベル `version` を
+  patch で上げる (上げないと version で更新を判定する環境に訂正が届かない)
 
 ### 個別 Blip の説明文を読みたいとき (利用時)
 
