@@ -1,0 +1,20 @@
+disk-saver
+==========
+
+This skill contains ideas and small adapted portions from the following
+MIT-licensed projects. Their copyright notices are reproduced below.
+
+1. disk-cleanup (https://github.com/CharlesLadera/claude-custom-skills)
+   Copyright (c) 2026 Charles Ladera
+   Adapted: catalog entry schema (id/path/tier/why/regen/command), the
+   no-deletion-primitives source guard and command allowlist idea
+   (scripts/policy.py, tests/test_safety.py).
+
+2. macos-cleaner (https://github.com/daymade/claude-code-skills)
+   Copyright (c) 2025 daymade
+   Concepts only (observe/plan/execute/verify phases, decision classes,
+   preserve-by-default dev caches). No files copied.
+
+tw93/Mole (GPL-3.0) was consulted for ideas only; no code was used.
+
+Full license texts: licenses/LICENSE-charlesladera-disk-cleanup, licenses/LICENSE-daymade-macos-cleaner

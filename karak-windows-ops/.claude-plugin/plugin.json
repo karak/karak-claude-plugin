@@ -1,0 +1,23 @@
+{
+  "name": "karak-windows-ops",
+  "description": "Windows host maintenance: disk-saver diagnoses disk usage with usage evidence (running apps, VS Code extension lists, nvm/Playwright references, superseded drivers, pagefile, stale workspaces), proposes prioritized Japanese reports, and removes only per-item approved targets",
+  "author": {
+    "name": "karak"
+  },
+  "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+  "repository": "https://github.com/karak-developer/karak-claude-plugin",
+  "license": "MIT",
+  "keywords": [
+    "windows",
+    "disk-cleanup",
+    "disk-space",
+    "maintenance",
+    "cache",
+    "storage",
+    "drivers",
+    "pagefile"
+  ],
+  "skills": [
+    "./skills/disk-saver"
+  ]
+}

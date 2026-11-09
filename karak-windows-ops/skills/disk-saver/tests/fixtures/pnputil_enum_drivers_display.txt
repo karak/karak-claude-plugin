@@ -1,0 +1,35 @@
+Microsoft PnP ユーティリティ
+
+公開名:     oem4.inf
+元の名前:      dlidusb.inf
+プロバイダー名:      DisplayLink
+クラス名:         Display
+クラス GUID:         {4d36e968-e325-11ce-bfc1-08002be10318}
+クラス バージョン:      2.0
+ドライバー バージョン:     09/26/2023 11.2.3146.0
+署名者名:        Microsoft Windows Hardware Compatibility Publisher
+
+公開名:     oem374.inf
+元の名前:      iigd_dch.inf
+プロバイダー名:      Intel Corporation
+クラス名:         Display
+クラス GUID:         {4d36e968-e325-11ce-bfc1-08002be10318}
+ドライバー バージョン:     12/12/2025 32.0.101.8332
+署名者名:        Microsoft Windows Hardware Compatibility Publisher
+
+公開名:     oem66.inf
+元の名前:      iigd_dch.inf
+プロバイダー名:      Intel Corporation
+クラス名:         Display
+クラス GUID:         {4d36e968-e325-11ce-bfc1-08002be10318}
+ドライバー バージョン:     08/24/2026 32.0.101.8991
+署名者名:        Microsoft Windows Hardware Compatibility Publisher
+
+公開名:     oem7.inf
+元の名前:      iigd_dch.inf
+プロバイダー名:      Intel Corporation
+クラス名:         Display
+クラス GUID:         {4d36e968-e325-11ce-bfc1-08002be10318}
+ドライバー バージョン:     05/29/2026 32.0.101.8826
+署名者名:        Microsoft Windows Hardware Compatibility Publisher
+
