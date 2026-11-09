@@ -4,8 +4,8 @@
     "name": "karak"
   },
   "metadata": {
-    "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Node.js backend development, and meta (session-aware) tools for Claude Code",
-    "version": "2.8.1"
+    "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Windows host maintenance, Node.js backend development, and meta (session-aware) tools for Claude Code",
+    "version": "2.9.0"
   },
   "plugins": [
     {
@@ -240,6 +240,34 @@
         "hooks",
         "memory",
         "session"
+      ]
+    },
+    {
+      "name": "karak-windows-ops",
+      "source": "./karak-windows-ops",
+      "description": "Windows host maintenance: disk-saver diagnoses disk usage with usage evidence (running apps, VS Code extension lists, nvm/Playwright references, superseded drivers, pagefile, stale workspaces), proposes prioritized Japanese reports, and removes only per-item approved targets",
+      "version": "1.0.0",
+      "author": {
+        "name": "karak"
+      },
+      "homepage": "https://github.com/karak-developer/karak-claude-plugin",
+      "repository": "https://github.com/karak-developer/karak-claude-plugin",
+      "license": "MIT",
+      "keywords": [
+        "windows",
+        "disk-cleanup",
+        "disk-space",
+        "maintenance",
+        "cache",
+        "storage",
+        "drivers",
+        "pagefile"
+      ],
+      "category": "productivity",
+      "tags": [
+        "windows",
+        "maintenance",
+        "disk"
       ]
     }
   ]

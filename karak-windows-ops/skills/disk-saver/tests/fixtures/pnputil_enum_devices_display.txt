@@ -1,0 +1,118 @@
+Microsoft PnP ユーティリティ
+
+インスタンス ID:                SWD\RemoteDisplayEnum\RdpIdd_IndirectDisplay&SessionId_0001
+デバイスの説明:         Microsoft Remote Display Adapter
+クラス名:                 Display
+クラス GUID:                 {4d36e968-e325-11ce-bfc1-08002be10318}
+製造元の名前:          Microsoft
+状態:                     切断済み
+ドライバー名:                rdpidd.inf
+一致するドライバー:
+    ドライバー名:            rdpidd.inf
+    プロバイダー名:          Microsoft
+    クラス名:             Display
+    クラス GUID:             {4d36e968-e325-11ce-bfc1-08002be10318}
+    ドライバーのバージョン:         06/21/2006 10.0.22621.3672
+    署名者名:            Microsoft Windows
+    一致するデバイス ID:     RdpIdd_IndirectDisplay
+    ドライバーのランク:            00FF0000
+    ドライバーの状態:          最適 /インストール済み
+
+    ドライバー名:            rdpidd.inf
+    プロバイダー名:          Microsoft
+    クラス名:             Display
+    クラス GUID:             {4d36e968-e325-11ce-bfc1-08002be10318}
+    ドライバーのバージョン:         06/21/2006 10.0.22621.3672
+    署名者名:            Microsoft Windows
+    一致するデバイス ID:     RdpIdd_IndirectDisplay
+    ドライバーのランク:            00FF2000
+    ドライバーの状態:          上位
+
+インスタンス ID:                PCI\VEN_8086&DEV_7D45&SUBSYS_00000000&REV_08\3&00000000&0&10
+デバイスの説明:         Intel(R) Graphics
+クラス名:                 Display
+クラス GUID:                 {4d36e968-e325-11ce-bfc1-08002be10318}
+製造元の名前:          Intel Corporation
+状態:                     開始
+ドライバー名:                oem66.inf
+拡張ドライバー名:     oem71.inf
+一致するドライバー:
+    ドライバー名:            oem66.inf
+    元の名前:          iigd_dch.inf
+    プロバイダー名:          Intel Corporation
+    クラス名:             Display
+    クラス GUID:             {4d36e968-e325-11ce-bfc1-08002be10318}
+    ドライバーのバージョン:         08/24/2026 32.0.101.8991
+    署名者名:            Microsoft Windows Hardware Compatibility Publisher
+    一致するデバイス ID:     PCI\VEN_8086&DEV_7D45&SUBSYS_00000000
+    ドライバーのランク:            00CF0001
+    ドライバーの状態:          最適 /インストール済み
+
+    ドライバー名:            oem71.inf
+    元の名前:          iigd_ext.inf
+    プロバイダー名:          Intel Corporation
+    クラス名:             Extension
+    クラス GUID:             {e2f84ce7-8efa-411c-aa69-97454ca4cb57}
+    ドライバーのバージョン:         08/24/2026 32.0.101.8991
+    拡張機能 D:           {a882d99b-2bb1-484c-b438-a24b8b506686}
+    署名者名:            Microsoft Windows Hardware Compatibility Publisher
+    一致するデバイス ID:     PCI\VEN_8086&DEV_7D45&SUBSYS_00000000
+    ドライバーのランク:            00FF0001
+    ドライバーの状態:          最適 /インストール済み /拡張機能
+
+    ドライバー名:            oem374.inf
+    元の名前:          iigd_dch.inf
+    プロバイダー名:          Intel Corporation
+    クラス名:             Display
+    クラス GUID:             {4d36e968-e325-11ce-bfc1-08002be10318}
+    ドライバーのバージョン:         12/12/2025 32.0.101.8332
+    署名者名:            Microsoft Windows Hardware Compatibility Publisher
+    一致するデバイス ID:     PCI\VEN_8086&DEV_7D45&SUBSYS_00000000
+    ドライバーのランク:            00CF0001
+    ドライバーの状態:          上位
+
+    ドライバー名:            oem7.inf
+    元の名前:          iigd_dch.inf
+    プロバイダー名:          Intel Corporation
+    クラス名:             Display
+    クラス GUID:             {4d36e968-e325-11ce-bfc1-08002be10318}
+    ドライバーのバージョン:         05/29/2026 32.0.101.8826
+    署名者名:            Microsoft Windows Hardware Compatibility Publisher
+    一致するデバイス ID:     PCI\VEN_8086&DEV_7D45&SUBSYS_00000000
+    ドライバーのランク:            00CF0001
+    ドライバーの状態:          上位
+
+    ドライバー名:            display.inf
+    プロバイダー名:          Microsoft
+    クラス名:             Display
+    クラス GUID:             {4d36e968-e325-11ce-bfc1-08002be10318}
+    ドライバーのバージョン:         06/21/2006 10.0.22621.1
+    署名者名:            Microsoft Windows
+    一致するデバイス ID:     PCI\CC_0300
+    ドライバーのランク:            00FB2008
+    ドライバーの状態:          上位
+
+    ドライバー名:            oem377.inf
+    元の名前:          iigd_ext.inf
+    プロバイダー名:          Intel Corporation
+    クラス名:             Extension
+    クラス GUID:             {e2f84ce7-8efa-411c-aa69-97454ca4cb57}
+    ドライバーのバージョン:         12/12/2025 32.0.101.8332
+    拡張機能 D:           {a882d99b-2bb1-484c-b438-a24b8b506686}
+    署名者名:            Microsoft Windows Hardware Compatibility Publisher
+    一致するデバイス ID:     PCI\VEN_8086&DEV_7D45&SUBSYS_00000000
+    ドライバーのランク:            00FF0001
+    ドライバーの状態:          上位 /拡張機能
+
+    ドライバー名:            oem12.inf
+    元の名前:          iigd_ext.inf
+    プロバイダー名:          Intel Corporation
+    クラス名:             Extension
+    クラス GUID:             {e2f84ce7-8efa-411c-aa69-97454ca4cb57}
+    ドライバーのバージョン:         05/29/2026 32.0.101.8826
+    拡張機能 D:           {a882d99b-2bb1-484c-b438-a24b8b506686}
+    署名者名:            Microsoft Windows Hardware Compatibility Publisher
+    一致するデバイス ID:     PCI\VEN_8086&DEV_7D45&SUBSYS_00000000
+    ドライバーのランク:            00FF0001
+    ドライバーの状態:          上位 /拡張機能
+
