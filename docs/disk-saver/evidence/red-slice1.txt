@@ -1,0 +1,941 @@
+....FFFFFFF.FFFFFFFFFFFF.FFFFFFFFFFF........FFFFFFFFF.FFFFFFFFF          [100%]
+================================== FAILURES ===================================
+____ test_catalog_covers_browser_on_device_ai_models_and_developer_caches _____
+
+catalog = {'entries': [], 'os': 'windows', 'version': 1}
+
+    def test_catalog_covers_browser_on_device_ai_models_and_developer_caches(catalog):
+        ids = {e["id"] for e in catalog["entries"]}
+>       assert {"chrome-ondevice-model", "edge-ondevice-model"} <= ids
+E       AssertionError: assert {'chrome-onde...device-model'} <= set()
+E         
+E         Extra items in the left set:
+E         'chrome-ondevice-model'
+E         'edge-ondevice-model'
+
+tests\test_catalog.py:48: AssertionError
+_ test_user_documents_credentials_and_cloud_folders_are_protected[OneDrive - Org\\Desktop\\proj] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential0\\ProgramData', ...}
+rel = 'OneDrive - Org\\Desktop\\proj'
+
+    @pytest.mark.parametrize("rel", [
+        r"OneDrive - Org\Desktop\proj",
+        r"Documents\report.docx",
+        r"Desktop\a",
+        r"Downloads\setup.exe",
+        r".ssh\id_ed25519",
+    ])
+    def test_user_documents_credentials_and_cloud_folders_are_protected(fake_env, rel):
+        path = os.path.join(fake_env["USERPROFILE"], rel)
+>       assert classify.protected_reason(path, fake_env)
+E       AssertionError: assert None
+E        +  where None = <function protected_reason at 0x000001E0C492A340>('C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential0\\Users\\someone\\OneDrive - Org\\Desktop\\proj', {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential0\\ProgramData', ...})
+E        +    where <function protected_reason at 0x000001E0C492A340> = classify.protected_reason
+
+tests\test_classify.py:50: AssertionError
+_ test_user_documents_credentials_and_cloud_folders_are_protected[Documents\\report.docx] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential1\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential1\\ProgramData', ...}
+rel = 'Documents\\report.docx'
+
+    @pytest.mark.parametrize("rel", [
+        r"OneDrive - Org\Desktop\proj",
+        r"Documents\report.docx",
+        r"Desktop\a",
+        r"Downloads\setup.exe",
+        r".ssh\id_ed25519",
+    ])
+    def test_user_documents_credentials_and_cloud_folders_are_protected(fake_env, rel):
+        path = os.path.join(fake_env["USERPROFILE"], rel)
+>       assert classify.protected_reason(path, fake_env)
+E       AssertionError: assert None
+E        +  where None = <function protected_reason at 0x000001E0C492A340>('C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential1\\Users\\someone\\Documents\\report.docx', {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential1\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential1\\ProgramData', ...})
+E        +    where <function protected_reason at 0x000001E0C492A340> = classify.protected_reason
+
+tests\test_classify.py:50: AssertionError
+_ test_user_documents_credentials_and_cloud_folders_are_protected[Desktop\\a] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential2\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential2\\ProgramData', ...}
+rel = 'Desktop\\a'
+
+    @pytest.mark.parametrize("rel", [
+        r"OneDrive - Org\Desktop\proj",
+        r"Documents\report.docx",
+        r"Desktop\a",
+        r"Downloads\setup.exe",
+        r".ssh\id_ed25519",
+    ])
+    def test_user_documents_credentials_and_cloud_folders_are_protected(fake_env, rel):
+        path = os.path.join(fake_env["USERPROFILE"], rel)
+>       assert classify.protected_reason(path, fake_env)
+E       AssertionError: assert None
+E        +  where None = <function protected_reason at 0x000001E0C492A340>('C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential2\\Users\\someone\\Desktop\\a', {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential2\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential2\\ProgramData', ...})
+E        +    where <function protected_reason at 0x000001E0C492A340> = classify.protected_reason
+
+tests\test_classify.py:50: AssertionError
+_ test_user_documents_credentials_and_cloud_folders_are_protected[Downloads\\setup.exe] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential3\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential3\\ProgramData', ...}
+rel = 'Downloads\\setup.exe'
+
+    @pytest.mark.parametrize("rel", [
+        r"OneDrive - Org\Desktop\proj",
+        r"Documents\report.docx",
+        r"Desktop\a",
+        r"Downloads\setup.exe",
+        r".ssh\id_ed25519",
+    ])
+    def test_user_documents_credentials_and_cloud_folders_are_protected(fake_env, rel):
+        path = os.path.join(fake_env["USERPROFILE"], rel)
+>       assert classify.protected_reason(path, fake_env)
+E       AssertionError: assert None
+E        +  where None = <function protected_reason at 0x000001E0C492A340>('C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential3\\Users\\someone\\Downloads\\setup.exe', {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential3\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential3\\ProgramData', ...})
+E        +    where <function protected_reason at 0x000001E0C492A340> = classify.protected_reason
+
+tests\test_classify.py:50: AssertionError
+_ test_user_documents_credentials_and_cloud_folders_are_protected[.ssh\\id_ed25519] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential4\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential4\\ProgramData', ...}
+rel = '.ssh\\id_ed25519'
+
+    @pytest.mark.parametrize("rel", [
+        r"OneDrive - Org\Desktop\proj",
+        r"Documents\report.docx",
+        r"Desktop\a",
+        r"Downloads\setup.exe",
+        r".ssh\id_ed25519",
+    ])
+    def test_user_documents_credentials_and_cloud_folders_are_protected(fake_env, rel):
+        path = os.path.join(fake_env["USERPROFILE"], rel)
+>       assert classify.protected_reason(path, fake_env)
+E       AssertionError: assert None
+E        +  where None = <function protected_reason at 0x000001E0C492A340>('C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential4\\Users\\someone\\.ssh\\id_ed25519', {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential4\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_user_documents_credential4\\ProgramData', ...})
+E        +    where <function protected_reason at 0x000001E0C492A340> = classify.protected_reason
+
+tests\test_classify.py:50: AssertionError
+__________________ test_security_software_data_is_protected ___________________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_security_software_data_is0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_security_software_data_is0\\ProgramData', ...}
+
+    def test_security_software_data_is_protected(fake_env):
+        path = os.path.join(fake_env["PROGRAMDATA"], "P-Pointer4", "scanner.db")
+>       assert classify.protected_reason(path, fake_env)
+E       AssertionError: assert None
+E        +  where None = <function protected_reason at 0x000001E0C492A340>('C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_security_software_data_is0\\ProgramData\\P-Pointer4\\scanner.db', {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_security_software_data_is0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_security_software_data_is0\\ProgramData', ...})
+E        +    where <function protected_reason at 0x000001E0C492A340> = classify.protected_reason
+
+tests\test_classify.py:55: AssertionError
+________ test_item_owned_by_a_running_app_is_held_back_with_the_reason ________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_item_owned_by_a_running_a0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_item_owned_by_a_running_a0\\ProgramData', ...}
+
+    def test_item_owned_by_a_running_app_is_held_back_with_the_reason(fake_env):
+        rows = rows_for([entry("vsix", gates=["process_not_running:Code.exe"])],
+                        [scanned("vsix", 2 * GB)], fake_env, running={"code.exe"})
+    
+        row = by_id(rows)["vsix"]
+>       assert row["blocked"] and "Code.exe" in row["blocked"]
+E       assert (None)
+
+tests\test_classify.py:68: AssertionError
+_ test_items_are_ranked_by_reclaimable_size_times_confidence_over_rebuild_cost _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_items_are_ranked_by_recla0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_items_are_ranked_by_recla0\\ProgramData', ...}
+
+    def test_items_are_ranked_by_reclaimable_size_times_confidence_over_rebuild_cost(fake_env):
+        rows = rows_for([entry("big", cost=3), entry("small", cost=1)],
+                        [scanned("big", 6 * GB), scanned("small", 3 * GB)], fake_env)
+    
+        proposals = [r["id"] for r in rows if r["section"] == "propose"]
+>       assert proposals == ["small", "big"]
+E       AssertionError: assert ['big', 'small'] == ['small', 'big']
+E         
+E         At index 0 diff: 'big' != 'small'
+E         Use -v to get more diff
+
+tests\test_classify.py:78: AssertionError
+________ test_equal_priority_prefers_items_that_need_no_administrator _________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_equal_priority_prefers_it0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_equal_priority_prefers_it0\\ProgramData', ...}
+
+    def test_equal_priority_prefers_items_that_need_no_administrator(fake_env):
+        rows = rows_for([entry("adm", admin=True, kind="handoff_admin",
+                               command="pnputil /delete-driver oem1.inf"),
+                         entry("usr")],
+                        [scanned("adm", 2 * GB), scanned("usr", 2 * GB)], fake_env)
+    
+        proposals = [r["id"] for r in rows if r["section"] == "propose"]
+>       assert proposals == ["usr", "adm"]
+E       AssertionError: assert ['adm', 'usr'] == ['usr', 'adm']
+E         
+E         At index 0 diff: 'adm' != 'usr'
+E         Use -v to get more diff
+
+tests\test_classify.py:88: AssertionError
+___ test_recently_used_data_gets_lower_confidence_than_long_untouched_data ____
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_recently_used_data_gets_l0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_recently_used_data_gets_l0\\ProgramData', ...}
+
+    def test_recently_used_data_gets_lower_confidence_than_long_untouched_data(fake_env):
+        rows = rows_for([entry("fresh"), entry("stale")],
+                        [scanned("fresh", GB, age_days=2), scanned("stale", GB, age_days=200)], fake_env)
+    
+        r = by_id(rows)
+>       assert r["fresh"]["confidence"] < r["stale"]["confidence"]
+E       assert 1 < 1
+
+tests\test_classify.py:96: AssertionError
+_ test_decisions_and_advice_are_listed_separately_and_never_counted_as_savings _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_decisions_and_advice_are_0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_decisions_and_advice_are_0\\ProgramData', ...}
+
+    def test_decisions_and_advice_are_listed_separately_and_never_counted_as_savings(fake_env):
+        rows = rows_for([entry("vm", cls="DECISION", kind="advice"),
+                         entry("pf", cls="ADVICE", kind="advice"),
+                         entry("c")],
+                        [scanned("vm", 8 * GB), scanned("pf", 20 * GB), scanned("c", GB)], fake_env)
+    
+        r = by_id(rows)
+>       assert r["vm"]["section"] == "decision"
+E       AssertionError: assert 'propose' == 'decision'
+E         
+E         - decision
+E         + propose
+
+tests\test_classify.py:107: AssertionError
+_____________________ test_empty_targets_are_not_proposed _____________________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_empty_targets_are_not_pro0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_empty_targets_are_not_pro0\\ProgramData', ...}
+
+    def test_empty_targets_are_not_proposed(fake_env):
+        rows = rows_for([entry("none")], [scanned("none", 0)], fake_env)
+    
+>       assert all(r["section"] != "propose" for r in rows)
+E       assert False
+E        +  where False = all(<generator object test_empty_targets_are_not_proposed.<locals>.<genexpr> at 0x000001E0C4A19220>)
+
+tests\test_classify.py:115: AssertionError
+_______ test_target_resolving_into_a_protected_folder_is_never_proposed _______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_target_resolving_into_a_p0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_target_resolving_into_a_p0\\ProgramData', ...}
+
+    def test_target_resolving_into_a_protected_folder_is_never_proposed(fake_env):
+        docs = os.path.join(fake_env["USERPROFILE"], "Documents", "cache")
+        rows = rows_for([entry("bad", paths=[r"~\Documents\cache"])],
+                        [scanned("bad", 5 * GB, path=docs)], fake_env)
+    
+        row = by_id(rows)["bad"]
+>       assert row["section"] == "protected"
+E       AssertionError: assert 'propose' == 'protected'
+E         
+E         - protected
+E         + propose
+
+tests\test_classify.py:124: AssertionError
+____________ test_permanent_deletion_is_spelled_out_in_the_method _____________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_permanent_deletion_is_spe0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_permanent_deletion_is_spe0\\ProgramData', ...}
+
+    def test_permanent_deletion_is_spelled_out_in_the_method(fake_env):
+        rows = rows_for([entry("d", kind="delete"), entry("r", kind="recycle")],
+                        [scanned("d", GB), scanned("r", GB)], fake_env)
+    
+        r = by_id(rows)
+>       assert "ごみ箱を経由せず完全削除" in r["d"]["method_label"]
+E       AssertionError: assert 'ごみ箱を経由せず完全削除' in ''
+
+tests\test_classify.py:133: AssertionError
+____ test_report_is_in_japanese_with_proposal_decision_and_advice_sections ____
+
+    def test_report_is_in_japanese_with_proposal_decision_and_advice_sections():
+        text = classify.render_report(sample_rows(), scan_meta(), now=NOW)
+    
+        for heading in ("提案", "判断が必要", "助言のみ"):
+>           assert heading in text
+E           AssertionError: assert '提案' in ''
+
+tests\test_report.py:29: AssertionError
+________ test_report_states_free_space_and_proposed_total_in_gigabytes ________
+
+    def test_report_states_free_space_and_proposed_total_in_gigabytes():
+        text = classify.render_report(sample_rows(), scan_meta(), now=NOW)
+    
+>       assert "17.0 GB" in text and "236.0 GB" in text
+E       AssertionError: assert ('17.0 GB' in '')
+
+tests\test_report.py:36: AssertionError
+______________ test_report_shows_how_each_item_would_be_removed _______________
+
+    def test_report_shows_how_each_item_would_be_removed():
+        text = classify.render_report(sample_rows(), scan_meta(), now=NOW)
+    
+>       assert "方法" in text
+E       AssertionError: assert '方法' in ''
+
+tests\test_report.py:43: AssertionError
+_____________ test_report_warns_when_the_scan_is_older_than_a_day _____________
+
+    def test_report_warns_when_the_scan_is_older_than_a_day():
+        fresh = classify.render_report(sample_rows(), scan_meta(age_hours=1), now=NOW)
+        stale = classify.render_report(sample_rows(), scan_meta(age_hours=30), now=NOW)
+    
+        assert "古い" not in fresh
+>       assert "古い" in stale
+E       AssertionError: assert '古い' in ''
+
+tests\test_report.py:52: AssertionError
+_ test_the_guard_recognises_each_deletion_primitive[import shutil\nshutil.rmtree(p)] _
+
+snippet = 'import shutil\nshutil.rmtree(p)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('import shutil\nshutil.rmtree(p)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_______ test_the_guard_recognises_each_deletion_primitive[os.remove(p)] _______
+
+snippet = 'os.remove(p)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('os.remove(p)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_______ test_the_guard_recognises_each_deletion_primitive[os.unlink(p)] _______
+
+snippet = 'os.unlink(p)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('os.unlink(p)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_____ test_the_guard_recognises_each_deletion_primitive[Path(p).unlink()] _____
+
+snippet = 'Path(p).unlink()'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('Path(p).unlink()')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_____ test_the_guard_recognises_each_deletion_primitive[os.rename(a, b)] ______
+
+snippet = 'os.rename(a, b)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('os.rename(a, b)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+____ test_the_guard_recognises_each_deletion_primitive[shutil.move(a, b)] _____
+
+snippet = 'shutil.move(a, b)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('shutil.move(a, b)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+______ test_the_guard_recognises_each_deletion_primitive[send2trash(p)] _______
+
+snippet = 'send2trash(p)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('send2trash(p)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_ test_the_guard_recognises_each_deletion_primitive[windll.shell32.SHFileOperationW(op)] _
+
+snippet = 'windll.shell32.SHFileOperationW(op)'
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>('windll.shell32.SHFileOperationW(op)')
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_ test_the_guard_recognises_each_deletion_primitive[subprocess.run(['pwsh', '-c', 'Remove-Item x'])] _
+
+snippet = "subprocess.run(['pwsh', '-c', 'Remove-Item x'])"
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>("subprocess.run(['pwsh', '-c', 'Remove-Item x'])")
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_ test_the_guard_recognises_each_deletion_primitive[subprocess.run('cmd /c del /q x')] _
+
+snippet = "subprocess.run('cmd /c del /q x')"
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>("subprocess.run('cmd /c del /q x')")
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_ test_the_guard_recognises_each_deletion_primitive[subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])] _
+
+snippet = "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])"
+
+    @pytest.mark.parametrize("snippet", [
+        "import shutil\nshutil.rmtree(p)",
+        "os.remove(p)",
+        "os.unlink(p)",
+        "Path(p).unlink()",
+        "os.rename(a, b)",
+        "shutil.move(a, b)",
+        "send2trash(p)",
+        "windll.shell32.SHFileOperationW(op)",
+        "subprocess.run(['pwsh', '-c', 'Remove-Item x'])",
+        "subprocess.run('cmd /c del /q x')",
+        "subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])",
+    ])
+    def test_the_guard_recognises_each_deletion_primitive(snippet):
+>       assert policy.source_violations(snippet) != []
+E       assert [] != []
+E        +  where [] = <function source_violations at 0x000001E0C49594E0>("subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])")
+E        +    where <function source_violations at 0x000001E0C49594E0> = policy.source_violations
+
+tests\test_safety.py:34: AssertionError
+_ test_destructive_broad_or_unknown_commands_are_rejected[docker system prune -f] _
+
+command = 'docker system prune -f'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('docker system prune -f')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+_ test_destructive_broad_or_unknown_commands_are_rejected[docker image prune -a -f] _
+
+command = 'docker image prune -a -f'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('docker image prune -a -f')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+_ test_destructive_broad_or_unknown_commands_are_rejected[docker volume prune --volumes] _
+
+command = 'docker volume prune --volumes'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('docker volume prune --volumes')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+_ test_destructive_broad_or_unknown_commands_are_rejected[pnputil /delete-driver oem7.inf] _
+
+command = 'pnputil /delete-driver oem7.inf'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('pnputil /delete-driver oem7.inf')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+__ test_destructive_broad_or_unknown_commands_are_rejected[rm -rf C:/Users] ___
+
+command = 'rm -rf C:/Users'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('rm -rf C:/Users')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+_ test_destructive_broad_or_unknown_commands_are_rejected[npm cache verify & del /q C:\\x] _
+
+command = 'npm cache verify & del /q C:\\x'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('npm cache verify & del /q C:\\x')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+_ test_destructive_broad_or_unknown_commands_are_rejected[pwsh -c Remove-Item x] _
+
+command = 'pwsh -c Remove-Item x'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('pwsh -c Remove-Item x')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+_____ test_destructive_broad_or_unknown_commands_are_rejected[format C:] ______
+
+command = 'format C:'
+
+    @pytest.mark.parametrize("command", [
+        "docker system prune -f",
+        "docker image prune -a -f",
+        "docker volume prune --volumes",
+        "pnputil /delete-driver oem7.inf",
+        "rm -rf C:/Users",
+        "npm cache verify & del /q C:\\x",
+        "pwsh -c Remove-Item x",
+        "format C:",
+    ])
+    def test_destructive_broad_or_unknown_commands_are_rejected(command):
+>       assert policy.command_violations(command) != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function command_violations at 0x000001E0C4959580>('format C:')
+E        +    where <function command_violations at 0x000001E0C4959580> = policy.command_violations
+
+tests\test_safety.py:62: AssertionError
+____ test_driver_removal_is_only_offered_as_an_admin_handoff_without_force ____
+
+    def test_driver_removal_is_only_offered_as_an_admin_handoff_without_force():
+        assert policy.handoff_violations("pnputil /delete-driver oem374.inf") == []
+>       assert policy.handoff_violations("pnputil /delete-driver oem374.inf /force") != []
+E       AssertionError: assert [] != []
+E        +  where [] = <function handoff_violations at 0x000001E0C4959620>('pnputil /delete-driver oem374.inf /force')
+E        +    where <function handoff_violations at 0x000001E0C4959620> = policy.handoff_violations
+
+tests\test_safety.py:67: AssertionError
+____________ test_tree_size_and_file_count_match_the_files_on_disk ____________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-82/test_tree_size_and_file_count_0')
+
+    def test_tree_size_and_file_count_match_the_files_on_disk(tmp_path):
+        write_file(tmp_path / "a.bin", 1000)
+        write_file(tmp_path / "sub" / "b.bin", 2000)
+        write_file(tmp_path / "sub" / "deep" / "c.bin", 3000)
+    
+        result = scan.size_tree(str(tmp_path))
+    
+>       assert result["bytes"] == 6000
+E       assert 0 == 6000
+
+tests\test_scan.py:21: AssertionError
+_____________ test_newest_modification_time_of_a_tree_is_reported _____________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-82/test_newest_modification_time_0')
+
+    def test_newest_modification_time_of_a_tree_is_reported(tmp_path):
+        now = time.time()
+        write_file(tmp_path / "old.bin", 10, mtime=now - 100 * DAY)
+        write_file(tmp_path / "sub" / "new.bin", 10, mtime=now - 2 * DAY)
+    
+        result = scan.size_tree(str(tmp_path))
+    
+>       assert abs(result["newest_mtime"] - (now - 2 * DAY)) < 5
+E       assert 1794021355.4409053 < 5
+E        +  where 1794021355.4409053 = abs((0.0 - (1794194155.4409053 - (2 * 86400))))
+
+tests\test_scan.py:33: AssertionError
+________ test_junctions_are_not_followed_so_linked_data_is_not_counted ________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-82/test_junctions_are_not_followe0')
+
+    def test_junctions_are_not_followed_so_linked_data_is_not_counted(tmp_path):
+        target = tmp_path / "elsewhere"
+        write_file(target / "big.bin", 5000)
+        root = tmp_path / "root"
+        write_file(root / "own.bin", 100)
+        subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(root / "link"), str(target)],
+            check=True, capture_output=True,
+        )
+    
+        result = scan.size_tree(str(root))
+    
+>       assert result["bytes"] == 100
+E       assert 0 == 100
+
+tests\test_scan.py:48: AssertionError
+___________ test_cloud_only_placeholder_files_occupy_no_local_space ___________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-82/test_cloud_only_placeholder_fi0')
+
+    def test_cloud_only_placeholder_files_occupy_no_local_space(tmp_path):
+        write_file(tmp_path / "local.bin", 700)
+        placeholder = write_file(tmp_path / "cloud.bin", 900)
+        FILE_ATTRIBUTE_OFFLINE = 0x1000
+        ok = ctypes.windll.kernel32.SetFileAttributesW(str(placeholder), FILE_ATTRIBUTE_OFFLINE)
+        if not ok or not (os.stat(placeholder).st_file_attributes & FILE_ATTRIBUTE_OFFLINE):
+            pytest.skip("environment cannot mark a file offline")
+    
+        result = scan.size_tree(str(tmp_path))
+    
+>       assert result["bytes"] == 700
+E       assert 0 == 700
+
+tests\test_scan.py:61: AssertionError
+_________ test_a_scan_that_exceeds_its_time_budget_is_marked_partial __________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-82/test_a_scan_that_exceeds_its_t0')
+
+    def test_a_scan_that_exceeds_its_time_budget_is_marked_partial(tmp_path):
+        for i in range(20):
+            write_file(tmp_path / f"d{i}" / "f.bin", 10)
+    
+        result = scan.size_tree(str(tmp_path), deadline=time.monotonic() - 1)
+    
+>       assert result["partial"] is True
+E       assert False is True
+
+tests\test_scan.py:71: AssertionError
+_ test_environment_variables_and_home_are_expanded_and_globs_match_every_profile _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_environment_variables_and0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_environment_variables_and0\\ProgramData', ...}
+
+    def test_environment_variables_and_home_are_expanded_and_globs_match_every_profile(fake_env):
+        local = fake_env["LOCALAPPDATA"]
+        for profile in ("Default", "Profile 1"):
+            os.makedirs(os.path.join(local, "Browser", profile, "Cache"))
+        os.makedirs(os.path.join(fake_env["USERPROFILE"], ".cache"))
+    
+        found = scan.expand(r"%LOCALAPPDATA%\Browser\*\Cache", fake_env)
+        home = scan.expand(r"~\.cache", fake_env)
+    
+>       assert sorted(found) == sorted(
+            os.path.join(local, "Browser", p, "Cache") for p in ("Default", "Profile 1")
+        )
+E       AssertionError: assert [] == ['C:\\Users\\...ile 1\\Cache']
+E         
+E         Right contains 2 more items, first extra item: 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_environment_variables_and0\\Users\\someone\\AppData\\Local\\Browser\\Default\\Cache'
+E         Use -v to get more diff
+
+tests\test_scan.py:83: AssertionError
+_____ test_absent_target_is_reported_with_zero_bytes_rather_than_failing ______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_absent_target_is_reported0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_absent_target_is_reported0\\ProgramData', ...}
+
+    def test_absent_target_is_reported_with_zero_bytes_rather_than_failing(fake_env):
+        entry = {"id": "missing", "paths": [r"%LOCALAPPDATA%\NoSuchTool\cache"]}
+    
+        result = scan.scan_entry(entry, fake_env)
+    
+>       assert result["bytes"] == 0
+E       assert -1 == 0
+
+tests\test_scan.py:94: AssertionError
+____ test_temp_selection_counts_only_children_untouched_for_the_given_days ____
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_temp_selection_counts_onl0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_temp_selection_counts_onl0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-82/test_temp_selection_counts_onl0')
+
+    def test_temp_selection_counts_only_children_untouched_for_the_given_days(fake_env, tmp_path):
+        now = time.time()
+        temp = tmp_path / "Users" / "someone" / "AppData" / "Local" / "Temp"
+        write_file(temp / "stale-dir" / "f.bin", 400, mtime=now - 30 * DAY)
+        os.utime(temp / "stale-dir", (now - 30 * DAY, now - 30 * DAY))
+        write_file(temp / "stale.log", 50, mtime=now - 30 * DAY)
+        write_file(temp / "fresh-dir" / "f.bin", 999, mtime=now - 1 * DAY)
+        write_file(temp / "claude" / "old.bin", 777, mtime=now - 30 * DAY)
+        entry = {
+            "id": "user-temp",
+            "paths": [r"%TEMP%"],
+            "select": {"children_older_than_days": 7, "exclude": ["claude"]},
+        }
+    
+        result = scan.scan_entry(entry, fake_env, now=now)
+    
+>       assert result["bytes"] == 450
+E       assert -1 == 450
+
+tests\test_scan.py:114: AssertionError
+_______ test_catalog_scan_reports_every_entry_and_the_drive_free_space ________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_catalog_scan_reports_ever0\\...Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-82\\test_catalog_scan_reports_ever0\\ProgramData', ...}
+
+    def test_catalog_scan_reports_every_entry_and_the_drive_free_space(fake_env):
+        write_file(__import__("pathlib").Path(fake_env["LOCALAPPDATA"]) / "toolA" / "x.bin", 123)
+        catalog = {"entries": [
+            {"id": "a", "paths": [r"%LOCALAPPDATA%\toolA"]},
+            {"id": "b", "paths": [r"%LOCALAPPDATA%\toolB"]},
+        ]}
+    
+        result = scan.scan_catalog(catalog, fake_env)
+    
+        by_id = {e["id"]: e for e in result["entries"]}
+>       assert by_id["a"]["bytes"] == 123
+               ^^^^^^^^^^
+E       KeyError: 'a'
+
+tests\test_scan.py:128: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_catalog.py::test_catalog_covers_browser_on_device_ai_models_and_developer_caches
+FAILED tests/test_classify.py::test_user_documents_credentials_and_cloud_folders_are_protected[OneDrive - Org\\Desktop\\proj]
+FAILED tests/test_classify.py::test_user_documents_credentials_and_cloud_folders_are_protected[Documents\\report.docx]
+FAILED tests/test_classify.py::test_user_documents_credentials_and_cloud_folders_are_protected[Desktop\\a]
+FAILED tests/test_classify.py::test_user_documents_credentials_and_cloud_folders_are_protected[Downloads\\setup.exe]
+FAILED tests/test_classify.py::test_user_documents_credentials_and_cloud_folders_are_protected[.ssh\\id_ed25519]
+FAILED tests/test_classify.py::test_security_software_data_is_protected - Ass...
+FAILED tests/test_classify.py::test_item_owned_by_a_running_app_is_held_back_with_the_reason
+FAILED tests/test_classify.py::test_items_are_ranked_by_reclaimable_size_times_confidence_over_rebuild_cost
+FAILED tests/test_classify.py::test_equal_priority_prefers_items_that_need_no_administrator
+FAILED tests/test_classify.py::test_recently_used_data_gets_lower_confidence_than_long_untouched_data
+FAILED tests/test_classify.py::test_decisions_and_advice_are_listed_separately_and_never_counted_as_savings
+FAILED tests/test_classify.py::test_empty_targets_are_not_proposed - assert F...
+FAILED tests/test_classify.py::test_target_resolving_into_a_protected_folder_is_never_proposed
+FAILED tests/test_classify.py::test_permanent_deletion_is_spelled_out_in_the_method
+FAILED tests/test_report.py::test_report_is_in_japanese_with_proposal_decision_and_advice_sections
+FAILED tests/test_report.py::test_report_states_free_space_and_proposed_total_in_gigabytes
+FAILED tests/test_report.py::test_report_shows_how_each_item_would_be_removed
+FAILED tests/test_report.py::test_report_warns_when_the_scan_is_older_than_a_day
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[import shutil\nshutil.rmtree(p)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[os.remove(p)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[os.unlink(p)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[Path(p).unlink()]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[os.rename(a, b)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[shutil.move(a, b)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[send2trash(p)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[windll.shell32.SHFileOperationW(op)]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[subprocess.run(['pwsh', '-c', 'Remove-Item x'])]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[subprocess.run('cmd /c del /q x')]
+FAILED tests/test_safety.py::test_the_guard_recognises_each_deletion_primitive[subprocess.run(['cmd', '/c', 'rd', '/s', 'x'])]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[docker system prune -f]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[docker image prune -a -f]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[docker volume prune --volumes]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[pnputil /delete-driver oem7.inf]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[rm -rf C:/Users]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[npm cache verify & del /q C:\\x]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[pwsh -c Remove-Item x]
+FAILED tests/test_safety.py::test_destructive_broad_or_unknown_commands_are_rejected[format C:]
+FAILED tests/test_safety.py::test_driver_removal_is_only_offered_as_an_admin_handoff_without_force
+FAILED tests/test_scan.py::test_tree_size_and_file_count_match_the_files_on_disk
+FAILED tests/test_scan.py::test_newest_modification_time_of_a_tree_is_reported
+FAILED tests/test_scan.py::test_junctions_are_not_followed_so_linked_data_is_not_counted
+FAILED tests/test_scan.py::test_cloud_only_placeholder_files_occupy_no_local_space
+FAILED tests/test_scan.py::test_a_scan_that_exceeds_its_time_budget_is_marked_partial
+FAILED tests/test_scan.py::test_environment_variables_and_home_are_expanded_and_globs_match_every_profile
+FAILED tests/test_scan.py::test_absent_target_is_reported_with_zero_bytes_rather_than_failing
+FAILED tests/test_scan.py::test_temp_selection_counts_only_children_untouched_for_the_given_days
+FAILED tests/test_scan.py::test_catalog_scan_reports_every_entry_and_the_drive_free_space
+48 failed, 15 passed in 2.64s

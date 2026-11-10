@@ -1,0 +1,214 @@
+F..FFFF.F..F.FF.FFF                                                      [100%]
+================================== FAILURES ===================================
+_________ test_node_version_in_use_and_newest_of_each_major_are_kept __________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_node_version_in_use_and_n0')
+
+    def test_node_version_in_use_and_newest_of_each_major_are_kept(tmp_path):
+        result = probes.nvm_unused(NVM_LIST, str(make_nvm(tmp_path)), pins=set(), size_fn=size)
+    
+>       assert item_names(result) == ["v22.22.0", "v24.18.0"]
+E       AssertionError: assert [] == ['v22.22.0', 'v24.18.0']
+E         
+E         Right contains 2 more items, first extra item: 'v22.22.0'
+E         Use -v to get more diff
+
+tests\test_probes.py:39: AssertionError
+________ test_each_unused_node_version_gets_its_own_uninstall_command _________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_each_unused_node_version_0')
+
+    def test_each_unused_node_version_gets_its_own_uninstall_command(tmp_path):
+        result = probes.nvm_unused(NVM_LIST, str(make_nvm(tmp_path)), pins=set(), size_fn=size)
+    
+        commands = sorted(i["command"] for i in result["items"])
+>       assert commands == ["nvm uninstall 22.22.0", "nvm uninstall 24.18.0"]
+E       AssertionError: assert [] == ['nvm uninsta...tall 24.18.0']
+E         
+E         Right contains 2 more items, first extra item: 'nvm uninstall 22.22.0'
+E         Use -v to get more diff
+
+tests\test_probes.py:58: AssertionError
+________ test_project_pins_are_read_from_nvmrc_and_node_version_files _________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_project_pins_are_read_fro0')
+
+    def test_project_pins_are_read_from_nvmrc_and_node_version_files(tmp_path):
+        (tmp_path / "app").mkdir()
+        (tmp_path / "app" / ".nvmrc").write_text("v22.22.0\n")
+        (tmp_path / "svc").mkdir()
+        (tmp_path / "svc" / ".node-version").write_text("20.11.0")
+    
+>       assert probes.find_node_pins([str(tmp_path)]) == {"22.22.0", "20.11.0"}
+E       AssertionError: assert set() == {'20.11.0', '22.22.0'}
+E         
+E         Extra items in the right set:
+E         '22.22.0'
+E         '20.11.0'
+E         Use -v to get more diff
+
+tests\test_probes.py:68: AssertionError
+_________ test_browser_revisions_used_by_an_existing_project_are_kept _________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_browser_revisions_used_by0')
+
+    def test_browser_revisions_used_by_an_existing_project_are_kept(tmp_path):
+        root = make_playwright(tmp_path, live_revisions=["1234", "1254"], dead_revisions=[])
+    
+        result = probes.playwright_unused(str(root), size_fn=size)
+    
+>       assert item_names(result) == ["chromium-1223", "chromium_headless_shell-1223"]
+E       AssertionError: assert [] == ['chromium-12...s_shell-1223']
+E         
+E         Right contains 2 more items, first extra item: 'chromium-1223'
+E         Use -v to get more diff
+
+tests\test_probes.py:97: AssertionError
+___ test_browser_revisions_referenced_only_by_deleted_projects_are_proposed ___
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_browser_revisions_referen0')
+
+    def test_browser_revisions_referenced_only_by_deleted_projects_are_proposed(tmp_path):
+        root = make_playwright(tmp_path, live_revisions=["1254"], dead_revisions=["1234"])
+    
+        result = probes.playwright_unused(str(root), size_fn=size)
+    
+>       assert "chromium-1234" in item_names(result)
+E       AssertionError: assert 'chromium-1234' in []
+E        +  where [] = item_names({'bytes': 0, 'evidence': [], 'items': []})
+
+tests\test_probes.py:106: AssertionError
+__ test_older_copy_of_an_extension_whose_newer_copy_is_installed_is_proposed __
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_older_copy_of_an_extensio0')
+
+    def test_older_copy_of_an_extension_whose_newer_copy_is_installed_is_proposed(tmp_path):
+        ext = make_extensions(tmp_path, ["ms-python.python-2026.2.0", "foo.bar-1.0.0", "baz.qux-0.2.0-win32-x64"])
+    
+        result = probes.vscode_old_extensions(str(ext), size_fn=size)
+    
+>       assert item_names(result) == ["baz.qux-0.1.0-win32-x64", "ms-python.python-2026.1.0"]
+E       AssertionError: assert [] == ['baz.qux-0.1...hon-2026.1.0']
+E         
+E         Right contains 2 more items, first extra item: 'baz.qux-0.1.0-win32-x64'
+E         Use -v to get more diff
+
+tests\test_probes.py:135: AssertionError
+_____ test_workspace_data_for_a_folder_that_no_longer_exists_is_proposed ______
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_workspace_data_for_a_fold0')
+
+    def test_workspace_data_for_a_folder_that_no_longer_exists_is_proposed(tmp_path):
+        ws = tmp_path / "workspaceStorage"
+        alive = tmp_path / "alive project"
+        alive.mkdir()
+        make_workspace(ws, "a", {"folder": file_uri(alive)})
+        make_workspace(ws, "b", {"folder": file_uri(tmp_path / "deleted project")})
+    
+        result = probes.vscode_stale_workspaces(str(ws), onedrive_roots=[], size_fn=size)
+    
+>       assert item_names(result) == ["b"]
+E       AssertionError: assert [] == ['b']
+E         
+E         Right contains one more item: 'b'
+E         Use -v to get more diff
+
+tests\test_probes.py:175: AssertionError
+_ test_missing_onedrive_folder_counts_as_stale_only_while_onedrive_is_available _
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_missing_onedrive_folder_c0')
+
+    def test_missing_onedrive_folder_counts_as_stale_only_while_onedrive_is_available(tmp_path):
+        onedrive = tmp_path / "OneDrive - Org"
+        ws = tmp_path / "workspaceStorage"
+        make_workspace(ws, "c", {"folder": file_uri(onedrive / "Desktop" / "old")})
+    
+        offline = probes.vscode_stale_workspaces(str(ws), onedrive_roots=[str(onedrive)], size_fn=size)
+        onedrive.mkdir()
+        online = probes.vscode_stale_workspaces(str(ws), onedrive_roots=[str(onedrive)], size_fn=size)
+    
+        assert offline["items"] == []
+>       assert item_names(online) == ["c"]
+E       AssertionError: assert [] == ['c']
+E         
+E         Right contains one more item: 'c'
+E         Use -v to get more diff
+
+tests\test_probes.py:199: AssertionError
+_____ test_superseded_driver_packages_not_bound_to_any_device_are_listed ______
+
+    def test_superseded_driver_packages_not_bound_to_any_device_are_listed():
+        devices = (FIX / "pnputil_enum_devices_display.txt").read_text(encoding="utf-8")
+    
+        in_use, candidates = probes.superseded_drivers(devices)
+    
+>       assert {"oem66.inf", "oem71.inf"} <= in_use
+E       AssertionError: assert {'oem66.inf', 'oem71.inf'} <= set()
+E         
+E         Extra items in the left set:
+E         'oem71.inf'
+E         'oem66.inf'
+
+tests\test_probes.py:209: AssertionError
+____________ test_driver_listing_is_understood_in_english_as_well _____________
+
+    def test_driver_listing_is_understood_in_english_as_well():
+        in_use, candidates = probes.superseded_drivers(ENGLISH_DEVICES)
+    
+>       assert in_use == {"oem66.inf", "oem71.inf"}
+E       AssertionError: assert set() == {'oem66.inf', 'oem71.inf'}
+E         
+E         Extra items in the right set:
+E         'oem71.inf'
+E         'oem66.inf'
+E         Use -v to get more diff
+
+tests\test_probes.py:245: AssertionError
+_______ test_driver_package_size_is_found_from_its_driver_store_folder ________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-86/test_driver_package_size_is_fo0')
+
+    def test_driver_package_size_is_found_from_its_driver_store_folder(tmp_path):
+        repo = tmp_path / "FileRepository"
+        write_file(repo / "iigd_dch.inf_amd64_aaa" / "big.bin", 5000)
+        (repo / "iigd_dch.inf_amd64_aaa" / "iigd_dch.inf").write_text(
+            "[Version]\nDriverVer = 05/29/2026,32.0.101.8826\n", encoding="utf-16")
+        write_file(repo / "iigd_dch.inf_amd64_bbb" / "big.bin", 7000)
+        (repo / "iigd_dch.inf_amd64_bbb" / "iigd_dch.inf").write_text(
+            "[Version]\nDriverVer=08/24/2026,32.0.101.8991\n", encoding="utf-8")
+    
+        folder = probes.driver_store_folder(str(repo), "iigd_dch.inf", "32.0.101.8826")
+    
+>       assert os.path.basename(folder) == "iigd_dch.inf_amd64_aaa"
+E       AssertionError: assert '' == 'iigd_dch.inf_amd64_aaa'
+E         
+E         - iigd_dch.inf_amd64_aaa
+
+tests\test_probes.py:260: AssertionError
+____ test_pagefile_report_compares_allocated_size_with_peak_use_and_memory ____
+
+    def test_pagefile_report_compares_allocated_size_with_peak_use_and_memory():
+        usage = {"Name": "C:\\pagefile.sys", "AllocatedBaseSize": 21504, "PeakUsage": 2867}
+        result = probes.pagefile_summary(usage, ram_bytes=16 * 1024 ** 3, automatic=True)
+    
+>       assert result["bytes"] == 21504 * 1024 ** 2
+E       assert 0 == (21504 * (1024 ** 2))
+
+tests\test_probes.py:269: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_probes.py::test_node_version_in_use_and_newest_of_each_major_are_kept
+FAILED tests/test_probes.py::test_each_unused_node_version_gets_its_own_uninstall_command
+FAILED tests/test_probes.py::test_project_pins_are_read_from_nvmrc_and_node_version_files
+FAILED tests/test_probes.py::test_browser_revisions_used_by_an_existing_project_are_kept
+FAILED tests/test_probes.py::test_browser_revisions_referenced_only_by_deleted_projects_are_proposed
+FAILED tests/test_probes.py::test_older_copy_of_an_extension_whose_newer_copy_is_installed_is_proposed
+FAILED tests/test_probes.py::test_workspace_data_for_a_folder_that_no_longer_exists_is_proposed
+FAILED tests/test_probes.py::test_missing_onedrive_folder_counts_as_stale_only_while_onedrive_is_available
+FAILED tests/test_probes.py::test_superseded_driver_packages_not_bound_to_any_device_are_listed
+FAILED tests/test_probes.py::test_driver_listing_is_understood_in_english_as_well
+FAILED tests/test_probes.py::test_driver_package_size_is_found_from_its_driver_store_folder
+FAILED tests/test_probes.py::test_pagefile_report_compares_allocated_size_with_peak_use_and_memory
+12 failed, 7 passed in 3.47s
+FAILED tests/test_probes.py::test_outranked_driver_without_a_newer_version_of_the_same_package_is_not_listed
+FAILED tests/test_probes.py::test_driver_summary_names_the_largest_packages_and_the_count
+2 failed, 19 passed, 1 warning in 2.01s

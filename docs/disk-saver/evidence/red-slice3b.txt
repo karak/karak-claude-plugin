@@ -1,0 +1,320 @@
+.....................FFFFFFFFFFF.FFFF.F................................. [ 60%]
+...............................................                          [100%]
+================================== FAILURES ===================================
+_______ test_nothing_runs_when_the_approval_belongs_to_a_different_plan _______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_nothing_runs_when_the_app0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_nothing_runs_when_the_app0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_nothing_runs_when_the_app0')
+
+    def test_nothing_runs_when_the_approval_belongs_to_a_different_plan(fake_env, tmp_path):
+        victim = write_file(tmp_path / "cache" / "a.bin", 10).parent
+        plan = make_plan([row("c", [victim])])
+    
+        result = run(plan, ["c"], fake_env, approved_hash="0000")
+    
+        assert victim.exists()
+>       assert result["refused"] and "計画" in result["refused"]
+E       assert (None)
+
+tests\test_execute.py:64: AssertionError
+______ test_a_plan_older_than_an_hour_is_refused_so_a_fresh_scan_is_used ______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_a_plan_older_than_an_hour0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_a_plan_older_than_an_hour0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_a_plan_older_than_an_hour0')
+
+    def test_a_plan_older_than_an_hour_is_refused_so_a_fresh_scan_is_used(fake_env, tmp_path):
+        victim = write_file(tmp_path / "cache" / "a.bin", 10).parent
+        plan = make_plan([row("c", [victim])], created_at=NOW - 2 * 3600)
+    
+        result = run(plan, ["c"], fake_env)
+    
+        assert victim.exists()
+>       assert result["refused"]
+E       assert None
+
+tests\test_execute.py:74: AssertionError
+______ test_only_approved_rows_are_removed_and_others_are_left_untouched ______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_only_approved_rows_are_re0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_only_approved_rows_are_re0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_only_approved_rows_are_re0')
+
+    def test_only_approved_rows_are_removed_and_others_are_left_untouched(fake_env, tmp_path):
+        a = write_file(tmp_path / "a" / "f.bin", 10).parent
+        b = write_file(tmp_path / "b" / "f.bin", 10).parent
+        plan = make_plan([row("a", [a]), row("b", [b])])
+    
+        result = run(plan, ["a"], fake_env)
+    
+>       assert not a.exists() and b.exists()
+E       AssertionError: assert (not True)
+E        +  where True = exists()
+E        +    where exists = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_only_approved_rows_are_re0/a').exists
+
+tests\test_execute.py:84: AssertionError
+____ test_a_failing_item_is_reported_with_its_error_and_the_run_continues _____
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_a_failing_item_is_reporte0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_a_failing_item_is_reporte0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_a_failing_item_is_reporte0')
+
+    def test_a_failing_item_is_reported_with_its_error_and_the_run_continues(fake_env, tmp_path):
+        first, second = tmp_path / "one", tmp_path / "two"
+        first.mkdir(); second.mkdir()
+        recycler = Recorder(fail_on=["one"])
+        plan = make_plan([row("r", [first, second], kind="recycle")])
+    
+        result = run(plan, ["r"], fake_env, recycler=recycler)
+    
+        by = {os.path.basename(r["target"]): r for r in result["results"]}
+>       assert by["one"]["status"] == "failed" and "in use" in by["one"]["error"]
+               ^^^^^^^^^
+E       KeyError: 'one'
+
+tests\test_execute.py:97: KeyError
+__ test_paths_in_protected_locations_are_refused_even_if_listed_in_the_plan ___
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_paths_in_protected_locati0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_paths_in_protected_locati0\\ProgramData', ...}
+
+    def test_paths_in_protected_locations_are_refused_even_if_listed_in_the_plan(fake_env):
+        docs = Path(fake_env["USERPROFILE"]) / "Documents" / "keep"
+        write_file(docs / "report.docx", 10)
+        plan = make_plan([row("x", [docs])])
+    
+        result = run(plan, ["x"], fake_env)
+    
+        assert docs.exists()
+>       assert status(result) == {("x", "keep"): "refused"}
+E       AssertionError: assert {} == {('x', 'keep'): 'refused'}
+E         
+E         Right contains 1 more item:
+E         {('x', 'keep'): 'refused'}
+E         Use -v to get more diff
+
+tests\test_execute.py:109: AssertionError
+________ test_rows_whose_app_is_running_at_execution_time_are_refused _________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_rows_whose_app_is_running0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_rows_whose_app_is_running0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_rows_whose_app_is_running0')
+
+    def test_rows_whose_app_is_running_at_execution_time_are_refused(fake_env, tmp_path):
+        cache = write_file(tmp_path / "Code" / "Cache" / "f", 10).parent
+        plan = make_plan([row("v", [cache], gates=["process_not_running:Code.exe"])])
+    
+        result = run(plan, ["v"], fake_env, running={"code.exe"})
+    
+        assert cache.exists()
+>       assert "Code.exe" in result["results"][0]["error"]
+                             ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:119: IndexError
+_______ test_gated_rows_are_refused_when_running_apps_cannot_be_checked _______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_gated_rows_are_refused_wh0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_gated_rows_are_refused_wh0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_gated_rows_are_refused_wh0')
+
+    def test_gated_rows_are_refused_when_running_apps_cannot_be_checked(fake_env, tmp_path):
+        cache = write_file(tmp_path / "Code" / "Cache" / "f", 10).parent
+        plan = make_plan([row("v", [cache], gates=["process_not_running:Code.exe"])])
+    
+        result = run(plan, ["v"], fake_env, running=None)
+    
+        assert cache.exists()
+>       assert result["results"][0]["status"] == "refused"
+               ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:129: IndexError
+_ test_advice_decision_admin_and_skipped_rows_are_never_executed[advice-advice] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_advice_decision_admin_and0')
+section = 'advice', kind = 'advice'
+
+    @pytest.mark.parametrize("section,kind", [
+        ("advice", "advice"), ("decision", "advice"), ("propose", "handoff_admin"), ("skipped", "command"),
+    ])
+    def test_advice_decision_admin_and_skipped_rows_are_never_executed(fake_env, tmp_path, section, kind):
+        runner = Recorder()
+        plan = make_plan([row("d", [tmp_path / "oem7.inf"], kind=kind, section=section,
+                              item_commands=["pnputil /delete-driver oem7.inf"])])
+    
+        result = run(plan, ["d"], fake_env, runner=runner)
+    
+        assert runner.calls == []
+>       assert result["results"][0]["status"] == "refused"
+               ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:143: IndexError
+_ test_advice_decision_admin_and_skipped_rows_are_never_executed[decision-advice] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and1\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and1\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_advice_decision_admin_and1')
+section = 'decision', kind = 'advice'
+
+    @pytest.mark.parametrize("section,kind", [
+        ("advice", "advice"), ("decision", "advice"), ("propose", "handoff_admin"), ("skipped", "command"),
+    ])
+    def test_advice_decision_admin_and_skipped_rows_are_never_executed(fake_env, tmp_path, section, kind):
+        runner = Recorder()
+        plan = make_plan([row("d", [tmp_path / "oem7.inf"], kind=kind, section=section,
+                              item_commands=["pnputil /delete-driver oem7.inf"])])
+    
+        result = run(plan, ["d"], fake_env, runner=runner)
+    
+        assert runner.calls == []
+>       assert result["results"][0]["status"] == "refused"
+               ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:143: IndexError
+_ test_advice_decision_admin_and_skipped_rows_are_never_executed[propose-handoff_admin] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and2\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and2\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_advice_decision_admin_and2')
+section = 'propose', kind = 'handoff_admin'
+
+    @pytest.mark.parametrize("section,kind", [
+        ("advice", "advice"), ("decision", "advice"), ("propose", "handoff_admin"), ("skipped", "command"),
+    ])
+    def test_advice_decision_admin_and_skipped_rows_are_never_executed(fake_env, tmp_path, section, kind):
+        runner = Recorder()
+        plan = make_plan([row("d", [tmp_path / "oem7.inf"], kind=kind, section=section,
+                              item_commands=["pnputil /delete-driver oem7.inf"])])
+    
+        result = run(plan, ["d"], fake_env, runner=runner)
+    
+        assert runner.calls == []
+>       assert result["results"][0]["status"] == "refused"
+               ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:143: IndexError
+_ test_advice_decision_admin_and_skipped_rows_are_never_executed[skipped-command] _
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and3\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_advice_decision_admin_and3\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_advice_decision_admin_and3')
+section = 'skipped', kind = 'command'
+
+    @pytest.mark.parametrize("section,kind", [
+        ("advice", "advice"), ("decision", "advice"), ("propose", "handoff_admin"), ("skipped", "command"),
+    ])
+    def test_advice_decision_admin_and_skipped_rows_are_never_executed(fake_env, tmp_path, section, kind):
+        runner = Recorder()
+        plan = make_plan([row("d", [tmp_path / "oem7.inf"], kind=kind, section=section,
+                              item_commands=["pnputil /delete-driver oem7.inf"])])
+    
+        result = run(plan, ["d"], fake_env, runner=runner)
+    
+        assert runner.calls == []
+>       assert result["results"][0]["status"] == "refused"
+               ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:143: IndexError
+_______ test_commands_outside_the_allowlist_are_refused_without_running _______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_commands_outside_the_allo0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_commands_outside_the_allo0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_commands_outside_the_allo0')
+
+    def test_commands_outside_the_allowlist_are_refused_without_running(fake_env, tmp_path):
+        runner = Recorder()
+        plan = make_plan([row("n", [tmp_path / "x"], kind="command", command="dotnet nuget locals all --clear")])
+    
+        result = run(plan, ["n"], fake_env, runner=runner)
+    
+        assert runner.calls == []
+>       assert result["results"][0]["status"] == "refused"
+               ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_execute.py:162: IndexError
+______ test_one_command_runs_per_item_when_items_carry_their_own_command ______
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_one_command_runs_per_item0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_one_command_runs_per_item0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_one_command_runs_per_item0')
+
+    def test_one_command_runs_per_item_when_items_carry_their_own_command(fake_env, tmp_path):
+        runner = Recorder()
+        v1, v2 = tmp_path / "v22.22.0", tmp_path / "v24.18.0"
+        plan = make_plan([row("nvm", [v1, v2], kind="command", command="nvm uninstall",
+                              item_commands=["nvm uninstall 22.22.0", "nvm uninstall 24.18.0"])])
+    
+        run(plan, ["nvm"], fake_env, runner=runner)
+    
+>       assert [c[-3:] for c in runner.calls] == [["nvm", "uninstall", "22.22.0"], ["nvm", "uninstall", "24.18.0"]]
+E       AssertionError: assert [] == [['nvm', 'uni...', '24.18.0']]
+E         
+E         Right contains 2 more items, first extra item: ['nvm', 'uninstall', '22.22.0']
+E         Use -v to get more diff
+
+tests\test_execute.py:173: AssertionError
+_________________ test_a_cache_command_runs_once_for_the_row __________________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_a_cache_command_runs_once0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_a_cache_command_runs_once0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_a_cache_command_runs_once0')
+
+    def test_a_cache_command_runs_once_for_the_row(fake_env, tmp_path):
+        runner = Recorder()
+        plan = make_plan([row("npm", [tmp_path / "_cacache"], kind="command", command="npm cache clean --force")])
+    
+        result = run(plan, ["npm"], fake_env, runner=runner)
+    
+>       assert [c[-4:] for c in runner.calls] == [["npm", "cache", "clean", "--force"]]
+E       AssertionError: assert [] == [['npm', 'cac...', '--force']]
+E         
+E         Right contains one more item: ['npm', 'cache', 'clean', '--force']
+E         Use -v to get more diff
+
+tests\test_execute.py:182: AssertionError
+________ test_deleting_a_cache_removes_its_files_and_reports_the_bytes ________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_deleting_a_cache_removes_0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_deleting_a_cache_removes_0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_deleting_a_cache_removes_0')
+
+    def test_deleting_a_cache_removes_its_files_and_reports_the_bytes(fake_env, tmp_path):
+        cache = tmp_path / "cache"
+        write_file(cache / "x" / "a.bin", 1000)
+        write_file(cache / "b.bin", 500)
+        plan = make_plan([row("c", [cache])])
+    
+        result = run(plan, ["c"], fake_env)
+    
+>       assert not cache.exists()
+E       AssertionError: assert not True
+E        +  where True = exists()
+E        +    where exists = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_deleting_a_cache_removes_0/cache').exists
+
+tests\test_execute.py:194: AssertionError
+________________ test_free_space_before_and_after_is_reported _________________
+
+fake_env = {'APPDATA': 'C:\\Users\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_free_space_before_and_aft0\...sers\\<user>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-109\\test_free_space_before_and_aft0\\ProgramData', ...}
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-109/test_free_space_before_and_aft0')
+
+    def test_free_space_before_and_after_is_reported(fake_env, tmp_path):
+        plan = make_plan([row("c", [write_file(tmp_path / "c" / "f", 10).parent])])
+    
+        result = run(plan, ["c"], fake_env)
+    
+>       assert result["free_before"] > 0 and result["free_after"] > 0
+E       assert (0 > 0)
+
+tests\test_execute.py:216: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_execute.py::test_nothing_runs_when_the_approval_belongs_to_a_different_plan
+FAILED tests/test_execute.py::test_a_plan_older_than_an_hour_is_refused_so_a_fresh_scan_is_used
+FAILED tests/test_execute.py::test_only_approved_rows_are_removed_and_others_are_left_untouched
+FAILED tests/test_execute.py::test_a_failing_item_is_reported_with_its_error_and_the_run_continues
+FAILED tests/test_execute.py::test_paths_in_protected_locations_are_refused_even_if_listed_in_the_plan
+FAILED tests/test_execute.py::test_rows_whose_app_is_running_at_execution_time_are_refused
+FAILED tests/test_execute.py::test_gated_rows_are_refused_when_running_apps_cannot_be_checked
+FAILED tests/test_execute.py::test_advice_decision_admin_and_skipped_rows_are_never_executed[advice-advice]
+FAILED tests/test_execute.py::test_advice_decision_admin_and_skipped_rows_are_never_executed[decision-advice]
+FAILED tests/test_execute.py::test_advice_decision_admin_and_skipped_rows_are_never_executed[propose-handoff_admin]
+FAILED tests/test_execute.py::test_advice_decision_admin_and_skipped_rows_are_never_executed[skipped-command]
+FAILED tests/test_execute.py::test_commands_outside_the_allowlist_are_refused_without_running
+FAILED tests/test_execute.py::test_one_command_runs_per_item_when_items_carry_their_own_command
+FAILED tests/test_execute.py::test_a_cache_command_runs_once_for_the_row - As...
+FAILED tests/test_execute.py::test_deleting_a_cache_removes_its_files_and_reports_the_bytes
+FAILED tests/test_execute.py::test_free_space_before_and_after_is_reported - ...
+16 failed, 103 passed in 4.15s

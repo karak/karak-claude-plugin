@@ -1,0 +1,7 @@
+FAILED tests/test_probes.py::test_node_pins_deep_inside_project_trees_are_found
+FAILED tests/test_probes.py::test_node_pins_written_by_windows_editors_are_understood[utf-8-sig-22.22.0\r\n]
+FAILED tests/test_probes.py::test_node_pins_written_by_windows_editors_are_understood[utf-16-22.22.0\r\n]
+FAILED tests/test_probes.py::test_a_pin_file_without_a_recognisable_version_makes_the_pin_search_incomplete
+FAILED tests/test_probes.py::test_lts_style_aliases_are_not_treated_as_unreadable
+FAILED tests/test_probes.py::test_skipped_node_check_is_reported_with_its_reason_not_as_no_data
+6 failed, 26 passed in 3.95s

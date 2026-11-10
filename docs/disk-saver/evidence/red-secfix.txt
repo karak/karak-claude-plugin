@@ -1,0 +1,10 @@
+FAILED tests/test_execute.py::test_a_plan_whose_item_paths_were_changed_after_approval_is_refused
+FAILED tests/test_execute.py::test_relative_item_paths_are_never_acted_on - A...
+FAILED tests/test_execute.py::test_commands_run_the_tool_found_on_path_not_one_in_the_current_folder
+FAILED tests/test_safety.py::test_vetted_commands_cannot_carry_extra_options_or_arguments[npm cache clean --force --cache=C:/Users/x]
+FAILED tests/test_safety.py::test_vetted_commands_cannot_carry_extra_options_or_arguments[uv cache prune --cache-dir=../../x]
+FAILED tests/test_safety.py::test_vetted_commands_cannot_carry_extra_options_or_arguments[nvm uninstall 22.22.0 extra]
+FAILED tests/test_safety.py::test_vetted_commands_cannot_carry_extra_options_or_arguments[pnpm store prune --force]
+FAILED tests/test_safety.py::test_vetted_commands_cannot_carry_extra_options_or_arguments[docker image prune -af]
+FAILED tests/test_safety.py::test_vetted_commands_cannot_carry_extra_options_or_arguments[dotnet nuget locals http-cache --clear global-packages]
+9 failed, 125 passed in 7.36s
