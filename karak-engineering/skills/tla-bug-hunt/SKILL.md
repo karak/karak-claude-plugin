@@ -7,103 +7,126 @@ description: |
 
 # TLA+ bug hunt for 2-tier web apps
 
-テストは誰かが思いついた順序しか確かめない。TLC は小さなモデルの中で、すべての実行順序を確かめる。このスキルは仕様書のない 2-tier アプリのコードから状態機械を逆引きし、TLC で反例を探し、TLA+ 上で直してから、アプリのコード修正指示に翻訳する。
+A test checks only the orderings someone thought of. TLC checks every ordering inside a small model. This skill reverse-engineers a state machine from the code of a 2-tier app that has no spec, uses TLC to find counterexamples, fixes the design in TLA+ first, and then translates the fix into code-change instructions for the app.
 
-成果物はアプリのリポジトリの `tla/<area>/` に置く。中身はモデル（`.tla` と `.cfg`）、`REPORT.md`、そして 1 コマンドで再実行できる手順である。アプリのコードは、ユーザーが頼まない限り変更しない。
+Put the output in the app's repo under `tla/<area>/`: the model (`.tla` and `.cfg`), a `REPORT.md`, and a one-command rerun. Do not change the app's code unless the user asks.
 
-## 先に読むもの
+## What to read first
 
-| いつ | 読むもの |
+| When | Read |
 |---|---|
-| Step 1〜3 でモデルを書くとき | [references/modeling-2tier.md](references/modeling-2tier.md)（状態の分類、原子性の粒度表、ネットワークのパターン、不変量カタログ） |
-| Step 4 で TLC を回すとき | [references/running-tlc.md](references/running-tlc.md)（導入、コマンド、`.cfg`、偽デッドロック、トレースの読み方） |
-| 手本が欲しいとき | [examples/order-pay/](examples/order-pay/README.md)（リトライによる二重決済。TLC で反例と修正後のパスを確認済み） |
-| 出典を示すとき | [references/sources.md](references/sources.md) |
+| Writing the model (Steps 1–3) | [references/modeling-2tier.md](references/modeling-2tier.md): state classification, atomicity table, network patterns, invariant catalog |
+| Running TLC (Step 4) | [references/running-tlc.md](references/running-tlc.md): setup, commands, `.cfg`, false deadlocks, reading traces |
+| You want a worked example | [examples/order-pay/](examples/order-pay/README.md): a retry that double-charges, with the counterexample and the fixed model's pass both confirmed in TLC |
+| Citing sources | [references/sources.md](references/sources.md) |
 
-TLC の実行は `bash scripts/tlc.sh <Spec>.tla [<Spec>.cfg]` で行う。PlusCal の変換、SANY、TLC を順に実行する。
+Run TLC with `bash scripts/tlc.sh <Spec>.tla [<Spec>.cfg]`. It runs the PlusCal translation, SANY and TLC in that order.
 
-## 手順
+## Procedure
 
-各 Step では、ゴールの成果物を作り、制約を守る。最初は「クライアント 1・サーバー 1・リクエスト 1」で書き、TLC が通ってから 1 段ずつ並行性を足す（Start Small）。一度に大きな仕様を書くと、SANY のパースエラーで止まりやすい。
+Each step has a goal (the artifact to produce) and constraints. Start with one client, one server and one request (Start Small). Once TLC passes, add concurrency one rung at a time. Asking for a large spec in one go tends to stall on SANY parse errors.
 
-### Step 1: コードから抽象状態を逆引きする
+### Step 1: Reverse-engineer the abstract state from the code
 
-**ゴール:** 次の 2 つの表を `REPORT.md` に書く。
+**Goal:** write two tables into `REPORT.md`.
 
-1. 状態変数の表。列は「変数 / 分類 / 値域 / コードの所在 `file:line`」。
-2. アクションの表。列は「アクション / 1 ステップでどこからどこまでを実行するか / コードの所在 `file:line`」。
+1. State variables. Columns: variable / category / domain / code location `file:line`.
+2. Actions. Columns: action / what one step covers, from where to where / code location `file:line`.
 
-**制約:**
-- 状態変数は「クライアント状態（未送信・送信中・完了など）」「ネットワーク（送ったリクエスト、届いたレスポンス、遅延、順不同）」「サーバー/DB 状態（セッション、テーブルのフラグや値、外部 API の副作用）」の 3 つに分類する。
-- 並行制御と状態遷移に効くものだけを残す。文字列の整形、バリデーションの文言、ORM の書き方は捨てる。
-- **入口を列挙する。** 同じ処理に到達する経路を、すべて行として残す。ダブルクリック、複数タブ、クライアントのリトライ、プロキシや LB の再送、ジョブやワーカーが経路の候補になる。
-- 各行にコードの `file:line` を付ける。行番号は `nl -ba <file>` の出力で確かめる。付けられない行は推測なので、「仮定」と明記する。
-- DB の種類と分離レベル（既定値と、コードやトランザクションでの指定）を確かめ、表に書く。原子性の粒度はこれで決まる。
+**Constraints:**
+- Sort state variables into three categories:
+  - **Client:** e.g. idle, sending, done.
+  - **Network:** requests sent, responses delivered, delay, out-of-order arrival.
+  - **Server/DB:** sessions, table flags and values, side effects of external APIs.
+- Keep only what affects concurrency control and state transitions. Drop string formatting, validation messages and ORM syntax.
+- **List every entry point.** Keep a row for every path that reaches the same handler. Candidates are double clicks, multiple tabs, client retries, proxy or load-balancer resends, and jobs or workers.
+- Attach a `file:line` to every row, and check line numbers against `nl -ba <file>`. A row you cannot attach a location to is a guess; mark it as an assumption.
+- Find out which DB and isolation level are in use (the default, and anything set in code or per transaction), and record them in the table. They decide the atomicity.
 
-### Step 2: PlusCal / TLA+ で書く
+### Step 2: Write it in PlusCal / TLA+
 
-**ゴール:** `Init` と `Next`（PlusCal ならプロセスとラベル）、`TypeOK`、`.cfg` を書き、SANY がパースでき、TLC が `TypeOK` だけで完走する状態にする。
+**Goal:** write `Init` and `Next` (processes and labels, in PlusCal), `TypeOK` and a `.cfg`, such that SANY parses the spec and TLC completes with `TypeOK` alone.
 
-**制約:**
-- **原子性の粒度はコードに合わせる。** 1 つのラベル（1 つのアクション）は、コード上で割り込めない範囲と一致させる。例えば、`await` 1 回、オートコミットのクエリ 1 本、トランザクション 1 つ、外部 API 呼び出し 1 回がそれぞれ 1 ステップになる。DB の読み込みと更新を同じステップにまとめると、レースが消える。判断に迷ったら [粒度表](references/modeling-2tier.md#原子性の粒度) に従う。
-- ネットワークの不確実性は、明示的なアクションとして書く。対象はタイムアウト後もサーバーで処理が続くこと、再試行による重複、順不同での到着、レスポンスの喪失である。
-- モデルの各ラベルや各アクションに、コードの所在をコメントで付ける。
-- 定数はまず最小にする（試行 2 回、クライアント 2、注文 1 など）。
+**Constraints:**
+- **Match the grain of atomicity to the code.** One label (one action) must equal a span of code that nothing can interleave with. Each of these is one step: one `await`, one autocommit query, one transaction, one external API call. Putting a DB read and its update in the same step makes the race disappear. When unsure, follow the [atomicity table](references/modeling-2tier.md#atomicity).
+- Model network uncertainty as explicit actions:
+  - the server keeps working after the client times out;
+  - retries create duplicates;
+  - messages arrive out of order;
+  - responses get lost.
+- Comment each label or action with its code location.
+- Start with the smallest constants: 2 attempts, 2 clients, 1 order, and so on.
 
-### Step 3: 不変量を書く
+### Step 3: Write the invariants
 
-**ゴール:** 起きてはならない状態を、変数を使った具体的な述語として書く。各不変量に、損害を 1 文で添える。
+**Goal:** write each state that must never happen as a concrete predicate over the variables. Give each invariant a one-sentence statement of the harm.
 
-**制約:**
-- `Spec => []Inv` として、到達可能なすべての状態で `TRUE` でなければならない条件を書く。`gatewayCharges <= 1` や `status = "paid" => chargeRows >= 1` のように書き、「エラーが起きない」のような抽象的な述語にはしない。
-- 各不変量について、**壊れる版を一度は見る**。対象のガードを外す、ステップの順序を入れ替えるといった変異版をモデルに作り、その不変量が TLC で違反になることを確かめる。一度も落ちたことのない不変量は、何も保証していない可能性がある。
-- 二重処理、二重課金、ロストアップデート、クライアントと DB の食い違い、宙に浮いた中間状態の候補は [不変量カタログ](references/modeling-2tier.md#不変量カタログ) にある。
+**Constraints:**
+- Write conditions that must be `TRUE` in every reachable state (`Spec => []Inv`). Write `gatewayCharges <= 1` or `status = "paid" => chargeRows >= 1`. Do not write abstract predicates such as "no error occurs".
+- **See each invariant fail at least once.** Make a mutant of the model that breaks what the invariant guards, for example by removing a guard or reordering two steps, and confirm TLC reports a violation. An invariant you have never seen fail may guarantee nothing.
+- The [invariant catalog](references/modeling-2tier.md#invariant-catalog) has candidates for double processing, double charging, lost updates, client/DB mismatch and stuck intermediate states.
 
-### Step 4: TLC を回して反例を読む
+### Step 4: Run TLC and read the counterexamples
 
-**ゴール:** すべての結果を `REPORT.md` に記録する。記録する項目は、実行コマンド、定数、TLC の最終行（`No error has been found.` や `Invariant X is violated.` など）、生成状態数である。反例はコードの言葉で番号付きのステップ列に書き直す。
+**Goal:** record every run in `REPORT.md`:
+- the command and the constants;
+- TLC's final line, such as `No error has been found.` or `Invariant X is violated.`;
+- the number of states generated.
 
-**制約:**
-- **デッドロック検査を `-deadlock` で丸ごと切らない。** 正常終了で止まるモデルを TLC がデッドロックと報告する場合は、[偽デッドロックの扱い](references/running-tlc.md#デッドロック) に従って、正常終了だけを許すように直す。本物のデッドロック（待ちが永遠に満たされない）を検出する力は残す。
-- 反例が出たら、仕様や不変量を弱めて消さない。まず「現実のアプリで起こるか」を、コードの所在と照らして判定する。モデルの誤り（粒度の取り違え、コードにない分岐）だと判断した場合は、その根拠になるコードの行を書いてからモデルを直す。
-- **最初の反例で狩りを終えない。** TLC は 1 回の実行で違反を 1 つしか報告しない。不変量ごとに `.cfg` を分けて（`INVARIANTS TypeOK X` を 1 つずつ）実行し、それぞれの反例を得る。1 つの `.cfg` に複数の不変量を並べると、並列ワーカーの都合でどれが報告されるかが実行ごとに変わる。見つけたバグを修正版で塞ぐか、その入口を一時的に閉じたモデルで再実行し、次のバグを TLC に出させる。推論だけで「もう 1 つある」と書いたものは、反例を出すまで「未確認」と書く。
-- 状態数が爆発したら、定数を減らす。モデルの意味を削って減らすことはしない。
+Rewrite each counterexample as a numbered sequence of steps in the code's terms.
 
-### Step 5: TLA+ 上で直してから、コード修正指示に翻訳する
+**Constraints:**
+- **Do not switch off deadlock checking wholesale with `-deadlock`.** If TLC reports a deadlock for a model that just finished normally, follow [handling false deadlocks](references/running-tlc.md#deadlocks) and change the model so that only normal termination is allowed. Keep the ability to catch real deadlocks, where a wait can never be satisfied.
+- When a counterexample appears, do not make it go away by weakening the spec or the invariant. First decide, against the code locations, whether it can happen in the real app. If you conclude it is a modeling error (wrong grain, a branch the code does not have), write down the code lines that show it before you fix the model.
+- **Do not stop at the first counterexample.** TLC reports one violation per run:
+  - Run each invariant with its own `.cfg` (`INVARIANTS TypeOK X`, one at a time) to get each counterexample. With several invariants in one `.cfg`, which one gets reported changes from run to run because of the parallel workers.
+  - Block the bug you found, either with the fixed version or with a model whose entry point to that bug is temporarily closed, and rerun so TLC shows the next bug.
+  - Anything you only reasoned about ("there is probably another one") stays "unconfirmed" until TLC produces a counterexample for it.
+- If the state space explodes, shrink the constants. Do not shrink it by cutting meaning out of the model.
 
-**ゴール:** 防護策を入れた修正版のモデル（例: `<Spec>Fixed.tla`）が、Step 4 と同じ `.cfg` と定数で `No error has been found.` になる。そのうえで、アプリのコード修正指示を書く。防護策の例は、条件付き UPDATE による排他、冪等性キー、一意制約、トランザクション分離レベルの調整、楽観的ロックなどである。
+### Step 5: Fix it in TLA+, then translate to code-change instructions
 
-**制約:**
-- TLC がパスするまで、コード修正指示に進まない。
-- 修正版は、バグ版と同じ定数と同じ不変量で回す。修正版を別ファイルにする場合は、`.cfg` の中身を揃える。1 つのファイルの中で `CONSTANT Fixed \in BOOLEAN` のように切り替えてもよい。
-- 修正で生まれた新しい中間状態や失敗経路（`charging` のまま例外が飛ぶ、など）も、モデルに入れたものだけを「検証済み」と書く。入れていないものは「未検証」と書く。
-- 修正版で追加した防護策は、そのまま `file:line` 単位のコード修正指示に対応させる。各指示には「なぜ必要か」を書き、Step 4 の反例の何番目のステップを塞ぐのかを引用する。
-- 修正の前提をモデルの外に置いた場合は、仮定として書く。例えば「決済ゲートウェイが冪等性キーを守る」は、モデル化しなければ仮定である。
-- アプリのコードは、ユーザーが頼まない限り編集しない。指示を書くところまでが、このスキルの仕事である。
+**Goal:** a fixed model with a protective mechanism, such as `<Spec>Fixed.tla`, reaches `No error has been found.` with the same `.cfg` and constants as Step 4. Example mechanisms:
+- exclusion through a conditional UPDATE;
+- idempotency keys;
+- unique constraints;
+- a changed transaction isolation level;
+- optimistic locking.
 
-## REPORT.md の構成
+Then write the code-change instructions for the app.
 
-`tla/<area>/REPORT.md` は次の順序で書く。
+**Constraints:**
+- Do not move on to code-change instructions until TLC passes.
+- Run the fixed version with the same constants and the same invariants as the buggy one. If the fixed version is a separate file, keep the `.cfg` contents identical. Switching within one file, for example with `CONSTANT Fixed \in BOOLEAN`, is also fine.
+- Call something "verified" only if it is in the model. That includes new intermediate states or failure paths the fix creates, such as an exception thrown while the order is still `charging`. Mark anything not modeled as "unverified".
+- Map each protective mechanism in the fixed version to a `file:line` code-change instruction. Each instruction says why it is needed and quotes which step of the Step 4 counterexample it blocks.
+- If the fix relies on something outside the model, write it down as an assumption. For example, "the payment gateway honors the idempotency key" is an assumption unless it is modeled.
+- Do not edit the app's code unless the user asks. This skill's job ends at the written instructions.
 
-1. **対象と結論。** どの処理を調べ、何が見つかったか。損害を 1 文で書く。
-2. **コード ↔ モデル対応表。** Step 1 の 2 つの表を置く。
-3. **不変量。** 各不変量について、述語、損害、壊れる版で落ちたことの記録を書く。
-4. **結果。** コマンド、定数、TLC の最終行、状態数を書く。バグ版と修正版の両方を載せる。
-5. **反例。** コードの言葉で書いた番号付きのステップ列。
-6. **コード修正指示。** `file:line`、変更内容、塞ぐ反例ステップ、仮定を書く。
-7. **範囲。** 検証した範囲（定数の上限）と、モデル化していないもの（クラッシュ、複数注文、ゲートウェイの失敗など）を書く。
-8. **同期点。** モデルが対応しているコードのコミット SHA。対象のファイルがこのコミットより後に変わったら、モデルを見直す。
-9. **再実行。** 1 行のコマンド。
+## Layout of REPORT.md
 
-## よくある間違い
+Write `tla/<area>/REPORT.md` in this order.
 
-| 間違い | 正しいやり方 |
+1. **Target and conclusion.** Which handler was examined and what was found. State the harm in one sentence.
+2. **Code ↔ model map.** The two tables from Step 1.
+3. **Invariants.** For each: the predicate, the harm, and the record of it failing on a mutant.
+4. **Results.** Command, constants, TLC's final line and state count, for both the buggy and the fixed versions.
+5. **Counterexamples.** Numbered step sequences in the code's terms.
+6. **Code-change instructions.** `file:line`, the change, the counterexample step it blocks, and its assumptions.
+7. **Scope.** What was checked (the bounds on the constants) and what was not modeled (crashes, multiple orders, gateway failures, and so on).
+8. **Sync point.** The commit SHA of the code the model describes. If the covered files change after that commit, revisit the model.
+9. **Rerun.** One command.
+
+## Common mistakes
+
+| Mistake | Instead |
 |---|---|
-| 正常終了がデッドロックと出たので `-deadlock` を付ける | 正常終了だけを許す。来なかったリクエストの待ちを抜けられるようにする（[例](examples/order-pay/tla/OrderPay.tla) の `Arrive`） |
-| SELECT と UPDATE を 1 ラベルに書く | オートコミットのクエリ 1 本を 1 ステップにする。まとめるとレースが見えなくなる |
-| タイムアウトしたらリクエストが消えるとモデル化する | クライアントが諦めても、サーバーのハンドラは走り続ける |
-| 入口がクライアントのリトライだけ | ダブルクリック、複数タブ、プロキシの再送も列挙する |
-| 反例を見て不変量を緩める | 現実に起きるかをコードで判定する。起きるなら、それは発見である |
-| 2 つめのバグを推論だけで報告する | 1 つめを塞いだモデルで再実行し、反例を出す |
-| 修正版を別の定数で回してパスとする | バグ版と同じ `.cfg` と定数で回す |
-| 一度に全機能をモデル化する | 1 リクエストから始め、1 段ずつ足す |
+| Adding `-deadlock` because normal termination shows up as a deadlock | Allow only normal termination. Let a wait for a request that never came be exited (see `Arrive` in the [example](examples/order-pay/tla/OrderPay.tla)) |
+| Putting a SELECT and its UPDATE in one label | One autocommit query is one step. Merging them hides the race |
+| Modeling a timeout as the request disappearing | The client gives up, but the server handler keeps running |
+| Client retry is the only entry point | Also list double clicks, multiple tabs and proxy resends |
+| Weakening an invariant after seeing a counterexample | Decide against the code whether it can happen. If it can, it is a finding |
+| Reporting a second bug from reasoning alone | Block the first bug and rerun to get a counterexample |
+| Several invariants in one `.cfg` while hunting | One invariant per `.cfg`, or `-workers 1` |
+| Passing the fixed version with different constants | Run it with the same `.cfg` and constants as the buggy version |
+| Modeling every feature at once | Start from one request and add one rung at a time |

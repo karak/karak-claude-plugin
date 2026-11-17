@@ -1,56 +1,56 @@
-# 2-tier アプリのモデル化パターン
+# Modeling patterns for 2-tier apps
 
-## 状態の分類
+## State classification
 
-| 分類 | 典型的な変数 | 値域の例 |
+| Category | Typical variables | Example domain |
 |---|---|---|
-| クライアント | 画面状態、送信回数、ボタンの有効/無効 | `{"idle","sending","done","error"}`、`1..MaxAttempts` |
-| ネットワーク | 送ったリクエストの集合、届いたレスポンスの集合、送信中のメッセージ | `SUBSET Attempts`、`[from, to, body]` のバッグ |
-| サーバー/DB | テーブルの行やフラグ、セッション、ロック、外部 API の副作用の回数 | `{"pending","charging","paid"}`、`Nat` |
-| ハンドラ局所 | SELECT で読んだ値、プログラムカウンタ | PlusCal の `variable` と `pc` |
+| Client | Screen state, attempt count, button enabled/disabled | `{"idle","sending","done","error"}`, `1..MaxAttempts` |
+| Network | Set of requests sent, set of responses delivered, messages in flight | `SUBSET Attempts`, a bag of `[from, to, body]` |
+| Server/DB | Table rows and flags, sessions, locks, count of external-API side effects | `{"pending","charging","paid"}`, `Nat` |
+| Handler-local | Values read by a SELECT, program counter | PlusCal `variable` and `pc` |
 
-外部 API の副作用（課金、メール送信、在庫引当）は、回数か集合として DB 側に置く。不変量の多くは、この副作用を数える。
+Put the side effects of external APIs (charges, sent emails, stock reservations) on the DB side, as a count or a set. Most invariants count these side effects.
 
-## 原子性の粒度
+## Atomicity
 
-1 ステップは、コード上で他のリクエストが割り込めない範囲と一致させる。
+One step must equal a span of code that no other request can interleave with.
 
-この表は PostgreSQL を前提にしている（既定の分離レベルは READ COMMITTED）。MySQL InnoDB の既定は REPEATABLE READ なので、使っている DB と分離レベルをコードと設定から確かめてから行を選ぶ。
+This table assumes PostgreSQL, whose default isolation level is READ COMMITTED. MySQL InnoDB defaults to REPEATABLE READ. Check the DB and isolation level in the code and configuration before you pick a row.
 
-| コードの形 | モデルでのステップ |
+| Code shape | Steps in the model |
 |---|---|
-| オートコミットのクエリ 1 本（`await db.query(...)`） | 1 ステップ |
-| `BEGIN ... COMMIT`（READ COMMITTED で、ロックなしの読み取り後に更新） | 読み取りと書き込みを別ステップにする。同じ行の lost update が起こり得る |
-| `BEGIN ... COMMIT`（`SELECT ... FOR UPDATE` で読んだ行だけを更新） | その行に関してはトランザクション全体で 1 ステップ。ロックしていない行や、後から INSERT される行（ファントム）は守られない。複数行にまたがる条件（write skew）は別ステップのまま扱う |
-| `BEGIN ... COMMIT`（REPEATABLE READ / スナップショット分離） | 読み取りは開始時点のスナップショット。同じ行への並行更新は片方が失敗する（PostgreSQL）。別の行に書く write skew は起こり得るので、読み取りと書き込みを別ステップにする |
-| `BEGIN ... COMMIT`（SERIALIZABLE） | 1 ステップ。ただし直列化失敗（SQLSTATE 40001）で中断され得る。中断と、アプリの再試行またはエラー応答をアクションとして書く |
-| トランザクションの中で外部 API を呼ぶ（呼び出しの後に COMMIT） | 原子的ではない。外部の副作用は COMMIT 前に起こる。呼び出しと COMMIT の間で落ちると、副作用だけが残る |
-| 条件付き更新 1 本（`UPDATE ... WHERE status='pending' RETURNING`） | 1 ステップ。判定と更新が同時に起こる |
-| READ COMMITTED の `UPDATE`。他のトランザクションが同じ行をロックしている | 行ロックを待つ。相手のコミット後に、PostgreSQL は最新の行で `WHERE` を評価し直す。条件付き更新なら、0 行になって正しく止まる。一方、アプリが先に読んだ値で計算した `SET balance = $1` は、最新の値を古い値で上書きする（lost update）。待ちを表すには、ロック保持者を変数にして `await` で待つ |
-| 加算型の更新（`SET balance = balance + $1`） | 1 ステップ。最新の値に足すので、lost update は起こらない |
-| `INSERT ... ON CONFLICT DO NOTHING`（一意制約あり） | 1 ステップ |
-| 外部 API の呼び出し（`await gateway.charge()`） | 1 ステップ。前後のクエリとは別にする |
-| 同期的な JS のコード片（`await` を挟まない） | 単一プロセス内なら 1 ステップ。ただし複数のサーバーインスタンスの間では原子的でない |
-| メモリ上のロックやキャッシュ（`Map`、`let inFlight`） | インスタンスが 1 つなら有効。複数インスタンスでは別々の変数としてモデル化する |
-| React の `setState` → 再描画 → ボタンの無効化 | 別ステップ。無効化される前に 2 回目のクリックが入り得る |
+| One autocommit query (`await db.query(...)`) | 1 step |
+| `BEGIN ... COMMIT` under READ COMMITTED, reading without a lock and then updating | Separate steps for the read and the write. A lost update on the same row is possible |
+| `BEGIN ... COMMIT` that updates only rows read with `SELECT ... FOR UPDATE` | 1 step for the whole transaction, with respect to those rows. Rows not locked, and rows inserted later (phantoms), are not protected. Keep conditions spanning several rows (write skew) as separate steps |
+| `BEGIN ... COMMIT` under REPEATABLE READ / snapshot isolation | Reads see the snapshot taken at the start. In PostgreSQL, one of two concurrent updates to the same row fails. Write skew across different rows can still happen, so keep the read and the write as separate steps |
+| `BEGIN ... COMMIT` under SERIALIZABLE | 1 step, but it can abort with a serialization failure (SQLSTATE 40001). Model the abort and the app's retry or error response as actions |
+| An external API call inside a transaction (the call, then COMMIT) | Not atomic. The external side effect happens before COMMIT. A crash between the call and COMMIT leaves only the side effect |
+| One conditional update (`UPDATE ... WHERE status='pending' RETURNING`) | 1 step. The check and the update happen together |
+| READ COMMITTED `UPDATE` while another transaction holds the row lock | Waits for the lock. After the other transaction commits, PostgreSQL re-evaluates the `WHERE` against the latest row. A conditional update therefore matches 0 rows and stops correctly. But `SET balance = $1`, computed from a value the app read earlier, overwrites the latest value with a stale one (lost update). To model the wait, keep the lock holder in a variable and `await` on it |
+| An additive update (`SET balance = balance + $1`) | 1 step. It adds to the latest value, so no lost update |
+| `INSERT ... ON CONFLICT DO NOTHING` (with a unique constraint) | 1 step |
+| An external API call (`await gateway.charge()`) | 1 step, separate from the queries before and after it |
+| Synchronous JS code (no `await` in between) | 1 step within a single process. Not atomic across server instances |
+| In-memory locks or caches (`Map`, `let inFlight`) | Effective with a single instance. With several instances, model them as separate variables per instance |
+| React `setState` → re-render → button disabled | Separate steps. A second click can arrive before the button is disabled |
 
-迷ったら粗い方（大きなステップ）ではなく、細かい方を選ぶ。細かすぎるモデルは状態が増えるだけだが、粗すぎるモデルはバグを隠す。
+When in doubt, choose the finer grain over the coarser one. A model that is too fine only grows the state space; a model that is too coarse hides bugs.
 
-## ネットワークと入口のパターン
+## Network and entry-point patterns
 
-| 現象 | モデル化 |
+| Phenomenon | How to model it |
 |---|---|
-| タイムアウト後の再試行 | クライアントの `either` に「レスポンス受信」と「タイムアウト → 次の試行を送る」を並べる。サーバーのハンドラはタイムアウトと無関係に進む |
-| レスポンスの喪失 | サーバーが返したのにクライアントへ届かない。`responded` に入れない分岐を設ける |
-| 順不同の到着 | 送信中のリクエストを集合として持ち、どれからでも受信できるようにする（列にしない） |
-| ダブルクリック、複数タブ | クライアントのプロセスを 2 つにする。または 1 クライアントが送信中に再送できるようにする |
-| プロキシや LB の再送 | 同じリクエストを複製するアクション（回数に上限を付ける） |
-| サーバーのクラッシュ | ハンドラが `Done` に飛ぶアクション（回数に上限を付ける）。DB の変更は残り、メモリは消える。現実のクラッシュは、そのプロセスで処理中のハンドラを全部止める。どの地点で落とすか、何本を同時に止めるかをレポートの「範囲」に書く |
-| 複数のサーバーインスタンス | インスタンスごとにメモリ上の状態（キャッシュ、ロック、キュー）を別の変数にする。DB だけが共有される |
+| Retry after timeout | In the client's `either`, put "receive response" and "time out → send the next attempt" side by side. The server handler proceeds regardless of the timeout |
+| Lost response | The server responded, but the response never reaches the client. Add a branch that does not add to `responded` |
+| Out-of-order arrival | Keep requests in flight as a set, not a sequence, so any one can be received next |
+| Double click, multiple tabs | Use two client processes, or let one client resend while a request is in flight |
+| Proxy or load-balancer resend | An action that duplicates a request, with a bound on how many times |
+| Server crash | An action that sends a handler to `Done`, with a bound on how many times. DB changes survive and memory is lost. A real crash stops every handler in flight in that process. Write down in the report's Scope section where the model crashes and how many handlers it stops at once |
+| Several server instances | Give each instance its own variables for in-memory state (caches, locks, queues). Only the DB is shared |
 
-### 来なかったリクエストの待ち
+### Waiting for a request that never came
 
-ハンドラを `process Handler \in Attempts` のように静的に並べると、送られなかった試行のハンドラが `await self \in sent` で永遠に待つ。TLC はこれをデッドロックと報告する。クライアントが終わったら抜けられるようにする。
+If handlers are declared statically, as in `process Handler \in Attempts`, the handler for an attempt that was never sent waits forever at `await self \in sent`. TLC reports this as a deadlock. Let it exit once the client is done.
 
 ```tla
 Arrive:
@@ -58,20 +58,20 @@ Arrive:
   if self \notin sent then goto Done; end if;
 ```
 
-この形にすると、`-deadlock` を付けずに済む。本物のデッドロックを検出する力も残る。
+With this shape there is no need for `-deadlock`, and real deadlocks are still detected.
 
-## 不変量カタログ
+## Invariant catalog
 
-以下はひな形である。変数名は自分のモデルに合わせ、各式は TLC で一度は落ちるのを確かめてから使う。
+These are templates. Rename the variables to match your model, and see each one fail in TLC once before relying on it.
 
-| バグの種類 | 損害 | 述語の形 |
+| Bug | Harm | Predicate shape |
 |---|---|---|
-| 二重課金・二重処理 | 1 回の意図に対して副作用が複数回起こる | `gatewayCharges <= 1`、`\A o \in Orders : Cardinality({c \in charges : c.order = o}) <= 1` |
-| ロストアップデート | 並行する更新の一方が消える | `stock = InitialStock - Cardinality(reserved)`、`balance = Value * Cardinality(usedCoupons)`（終了時、またはトランザクションの外にいる時点で評価する） |
-| 負の残高・在庫 | 制約が破られる | `balance >= 0`、`\A i \in Items : stock[i] >= 0` |
-| DB と副作用の食い違い | 支払済みなのに記録がない、または逆 | `status = "paid" => chargeRows >= 1`、`chargeRows = gatewayCharges` |
-| クライアントと DB の食い違い | 画面は成功と表示したのに DB は未完了 | `clientState = "done" => status = "paid"` |
-| 処理済みの数と一意なイベントの数 | 冪等性が守られない | `Cardinality(processed) = Cardinality(uniqueClientEvents)` |
-| 宙に浮いた中間状態 | `charging` のまま、誰も先に進めない | 終了時の不変量として書く: `(\A p \in ProcSet : pc[p] = "Done") => status # "charging"`。PlusCal の `define` では `ProcSet` を参照できないので、`\* END TRANSLATION` の下に置く（[例](../examples/order-pay/tla/OrderPayCrash.tla)） |
+| Double charge / double processing | One intent causes a side effect more than once | `gatewayCharges <= 1`, `\A o \in Orders : Cardinality({c \in charges : c.order = o}) <= 1` |
+| Lost update | One of two concurrent updates disappears | `stock = InitialStock - Cardinality(reserved)`, `balance = Value * Cardinality(usedCoupons)` (evaluate at termination or when no transaction is open) |
+| Negative balance / stock | A constraint is broken | `balance >= 0`, `\A i \in Items : stock[i] >= 0` |
+| DB vs side-effect mismatch | Paid with no record of the charge, or the reverse | `status = "paid" => chargeRows >= 1`, `chargeRows = gatewayCharges` |
+| Client vs DB mismatch | The screen shows success but the DB is not done | `clientState = "done" => status = "paid"` |
+| Processed count vs unique events | Idempotency is not kept | `Cardinality(processed) = Cardinality(uniqueClientEvents)` |
+| Stuck intermediate state | Stays `charging` and nobody can move it on | Write it as a termination invariant: `(\A p \in ProcSet : pc[p] = "Done") => status # "charging"`. PlusCal's `define` cannot refer to `ProcSet`, so put it below `\* END TRANSLATION` ([example](../examples/order-pay/tla/OrderPayCrash.tla)) |
 
-「宙に浮いた中間状態」は、クラッシュをモデル化すると見つかることが多い。中間状態を導入した修正（`charging` など）を入れたら、クラッシュを足して再実行する。
+Stuck intermediate states often show up once crashes are modeled. After a fix that introduces an intermediate state (such as `charging`), add crashes and rerun.

@@ -1,29 +1,29 @@
-# TLC の実行と結果の読み方
+# Running TLC and reading its results
 
-## 導入
+## Setup
 
-- Java 11 以上が必要である。
-- `tla2tools.jar` を https://github.com/tlaplus/tlaplus/releases から取得する。v1.7.4 で動作を確認した。
-- ダウンロードする前に、ファイル名、取得元、サイズをユーザーに示して承認を得る。
-- jar はアプリのリポジトリに入れない。置いた場所を `TLA2TOOLS` で渡す。
-- VS Code 拡張（tlaplus.vscode-ide）や TLA+ Toolbox でも同じ jar が動く。再実行の手順には CLI のコマンドを残す。
+- You need Java 11 or later.
+- Get `tla2tools.jar` from https://github.com/tlaplus/tlaplus/releases. This skill was checked with v1.7.4.
+- Before downloading, show the user the file name, source and size, and get their approval.
+- Keep the jar out of the app's repo, and pass its location in `TLA2TOOLS`.
+- The same jar also runs inside the VS Code extension (tlaplus.vscode-ide) and the TLA+ Toolbox. The rerun instructions in the report must still give the CLI command.
 
-## コマンド
+## Commands
 
-`bash scripts/tlc.sh Spec.tla [Spec.cfg] [TLC の追加引数]` は、次の処理を順に実行する。個別に実行するときは `J=$TLA2TOOLS` として、同じコマンドを使う。
+`bash scripts/tlc.sh Spec.tla [Spec.cfg] [extra TLC args]` runs the stages below in order. To run one stage by hand, set `J=$TLA2TOOLS` and use the same command.
 
-| 段階 | コマンド | 成功の印 |
+| Stage | Command | Sign of success |
 |---|---|---|
-| PlusCal の変換 | `java -cp $J pcal.trans -nocfg Spec.tla` | `Translation completed.` |
-| 構文・意味の検査 | `java -cp $J tla2sany.SANY Spec.tla` | `Semantic errors` が出ない |
-| モデル検査 | `java -cp $J tlc2.TLC -workers auto -config Spec.cfg Spec.tla` | `Model checking completed. No error has been found.` |
+| PlusCal translation | `java -cp $J pcal.trans -nocfg Spec.tla` | `Translation completed.` |
+| Syntax and semantic check | `java -cp $J tla2sany.SANY Spec.tla` | No `Semantic errors` |
+| Model checking | `java -cp $J tlc2.TLC -workers auto -config Spec.cfg Spec.tla` | `Model checking completed. No error has been found.` |
 
-- `pcal.trans` は `.tla` の `\* BEGIN TRANSLATION` から `\* END TRANSLATION` までを書き換える。この範囲は手で編集しない。
-- `pcal.trans` は、変換前のファイルを `.old` として残す。ラッパーはこれを消す。
-- `-nocfg` を付けないと、`pcal.trans` が手書きの `.cfg` を上書きする。
-- TLC は作業ディレクトリに `states/` を作る。ラッパーは `-metadir` で一時ディレクトリに逃がす。
+- `pcal.trans` rewrites the part of the `.tla` file between `\* BEGIN TRANSLATION` and `\* END TRANSLATION`. Do not edit that part by hand.
+- `pcal.trans` keeps the previous file as `.old`. The wrapper deletes it.
+- Without `-nocfg`, `pcal.trans` overwrites your hand-written `.cfg`.
+- TLC creates a `states/` directory in the working directory. The wrapper sends it to a temporary directory with `-metadir`.
 
-## .cfg の雛形
+## .cfg template
 
 ```text
 SPECIFICATION Spec
@@ -32,51 +32,58 @@ CONSTANTS MaxAttempts = 2
 INVARIANTS TypeOK NoDoubleCharge PaidHasChargeRow
 ```
 
-- 定数は最小から始める。ハンドラ数、試行数、クラッシュ数を 1 ずつ増やすと、状態数はおおむね数倍ずつ増える。
-- 1 分以内に終わる範囲を、再実行の既定値にする。
-- バグを探すときは、不変量ごとに `.cfg` を分ける（例: `Spec_NoDouble.cfg`）。並列ワーカーで回すと、複数の不変量のうちどれが先に報告されるか、また違反時の状態数が実行ごとに変わる。決定的な結果が欲しいときは `-workers 1` を付ける。
+- Start with the smallest constants. Adding one more handler, attempt or crash multiplies the state count several times over.
+- Make the default for reruns the largest bound that finishes within about a minute.
+- While hunting, give each invariant its own `.cfg` (for example `Spec_NoDouble.cfg`). With parallel workers, which of several invariants gets reported first, and the state count at the violation, change from run to run. Add `-workers 1` when you need deterministic output.
 
-## デッドロック
+## Deadlocks
 
-TLC は、次の状態がない状態に達するとデッドロックと報告する。原因は次の 3 種類である。
+TLC reports a deadlock when it reaches a state with no successor. There are three causes.
 
-| 原因 | 見分け方 | 対処 |
+| Cause | How to tell | What to do |
 |---|---|---|
-| 正常終了（全プロセスが `Done`） | 最終状態の `pc` がすべて `"Done"` | PlusCal なら、変換結果に `Terminating` が入るので出ない。手書きの TLA+ なら、`Terminating == AllDone /\ UNCHANGED vars` を `Next` に加える |
-| 来ない入力を待つプロセス | 最終状態の一部の `pc` が `await` のラベルで止まっている | その待ちを、終了条件でも抜けられるようにする（[modeling-2tier.md](modeling-2tier.md#来なかったリクエストの待ち)） |
-| 本物のデッドロック | 待ちの条件が、モデルの外の事情なしには満たされない | **これは発見である。** 反例としてコードの言葉で報告する |
+| Normal termination (every process is `Done`) | In the final state, every `pc` is `"Done"` | In PlusCal this does not happen, because the translation includes `Terminating`. In hand-written TLA+, add `Terminating == AllDone /\ UNCHANGED vars` to `Next` |
+| A process waiting for input that never comes | In the final state, some `pc` is stuck at an `await` label | Let that wait also exit on a termination condition ([modeling-2tier.md](modeling-2tier.md#waiting-for-a-request-that-never-came)) |
+| A real deadlock | The wait cannot be satisfied without something outside the model | **This is a finding.** Report it as a counterexample in the code's terms |
 
-`-deadlock` フラグは、デッドロック検査を丸ごと無効にする。付けると、上の表の 3 行目（本物のデッドロック）も見えなくなる。このスキルでは使わない。偽デッドロックは、表の 1 行目か 2 行目の方法で消す。
+The `-deadlock` flag switches off deadlock checking entirely. With it, the third row (real deadlocks) becomes invisible too. This skill does not use it; remove false deadlocks with the first or second row instead.
 
-## PlusCal の落とし穴
+## PlusCal pitfalls
 
-- `define` ブロックでは `ProcSet` を参照できない。`ProcSet` は `define` より後に定義されるからである。`pc` は変数宣言に含まれるので参照できる。`ProcSet` を読む不変量（「全プロセスが終わったら」など）は、`\* END TRANSLATION` の下、モジュール末尾の `====` の上に書く（[例](../examples/order-pay/tla/OrderPayCrash.tla)）。`define` の中に置きたい場合は、`ProcSet` の代わりにプロセス ID の集合を明示する（例: `{0} \union Attempts`）。
-- ラベル 1 つが 1 つの原子的ステップになる。同じラベル内で同じ変数に 2 回代入すると、変換時にエラーになる。
-- `either ... or ...` の各分岐の先頭に `await` を置くと、その分岐は条件が満たされたときにだけ選べる。
-- `goto` の後には、次のラベルが必要である。そのため、`if c then goto L; end if; x := 1;` を 1 つのラベルの中に書くと `Missing label` になる。判定と実行を同じ原子的ステップにしたいときは、`if c then goto L; else x := 1; end if;` のように `else` の中に書く。
-- `\* BEGIN TRANSLATION` と `\* END TRANSLATION` の目印は、なければ `pcal.trans` が自動で加える。新しく書く仕様では、`(* --algorithm ... end algorithm; *)` の後に何も書かずに変換してよい。
+- `define` cannot refer to `ProcSet`, because `ProcSet` is defined after `define`. `pc` is part of the variable declaration, so it can be referred to.
+  - Put invariants that read `ProcSet` (such as "once every process has finished") below `\* END TRANSLATION`, above the module's closing `====` ([example](../examples/order-pay/tla/OrderPayCrash.tla)).
+  - To keep one inside `define`, spell out the set of process IDs instead of `ProcSet`, for example `{0} \union Attempts`.
+- One label is one atomic step. Assigning the same variable twice within one label is a translation error.
+- An `await` at the head of an `either ... or ...` branch makes that branch selectable only when its condition holds.
+- A `goto` must be followed by a label. So `if c then goto L; end if; x := 1;` inside one label fails with `Missing label`. To keep the check and the action in one atomic step, put the action in the `else` branch: `if c then goto L; else x := 1; end if;`.
+- If the `\* BEGIN TRANSLATION` and `\* END TRANSLATION` markers are missing, `pcal.trans` adds them. A new spec can be translated with nothing after `(* --algorithm ... end algorithm; *)`.
 
-## 反例トレースの読み方
+## Reading a counterexample trace
 
-1. 1 行目の `Error: Invariant X is violated.` で、どの不変量が破れたかを確かめる。
-2. 各 `State n: <Label line ...>` を見る。そのステップでどのラベル（アクション）が動いたかが分かる。
-3. 変数の差分を追う。`pc` の変化で、どのプロセスが進んだかが分かる。
-4. 各ステップをコードの `file:line` に写し、番号付きの日本語のステップ列に書き直す。
+1. The first line, `Error: Invariant X is violated.`, tells you which invariant broke.
+2. Each `State n: <Label line ...>` tells you which label (action) ran in that step.
+3. Follow the changes in the variables. The change in `pc` tells you which process moved.
+4. Map each step to a `file:line` in the code, and rewrite the trace as a numbered sequence of steps.
 
-TLC は幅優先探索で、最短の反例を 1 つだけ返す。次のバグを探すときは、見つけたバグを塞いだモデルで再実行する。
+TLC searches breadth-first and returns one shortest counterexample. To find the next bug, rerun with a model in which the found bug is blocked.
 
-反例は `-metadir` のディレクトリにも `*_TTrace_*.tla` として書き出される。ラッパーは終了時にこのディレクトリを消すので、トレースは標準出力から読むか、残したいときは TLC を直接実行する。
+TLC also writes the counterexample to `*_TTrace_*.tla` in the `-metadir` directory. The wrapper deletes that directory on exit, so read the trace from standard output, or run TLC directly if you want to keep the file.
 
-## 状態数が多すぎるとき
+## When the state space is too large
 
-- 定数を減らす。
-- 対称性を使う。ID の集合を整数ではなくモデル値にする（`.cfg` に `CONSTANT Clients = {c1, c2}`）。そのうえで、仕様に `Perms == Permutations(Clients)`（`TLC` モジュールを `EXTENDS` する）を定義し、`.cfg` に `SYMMETRY Perms` を書く。対称性を使うと、活性（liveness）の検査は正しくなくなる。安全性の不変量だけを確かめるときに使う。
-- 不要な局所変数を、使い終わったら初期値に戻す。
-- 探索の上限を付ける。`.cfg` の `CONSTRAINT` に「試行回数 <= N」のような状態制約を書く。それでも大きすぎる場合は、`-simulate -depth 50` でランダムな実行を試す。ランダムな実行で違反が出なくても、全探索ではないので「検証した」とは書かない。
-- 不変量やモデルの意味を削って状態数を減らすことはしない。
+- Shrink the constants.
+- Use symmetry:
+  - Make ID sets model values instead of integers (`CONSTANT Clients = {c1, c2}` in the `.cfg`).
+  - Define `Perms == Permutations(Clients)` in the spec, with `EXTENDS TLC`.
+  - Add `SYMMETRY Perms` to the `.cfg`.
+  - Symmetry makes liveness checking unsound, so use it only for safety invariants.
+- Reset local variables to their initial values once they are no longer needed.
+- Bound the search with a state constraint such as "attempts <= N" under `CONSTRAINT` in the `.cfg`.
+- If it is still too large, try random runs with `-simulate -depth 50`. If no violation shows up, do not write "verified", because a random search is not exhaustive.
+- Do not shrink the state space by cutting invariants or meaning out of the model.
 
-## 活性（いつかは起こること）
+## Liveness (things that must eventually happen)
 
-このスキルは安全性（悪い状態に到達しない）を主に扱う。「いつかは支払われる」のような活性を確かめるときは、`.cfg` に `PROPERTY Termination` などの時相式を書く。PlusCal の変換結果には `Termination` が入っている。
+This skill mainly deals with safety: never reaching a bad state. To check liveness, such as "eventually paid", put a temporal formula like `PROPERTY Termination` in the `.cfg`. PlusCal's translation already defines `Termination`.
 
-活性を確かめるには公平性も必要になる。PlusCal なら `fair process`、TLA+ なら `WF_vars(Action)` を付ける。公平性がないと、TLC は「誰も何もしない」実行を反例として返す。
+Liveness also needs fairness: `fair process` in PlusCal, or `WF_vars(Action)` in TLA+. Without it, TLC returns "nobody ever does anything" as a counterexample.
