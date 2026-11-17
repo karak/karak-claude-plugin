@@ -4,8 +4,8 @@
     "name": "karak"
   },
   "metadata": {
-    "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Windows host maintenance, Node.js backend development, and meta (session-aware) tools for Claude Code",
-    "version": "2.9.0"
+    "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Windows host maintenance, Node.js backend development, TLA+ bug hunting, and meta (session-aware) tools for Claude Code",
+    "version": "2.10.0"
   },
   "plugins": [
     {
@@ -115,8 +115,8 @@
     {
       "name": "karak-engineering",
       "source": "./karak-engineering",
-      "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management, and Node.js 24 backend development (Express, Drizzle/Prisma, Vitest, tsup)",
-      "version": "1.1.0",
+      "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management, Node.js 24 backend development (Express, Drizzle/Prisma, Vitest, tsup), and TLA+ bug hunting for 2-tier web apps (PlusCal/TLC model checking for races, double submission, and client/DB state mismatches)",
+      "version": "1.2.0",
       "author": {
         "name": "karak"
       },
@@ -135,7 +135,13 @@
         "vitest",
         "tsup",
         "backend",
-        "rest-api"
+        "rest-api",
+        "tla-plus",
+        "pluscal",
+        "tlc",
+        "model-checking",
+        "formal-verification",
+        "race-condition"
       ],
       "category": "development",
       "tags": [
@@ -147,7 +153,10 @@
         "backend",
         "express",
         "drizzle",
-        "vitest"
+        "vitest",
+        "tla-plus",
+        "formal-verification",
+        "model-checking"
       ]
     },
     {

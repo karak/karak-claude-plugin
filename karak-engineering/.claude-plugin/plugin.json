@@ -1,6 +1,6 @@
 {
   "name": "karak-engineering",
-  "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management, and Node.js 24 backend development (Express, Drizzle/Prisma, Vitest, tsup)",
+  "description": "Code quality, review, and design doc skills: Codex-based code review with session resume, Google design docs, code refactoring, QA management, Node.js 24 backend development (Express, Drizzle/Prisma, Vitest, tsup), and TLA+ bug hunting for 2-tier web apps (PlusCal/TLC model checking for races, double submission, and client/DB state mismatches)",
   "author": {
     "name": "karak"
   },
@@ -19,12 +19,19 @@
     "vitest",
     "tsup",
     "backend",
-    "rest-api"
+    "rest-api",
+    "tla-plus",
+    "pluscal",
+    "tlc",
+    "model-checking",
+    "formal-verification",
+    "race-condition"
   ],
   "skills": [
     "./skills/codex-review",
     "./skills/google-design-docs",
-    "./skills/nodejs-backend"
+    "./skills/nodejs-backend",
+    "./skills/tla-bug-hunt"
   ],
   "agents": [
     "./agents/code-refactorer.md",
