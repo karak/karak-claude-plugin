@@ -1,8 +1,8 @@
 ---
 name: tla-bug-hunt
 description: |
-  Use when hunting race conditions, double submission / double charge, lost updates, retry duplicates, or client-server-DB state mismatches in a 2-tier web app (browser or mobile client + API server + DB) that has no written spec, by modeling it in TLA+ or PlusCal and model-checking with TLC. Also use when a TLC counterexample, false deadlock, or SANY parse error comes up in such a model.
-  Triggers: "TLA+ でバグを探して", "レースコンディション", "二重決済", "二重送信", "冪等性", "状態不整合", "モデル検査", "形式検証", "tla bug hunt", "model-check this endpoint", "can this retry double-charge".
+  Use when hunting race conditions, double submission or double charges, lost updates, retry duplicates, or client/server/DB state mismatches in a 2-tier web app (browser or mobile client + API server + DB) that has no written spec, by modeling it in TLA+ or PlusCal and model-checking it with TLC. Also use when a TLC counterexample, false deadlock, or SANY parse error comes up in such a model.
+  Triggers: "find bugs in this API with TLA+", "model-check this endpoint", "can this retry double-charge", "is there a race in this handler", "tla bug hunt".
 ---
 
 # TLA+ bug hunt for 2-tier web apps
