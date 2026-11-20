@@ -67,13 +67,9 @@ python3 -c "import json; p=json.load(open('.claude-plugin/plugin.json')); m=json
 
 #### 3c: tags に関連タグを追加（必要に応じて）
 
-#### 3d: version をインクリメント
+#### 3d: Leave versions unchanged
 
-`metadata.version` と `plugins[0].version` の両方を同じ値に更新する。
-
-```bash
-python3 -c "import json; m=json.load(open('.claude-plugin/marketplace.json')); assert m['metadata']['version']==m['plugins'][0]['version']"
-```
+Don't bump `metadata.version` or any plugin `version` in a work PR. Versions are bumped only in the release-prep PR before a develop→main merge; see CLAUDE.md "Branching and releases".
 
 ### Step 4: バリデーション
 
@@ -105,7 +101,7 @@ claude plugin validate .
 - [ ] plugin.json に `version` フィールドがない
 - [ ] marketplace.json の `description` に新スキルが含まれている
 - [ ] marketplace.json の `keywords` が plugin.json の `keywords` と一致している
-- [ ] marketplace.json の `metadata.version` と `plugins[0].version` が同じ値
+- [ ] Versions in marketplace.json are unchanged (they are bumped only at release time)
 - [ ] `claude plugin validate .` がエラーなしで通る
 
 ## よくあるミス
@@ -115,5 +111,5 @@ claude plugin validate .
 | plugin.json に `version` を追加してしまう | marketplace.json のみで version を管理する |
 | skills パスを `"skills/<name>"` にしてしまう | `"./skills/<name>"` と先頭に `./` を付ける |
 | marketplace.json の keywords を更新し忘れる | plugin.json と marketplace.json で同一配列にする |
-| version を片方だけ更新する | `metadata.version` と `plugins[0].version` を両方更新する |
+| Bumping versions in a work PR | Leave versions alone; bump them in the release-prep PR (CLAUDE.md) |
 | プロジェクトローカルスキルを配布用 skills/ に置く | `.claude/skills/` に配置する（配布対象にしない） |
