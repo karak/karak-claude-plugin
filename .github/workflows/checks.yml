@@ -3,7 +3,7 @@ name: checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, develop]
 
 permissions:
   contents: read
@@ -25,6 +25,29 @@ jobs:
         env:
           BASE_REF: ${{ github.event_name == 'push' && github.event.before || 'origin/main' }}
         run: bash scripts/check-sync.sh
+
+  release-gate:
+    # main is the release branch: every merge into it is a release (see CLAUDE.md).
+    if: github.base_ref == 'main' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Head branch is develop, versions bumped
+        # On a PR, compare with the main tip and require the head to be develop.
+        # On a push to main (e.g. a direct push), compare with the commit before the push;
+        # HEAD_BRANCH is empty there, so only the version checks run.
+        env:
+          BASE_REF: ${{ github.event_name == 'push' && github.event.before || 'origin/main' }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: bash scripts/check-release.sh
+
+  release-gate-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash scripts/tests/test-check-release.sh
 
   line-endings:
     runs-on: ubuntu-latest
