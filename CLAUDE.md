@@ -23,7 +23,7 @@ Claude Code plugin marketplace (`.claude-plugin/marketplace.json`) with sub-plug
 Release only when the user asks. A merge into `main` publishes to every user.
 
 1. **Prepare on a branch.** Branch `chore/release-v<X.Y.Z>` from `origin/develop`, where `X.Y.Z` is the new `metadata.version`.
-2. **Find what changed.** Run `git diff --stat origin/main origin/develop -- 'karak-*/' .claude-plugin/marketplace.json`. A plugin counts as changed when files under its `source` directory changed or its marketplace entry changed apart from `version`.
+2. **Find what changed.** Run `git diff --stat origin/main origin/develop -- 'karak-*' .claude-plugin/marketplace.json`. A plugin counts as changed when files under its `source` directory changed or its marketplace entry changed apart from `version`.
 3. **Bump in `.claude-plugin/marketplace.json` only.** `plugin.json` files carry no `version`; keep it that way.
    - Each changed plugin: major for a removed or renamed skill/agent or another breaking change, minor for a new skill/agent or feature, patch for fixes and wording.
    - `metadata.version`: always bump it on a release, by the largest bump among the plugins (patch when only non-plugin files changed).
@@ -36,7 +36,7 @@ There is no hotfix branch. Urgent fixes also go through `develop` and a release.
 
 ### Why versions must change
 
-Claude Code decides whether an installed plugin needs updating from its version. If the content changes but the version stays the same, users keep the cached old copy. If the same version holds different content on different days, the version means nothing.
+Claude Code decides whether an installed plugin needs updating from its version. Here that is the `version` in the marketplace entry, because `plugin.json` would take precedence if it had one. If the content changes but the version stays the same, users keep the cached old copy. If the same version holds different content on different days, the version means nothing. See https://code.claude.com/docs/en/plugins/loading.md (versions and updates) and https://code.claude.com/docs/en/plugins/host-marketplace.md (release a new version).
 
 ## Checks
 
