@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Design, UX psychology, specialized cloud architecture, Windows Desktop, Windows host maintenance, Node.js backend development, TLA+ bug hunting, and meta (session-aware) tools for Claude Code",
-    "version": "2.10.0"
+    "version": "2.10.1"
   },
   "plugins": [
     {
