@@ -52,14 +52,23 @@ if ! semver_gt "$head_top" "$base_top"; then
     FAILED=1
 fi
 
+# Capture first: a jq failure inside a process substitution would be ignored and skip every check.
+plugins_tsv="$(printf '%s' "$head_json" | jq -re '.plugins | if length > 0 then .[] | [.name, .source] | @tsv else error("no plugins") end')" \
+    || { echo "ERROR: cannot read .plugins from HEAD $MARKETPLACE (no plugins)"; exit 1; }
+
 while IFS=$'\t' read -r name source; do
     head_entry="$(printf '%s' "$head_json" | jq -cS --arg n "$name" '.plugins[] | select(.name == $n)')"
     base_entry="$(printf '%s' "$base_json" | jq -cS --arg n "$name" '.plugins[] | select(.name == $n)')"
-    if [ -z "$base_entry" ]; then
-        echo "NEW: $name ($(printf '%s' "$head_entry" | jq -r .version))"
-        continue
-    fi
     path="${source#./}"
+    if [ -z "$base_entry" ]; then
+        # A renamed plugin keeps its source dir; compare it with the entry that owned that dir.
+        base_entry="$(printf '%s' "$base_json" | jq -cS --arg s "$source" '[.plugins[] | select(.source == $s)] | first // empty')"
+        if [ -z "$base_entry" ]; then
+            echo "NEW: $name ($(printf '%s' "$head_entry" | jq -r .version))"
+            continue
+        fi
+        echo "RENAMED: $(printf '%s' "$base_entry" | jq -r .name) -> $name"
+    fi
     changed=""
     if ! git -C "$REPO_ROOT" diff --quiet "$base_commit" HEAD -- "$path"; then
         changed="files under $path"
@@ -75,7 +84,7 @@ while IFS=$'\t' read -r name source; do
         echo "VERSION: $name changed ($changed) but its version did not increase ($BASE_REF: $base_v, HEAD: $head_v)"
         FAILED=1
     fi
-done < <(printf '%s' "$head_json" | jq -r '.plugins[] | [.name, .source] | @tsv')
+done <<<"$plugins_tsv"
 
 if [ "$FAILED" -eq 1 ]; then
     echo "Release gate FAILED. See CLAUDE.md \"Branching and releases\"."

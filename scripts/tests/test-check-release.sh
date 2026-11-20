@@ -76,5 +76,11 @@ run_case "empty HEAD_BRANCH (push event) skips branch check" 0 "Release gate pas
 setup bad-format;     echo two > plug-a/SKILL.md; marketplace 1.1.0 1.0.1-beta
 run_case "non MAJOR.MINOR.PATCH version fails" 1 "VERSION: plug-a changed"
 
+setup no-plugins;     printf '{"metadata":{"version":"1.0.1"}}\n' > .claude-plugin/marketplace.json
+run_case "marketplace without plugins fails instead of skipping checks" 1 "no plugins"
+
+setup renamed;        echo two > plug-a/SKILL.md; marketplace 1.1.0 1.0.0; sed -i.bak 's/"name":"plug-a"/"name":"plug-a2"/' .claude-plugin/marketplace.json; rm .claude-plugin/marketplace.json.bak
+run_case "renamed plugin with changed files and no bump fails" 1 "VERSION: plug-a2 changed"
+
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]
